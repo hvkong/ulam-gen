@@ -13,3 +13,19 @@ Customize the look and feel of the frontend via the below locations.
 
 
 Once you’ve edited any of the Svelte/HTML files, rebuild the frontend and then the Go binary (via `docker buildx build -t quickfood-local:latest --load .` or your normal build command) to package the updates.
+
+
+
+# Shortcuts
+
+## Build
+To build, create, start the resources in docker compose file.
+```
+docker compose -f compose.grafana-cloud.microservices.yaml up -d --build
+```
+
+## Stop and Remove
+To stop and remove containers, networks and other resources.
+```
+docker compose -f compose.grafana-cloud.microservices.yaml down
+```

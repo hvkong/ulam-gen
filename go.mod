@@ -1,4 +1,4 @@
-module github.com/grafana/quickpizza
+module github.com/hvkong/ulam-gen
 
 go 1.24.0
 

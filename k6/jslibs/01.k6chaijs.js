@@ -17,19 +17,19 @@ export const options = {
 };
 
 export default async function () {
-  describe("Get pizza recommendations", async () => {
+  describe("Get food recommendations", async () => {
     const page = browser.newPage();
 
     try {
       await page.goto(BASE_URL);
 
-      expect(page.locator("h1").textContent(), "text content").to.equal("Looking to break out of your pizza routine?");
+      expect(page.locator("h1").textContent(), "text content").to.equal("Looking to break out of your food routine?");
 
-      await page.locator('//button[. = "Pizza, Please!"]').click();
+      await page.locator('//button[. = "Food, Please!"]').click();
       page.waitForTimeout(500);
       page.screenshot({ path: "screenshot.png" });
 
-      expect(page.locator("div#recommendations").textContent(), "pizza recommendations").to.not.be.empty;
+      expect(page.locator("div#recommendations").textContent(), "food recommendations").to.not.be.empty;
     } finally {
       page.close();
     }

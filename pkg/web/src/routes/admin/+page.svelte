@@ -8,7 +8,7 @@ var loginError = '';
 var username = 'admin';
 var password = 'admin';
 var adminLoggedIn = false;
-var latestPizzaRecommendations: string[] = [];
+var latestFoodRecommendations: string[] = [];
 
 onMount(async () => {
 	adminLoggedIn = checkAdminLoggedIn();
@@ -89,7 +89,7 @@ function updateRecommendations() {
 			if (newRec.length >= 0) {
 				newRec[0] = newRec[0] + ' (newest)';
 			}
-			latestPizzaRecommendations = newRec;
+			latestFoodRecommendations = newRec;
 		});
 }
 </script>
@@ -104,14 +104,14 @@ function updateRecommendations() {
 			>
 			<div class="mt-4 mb-4">
 				<h2 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl mb-2">
-					Latest pizza recommendations
+					Latest food recommendations
 				</h2>
 				<ul>
-					{#if latestPizzaRecommendations.length === 0}
+					{#if latestFoodRecommendations.length === 0}
 						<li>No recommendations yet</li>
 					{:else}
-						{#each latestPizzaRecommendations as pizza}
-							<li>{pizza}</li>
+						{#each latestFoodRecommendations as food}
+							<li>{food}</li>
 						{/each}
 					{/if}
 				</ul>

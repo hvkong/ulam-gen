@@ -9,8 +9,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/grafana/quickpizza/pkg/errorinjector"
-	"github.com/grafana/quickpizza/pkg/model"
+	"github.com/hvkong/ulam-gen/pkg/errorinjector"
+	"github.com/hvkong/ulam-gen/pkg/model"
 )
 
 var errNotFound = errors.New("Entity not found")

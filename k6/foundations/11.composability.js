@@ -70,7 +70,7 @@ export function getPizza() {
     maxNumberOfToppings: 6,
     minNumberOfToppings: 2,
   };
-  let res = http.post(`${BASE_URL}/api/pizza`, JSON.stringify(restrictions), {
+  let res = http.post(`${BASE_URL}/api/food`, JSON.stringify(restrictions), {
     headers: {
       "Content-Type": "application/json",
       "Authorization": "Token " + tokens[Math.floor(Math.random() * tokens.length)],
@@ -94,10 +94,10 @@ export async function checkFrontend() {
     await page.goto(BASE_URL);
     checkData = await page.locator("h1").textContent();
     check(page, {
-      header: checkData == "Looking to break out of your pizza routine?",
+      header: checkData == "Looking to break out of your food routine?",
     });
 
-    await page.locator('//button[. = "Pizza, Please!"]').click();
+    await page.locator('//button[. = "Food, Please!"]').click();
     await page.waitForTimeout(500);
     await page.screenshot({ path: "screenshot.png" });
     checkData = await page.locator("div#recommendations").textContent();

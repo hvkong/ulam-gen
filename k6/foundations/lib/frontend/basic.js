@@ -9,10 +9,10 @@ export async function LoadAndCheck(url, headless) {
     await page.goto(url)
     checkData = await page.locator("h1").textContent();
     check(page, {
-      header: checkData == "Looking to break out of your pizza routine?",
+      header: checkData == "Looking to break out of your food routine?",
     });
-  
-    await page.locator('//button[. = "Pizza, Please!"]').click();
+
+    await page.locator('//button[. = "Food, Please!"]').click();
     await page.waitForTimeout(500);
     await page.screenshot({ path: `screenshots/${__ITER}.png` });
     checkData = await page.locator("div#recommendations").textContent();

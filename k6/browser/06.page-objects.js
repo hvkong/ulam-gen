@@ -63,7 +63,7 @@ export async function pizzaRecommendations() {
     await pageUtils.addPerformanceMark('page-visit');
 
     check(recommendationsPage, {
-      header: await recommendationsPage.getHeadingTextContent() == "Looking to break out of your pizza routine?",
+      header: await recommendationsPage.getHeadingTextContent() == "Looking to break out of your food routine?",
     });
 
     await recommendationsPage.getPizzaRecommendation();

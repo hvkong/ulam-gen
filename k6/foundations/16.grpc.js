@@ -4,7 +4,7 @@ import { check, sleep } from 'k6';
 const BASE_URL = __ENV.BASE_GRPC_URL || 'localhost:3334';
 
 const client = new Client();
-client.load(['definitions'], '../../../proto/quickpizza.proto');
+client.load(['definitions'], '../../../proto/quickfood.proto');
 
 export default () => {
   client.connect(BASE_URL, {
@@ -12,7 +12,7 @@ export default () => {
   });
 
   const data = { ingredients: ["Pepperoni", "Mozzarella"], dough: "Stuffed" };
-  const response = client.invoke('quickpizza.GRPC/RatePizza', data);
+  const response = client.invoke('quickfood.GRPC/RateFood', data);
 
   check(response, {
     'status is OK': (r) => r && r.status === StatusOK,

@@ -9,8 +9,7 @@ ENV PUBLIC_BACKEND_ENDPOINT=${PUBLIC_BACKEND_ENDPOINT}
 ARG PUBLIC_BACKEND_WS_ENDPOINT=""
 ENV PUBLIC_BACKEND_WS_ENDPOINT=${PUBLIC_BACKEND_WS_ENDPOINT}
 
-RUN npm install && \
-    npm run build
+RUN rm -rf node_modules build && npm install && npm run build && ls -la build/
 
 FROM golang:1.24-bullseye@sha256:2cdc80dc25edcb96ada1654f73092f2928045d037581fa4aa7c40d18af7dd85a AS builder
 

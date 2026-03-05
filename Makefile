@@ -33,7 +33,7 @@ dev: # Run with live-reload (frontend dev server + backend with -dev flag)
 
 .PHONY: proto
 proto: # Generate protobuf files
-	protoc --go_out=. --go-grpc_out=. proto/quickpizza.proto
+	protoc --go_out=. --go-grpc_out=. proto/quickfood.proto
 
 .PHONY: format
 format: format-go format-web

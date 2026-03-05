@@ -5,8 +5,8 @@ import (
 
 	"log/slog"
 
-	"github.com/grafana/quickpizza/pkg/database/migrations"
-	"github.com/grafana/quickpizza/pkg/model"
+	"github.com/hvkong/ulam-gen/pkg/database/migrations"
+	"github.com/hvkong/ulam-gen/pkg/model"
 
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/migrate"

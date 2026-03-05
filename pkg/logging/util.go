@@ -7,7 +7,7 @@ import (
 )
 
 func GetLogLevel() slog.Level {
-	switch strings.ToLower(os.Getenv("QUICKPIZZA_LOG_LEVEL")) {
+	switch strings.ToLower(os.Getenv("QUICKFOOD_LOG_LEVEL")) {
 	case "debug":
 		return slog.LevelDebug
 	case "warn":

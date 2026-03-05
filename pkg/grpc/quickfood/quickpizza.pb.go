@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.35.2
 // 	protoc        v5.28.3
-// source: proto/quickpizza.proto
+// source: proto/quickfood.proto
 
-package quickpizza
+package quickfood
 
 import (
 	reflect "reflect"
@@ -102,7 +102,7 @@ func (x *StatusResponse) GetReady() bool {
 	return false
 }
 
-type PizzaRatingRequest struct {
+type FoodRatingRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -111,20 +111,20 @@ type PizzaRatingRequest struct {
 	Dough       string   `protobuf:"bytes,2,opt,name=dough,proto3" json:"dough,omitempty"`
 }
 
-func (x *PizzaRatingRequest) Reset() {
-	*x = PizzaRatingRequest{}
+func (x *FoodRatingRequest) Reset() {
+	*x = FoodRatingRequest{}
 	mi := &file_proto_quickpizza_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *PizzaRatingRequest) String() string {
+func (x *FoodRatingRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PizzaRatingRequest) ProtoMessage() {}
+func (*FoodRatingRequest) ProtoMessage() {}
 
-func (x *PizzaRatingRequest) ProtoReflect() protoreflect.Message {
+func (x *FoodRatingRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_quickpizza_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -136,26 +136,26 @@ func (x *PizzaRatingRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PizzaRatingRequest.ProtoReflect.Descriptor instead.
-func (*PizzaRatingRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use FoodRatingRequest.ProtoReflect.Descriptor instead.
+func (*FoodRatingRequest) Descriptor() ([]byte, []int) {
 	return file_proto_quickpizza_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *PizzaRatingRequest) GetIngredients() []string {
+func (x *FoodRatingRequest) GetIngredients() []string {
 	if x != nil {
 		return x.Ingredients
 	}
 	return nil
 }
 
-func (x *PizzaRatingRequest) GetDough() string {
+func (x *FoodRatingRequest) GetDough() string {
 	if x != nil {
 		return x.Dough
 	}
 	return ""
 }
 
-type PizzaRatingResponse struct {
+type FoodRatingResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -163,20 +163,20 @@ type PizzaRatingResponse struct {
 	StarsRating int32 `protobuf:"varint,1,opt,name=stars_rating,json=starsRating,proto3" json:"stars_rating,omitempty"`
 }
 
-func (x *PizzaRatingResponse) Reset() {
-	*x = PizzaRatingResponse{}
+func (x *FoodRatingResponse) Reset() {
+	*x = FoodRatingResponse{}
 	mi := &file_proto_quickpizza_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *PizzaRatingResponse) String() string {
+func (x *FoodRatingResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PizzaRatingResponse) ProtoMessage() {}
+func (*FoodRatingResponse) ProtoMessage() {}
 
-func (x *PizzaRatingResponse) ProtoReflect() protoreflect.Message {
+func (x *FoodRatingResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_quickpizza_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -188,12 +188,12 @@ func (x *PizzaRatingResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PizzaRatingResponse.ProtoReflect.Descriptor instead.
-func (*PizzaRatingResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use FoodRatingResponse.ProtoReflect.Descriptor instead.
+func (*FoodRatingResponse) Descriptor() ([]byte, []int) {
 	return file_proto_quickpizza_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *PizzaRatingResponse) GetStarsRating() int32 {
+func (x *FoodRatingResponse) GetStarsRating() int32 {
 	if x != nil {
 		return x.StarsRating
 	}
@@ -247,14 +247,14 @@ var file_proto_quickpizza_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_proto_quickpizza_proto_goTypes = []any{
 	(*StatusRequest)(nil),       // 0: quickpizza.StatusRequest
 	(*StatusResponse)(nil),      // 1: quickpizza.StatusResponse
-	(*PizzaRatingRequest)(nil),  // 2: quickpizza.PizzaRatingRequest
-	(*PizzaRatingResponse)(nil), // 3: quickpizza.PizzaRatingResponse
+	(*FoodRatingRequest)(nil),  // 2: quickpizza.FoodRatingRequest
+	(*FoodRatingResponse)(nil), // 3: quickpizza.FoodRatingResponse
 }
 var file_proto_quickpizza_proto_depIdxs = []int32{
-	0, // 0: quickpizza.GRPC.Status:input_type -> quickpizza.StatusRequest
-	2, // 1: quickpizza.GRPC.RatePizza:input_type -> quickpizza.PizzaRatingRequest
-	1, // 2: quickpizza.GRPC.Status:output_type -> quickpizza.StatusResponse
-	3, // 3: quickpizza.GRPC.RatePizza:output_type -> quickpizza.PizzaRatingResponse
+	0, // 0: quickfood.GRPC.Status:input_type -> quickpizza.StatusRequest
+	2, // 1: quickfood.GRPC.RateFood:input_type -> quickpizza.FoodRatingRequest
+	1, // 2: quickfood.GRPC.Status:output_type -> quickpizza.StatusResponse
+	3, // 3: quickfood.GRPC.RateFood:output_type -> quickpizza.FoodRatingResponse
 	2, // [2:4] is the sub-list for method output_type
 	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

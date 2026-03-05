@@ -13,11 +13,11 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/migrate"
 
-	"github.com/grafana/quickpizza/pkg/database/migrations"
-	"github.com/grafana/quickpizza/pkg/errorinjector"
-	"github.com/grafana/quickpizza/pkg/model"
-	"github.com/grafana/quickpizza/pkg/password"
-	"github.com/grafana/quickpizza/pkg/util"
+	"github.com/hvkong/ulam-gen/pkg/database/migrations"
+	"github.com/hvkong/ulam-gen/pkg/errorinjector"
+	"github.com/hvkong/ulam-gen/pkg/model"
+	"github.com/hvkong/ulam-gen/pkg/password"
+	"github.com/hvkong/ulam-gen/pkg/util"
 )
 
 type Catalog struct {

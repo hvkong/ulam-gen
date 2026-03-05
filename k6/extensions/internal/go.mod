@@ -1,9 +1,9 @@
-module github.com/grafana/quickpizza/extensions/internal
+module github.com/hvkong/ulam-gen/extensions/internal
 
 go 1.20
 
 require (
-	github.com/grafana/quickpizza v0.0.5
+	github.com/hvkong/ulam-gen v0.0.5
 	go.k6.io/k6 v0.46.0
 )
 

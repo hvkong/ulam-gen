@@ -15,8 +15,8 @@ servers:
     description: Production server
 
 tags:
-  - name: pizza
-    description: Pizza related endpoints including recommendations, and catalog of ingredients, doughs and tools
+  - name: food
+    description: Food related endpoints including recommendations, and catalog of ingredients, doughs and tools
   - name: pizza-text
     description: Text content for pizza naming and description
   - name: ratings
@@ -29,13 +29,13 @@ tags:
     description: HTTP testing endpoints similar to httpbin.org
 
 paths:
-  /api/pizza:
+  /api/food:
     post:
       tags:
         - pizza
-      summary: Get a pizza recommendation
-      description: Returns a randomly generated pizza with ingredients, tool, and calories
-      operationId: getPizzaRecommendation
+      summary: Get a food recommendation
+      description: Returns a randomly generated food recommendation with ingredients, tool, and calories
+      operationId: getFoodRecommendation
       security:
         - authToken: []
       requestBody:
@@ -58,7 +58,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PizzaRecommendation'
+                $ref: '#/components/schemas/FoodRecommendation'
               example:
                 pizza:
                   id: 1
@@ -92,13 +92,13 @@ paths:
         '500':
           description: Internal server error
 
-  /api/pizza/{id}:
+  /api/food/{id}:
     get:
       tags:
         - pizza
-      summary: Get a specific pizza recommendation
-      description: Returns a specific pizza recommendation by ID
-      operationId: getPizzaById
+      summary: Get a specific food recommendation
+      description: Returns a specific food recommendation by ID
+      operationId: getFoodById
       security:
         - authToken: []
       parameters:

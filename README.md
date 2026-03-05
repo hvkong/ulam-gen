@@ -1,23 +1,23 @@
-# QuickPizza
+# QuickFood
 
-![QuickPizza screenshot](./docs/images/quickpizza-screenshot.png)
+![QuickFood screenshot](./docs/images/quickfood-screenshot.png)
 
-- [What is QuickPizza? 🍕🍕🍕](#what-is-quickpizza-)
+- [What is QuickFood? 🍕🍕🍕](#what-is-quickfood-)
 - [Requirements](#requirements)
-- [Use k6 to test QuickPizza](#use-k6-to-test-quickpizza)
+- [Use k6 to test QuickFood](#use-k6-to-test-quickfood)
 - [Run locally with Docker](#run-locally-with-docker)
 - [Run and observe locally with Grafana OSS 🐳📊](#run-and-observe-locally-with-grafana-oss-)
-- [QuickPizza deployment modes: Monolithic vs Microservices](#quickpizza-deployment-modes-monolithic-vs-microservices)
+- [QuickFood deployment modes: Monolithic vs Microservices](#quickfood-deployment-modes-monolithic-vs-microservices)
 - [Run locally and observe with Grafana Cloud ☁📊](#run-locally-and-observe-with-grafana-cloud-)
   - [Enable Grafana Cloud Observability solutions](#enable-grafana-cloud-observability-solutions)
 
-## What is QuickPizza? 🍕🍕🍕
+## What is QuickFood? 🍕🍕🍕
 
-**QuickPizza** is a simple web application, used for demonstrations and workshops, that generates new and exciting pizza combinations!
+**QuickFood** is a simple web application, used for demonstrations and workshops, that generates new and exciting food combinations!
 
 It helps you learn app instrumentation and observability with the Grafana stack, and k6 testing from basics to advanced.
 
-You can run QuickPizza locally or deploy it to your own infrastructure. For demo purposes, QuickPizza is also publicly available at:
+You can run QuickFood locally or deploy it to your own infrastructure. For demo purposes, QuickFood is also publicly available at:
 1. [quickpizza.grafana.fun](https://quickpizza.grafana.fun/) — Experience this demo instrumented in Grafana Play. Explore [Application Observability](https://play.grafana.org/a/grafana-app-observability-app/services?instrumentedFilter=all&sortFilterId=serviceName&var-prometheus=grafanacloud-prom&from=now-30m&to=now&timezone=utc&var-environmentValue=production&var-filterBy=serviceNamespace%7C%3D%7Cquickpizza), [Database Observability](https://play.grafana.org/a/grafana-dbo11y-app/overview?waitEvents=durationOfEvents&var-filters=namespace%7C%3D%7Cquickpizza), [Frontend Observability](https://play.grafana.org/a/grafana-kowalski-app/apps/2410), [Kubernetes Monitoring](https://play.grafana.org/a/grafana-k8s-app/home?from=now-1h&to=now&refresh=1m&var-cluster=%24__all&var-namespace=quickpizza), [SRE Demo Dashboard](https://play.grafana.org/d/d2e206e1-f72b-448c-83d8-657831c2ea6d/overview), and more insights in Grafana Play.
 2. [quickpizza.grafana.com](https://quickpizza.grafana.com/) — Use this environment to run small-scale performance tests like the ones in the [k6 folder](./k6/).
 
@@ -271,7 +271,7 @@ Finally, execute the Docker Compose command using the `compose.grafana-cloud.mic
 docker compose -f compose.grafana-cloud.microservices.yaml up -d
 ```
 
-QuickPizza is available at [localhost:3333](http://localhost:3333). Click the `Pizza, Please!` button and discover some awesome pizzas!
+QuickFood is available at [localhost:3333](http://localhost:3333). Click the `Food, Please!` button and discover some awesome food combinations!
 
 Now, you can log in to [Grafana Cloud](https://grafana.com/products/cloud/) and use **Explore** or **Drilldown apps** to access QuickPizza's telemetry data.
 

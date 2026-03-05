@@ -5,14 +5,14 @@ const BASE_URL = __ENV.BASE_URL || "http://localhost:3333";
 
 export const options = {
   scenarios: {
-    pizzaRecommendations: {
+    foodRecommendations: {
       executor: "shared-iterations",
       options: {
         browser: {
           type: "chromium",
         },
       },
-      exec: "pizzaRecommendations",
+      exec: "foodRecommendations",
     },
     admin: {
       executor: "shared-iterations",
@@ -46,17 +46,17 @@ export async function admin() {
   }
 }
 
-export async function pizzaRecommendations() {
+export async function foodRecommendations() {
   let checkData;
   const page = await browser.newPage();
   try {
     await page.goto(BASE_URL);
     checkData = await page.locator("h1").textContent();
     check(checkData, {
-      header: checkData == "Looking to break out of your pizza routine?",
+      header: checkData == "Looking to break out of your food routine?",
     });
 
-    await page.getByRole("button", { name: "Pizza, Please!" }).click();
+    await page.getByRole("button", { name: "Food, Please!" }).click();
     await page.waitForTimeout(500);
     await page.screenshot({ path: "screenshot.png" });
     checkData = await page.locator("div#recommendations").textContent();

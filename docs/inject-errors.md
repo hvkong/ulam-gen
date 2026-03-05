@@ -45,7 +45,7 @@ You can introduce errors from the client side using custom headers. Below is a l
 Example of header usage:
 
 ```shell
-curl -X POST http://localhost:3333/api/pizza \
+curl -X POST http://localhost:3333/api/food \
      -H "Content-Type: application/json" \
      -H "Authorization: abcdef0123456789" \
      -H "x-error-record-recommendation: internal-error" \

@@ -57,10 +57,10 @@ export async function pizzaRecommendations() {
     await page.evaluate(() => window.performance.mark('page-visit'));
     checkData = await page.locator("h1").textContent();
     check(checkData, {
-      header: checkData == "Looking to break out of your pizza routine?",
+      header: checkData == "Looking to break out of your food routine?",
     });
 
-    await page.getByRole("button", { name: "Pizza, Please!" }).click();
+    await page.getByRole("button", { name: "Food, Please!" }).click();
     await page.waitForTimeout(500);
     await page.screenshot({ path: "screenshot.png" });
 

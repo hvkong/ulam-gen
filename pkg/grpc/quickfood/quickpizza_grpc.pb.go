@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.28.3
-// source: proto/quickpizza.proto
+// source: proto/quickfood.proto
 
-package quickpizza
+package quickfood
 
 import (
 	context "context"
@@ -20,8 +20,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	GRPC_Status_FullMethodName    = "/quickpizza.GRPC/Status"
-	GRPC_RatePizza_FullMethodName = "/quickpizza.GRPC/RatePizza"
+	GRPC_Status_FullMethodName    = "/quickfood.GRPC/Status"
+	GRPC_RateFood_FullMethodName = "/quickfood.GRPC/RateFood"
 )
 
 // GRPCClient is the client API for GRPC service.
@@ -29,7 +29,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GRPCClient interface {
 	Status(ctx context.Context, in *StatusRequest, opts ...grpc.CallOption) (*StatusResponse, error)
-	RatePizza(ctx context.Context, in *PizzaRatingRequest, opts ...grpc.CallOption) (*PizzaRatingResponse, error)
+	RateFood(ctx context.Context, in *FoodRatingRequest, opts ...grpc.CallOption) (*FoodRatingResponse, error)
 }
 
 type gRPCClient struct {
@@ -50,10 +50,10 @@ func (c *gRPCClient) Status(ctx context.Context, in *StatusRequest, opts ...grpc
 	return out, nil
 }
 
-func (c *gRPCClient) RatePizza(ctx context.Context, in *PizzaRatingRequest, opts ...grpc.CallOption) (*PizzaRatingResponse, error) {
+func (c *gRPCClient) RateFood(ctx context.Context, in *FoodRatingRequest, opts ...grpc.CallOption) (*FoodRatingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(PizzaRatingResponse)
-	err := c.cc.Invoke(ctx, GRPC_RatePizza_FullMethodName, in, out, cOpts...)
+	out := new(FoodRatingResponse)
+	err := c.cc.Invoke(ctx, GRPC_RateFood_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (c *gRPCClient) RatePizza(ctx context.Context, in *PizzaRatingRequest, opts
 // for forward compatibility.
 type GRPCServer interface {
 	Status(context.Context, *StatusRequest) (*StatusResponse, error)
-	RatePizza(context.Context, *PizzaRatingRequest) (*PizzaRatingResponse, error)
+	RateFood(context.Context, *FoodRatingRequest) (*FoodRatingResponse, error)
 	mustEmbedUnimplementedGRPCServer()
 }
 
@@ -79,8 +79,8 @@ type UnimplementedGRPCServer struct{}
 func (UnimplementedGRPCServer) Status(context.Context, *StatusRequest) (*StatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Status not implemented")
 }
-func (UnimplementedGRPCServer) RatePizza(context.Context, *PizzaRatingRequest) (*PizzaRatingResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RatePizza not implemented")
+func (UnimplementedGRPCServer) RateFood(context.Context, *FoodRatingRequest) (*FoodRatingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RateFood not implemented")
 }
 func (UnimplementedGRPCServer) mustEmbedUnimplementedGRPCServer() {}
 func (UnimplementedGRPCServer) testEmbeddedByValue()              {}
@@ -121,20 +121,20 @@ func _GRPC_Status_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GRPC_RatePizza_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PizzaRatingRequest)
+func _GRPC_RateFood_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FoodRatingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GRPCServer).RatePizza(ctx, in)
+		return srv.(GRPCServer).RateFood(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GRPC_RatePizza_FullMethodName,
+		FullMethod: GRPC_RateFood_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GRPCServer).RatePizza(ctx, req.(*PizzaRatingRequest))
+		return srv.(GRPCServer).RateFood(ctx, req.(*FoodRatingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -143,7 +143,7 @@ func _GRPC_RatePizza_Handler(srv interface{}, ctx context.Context, dec func(inte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var GRPC_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "quickpizza.GRPC",
+	ServiceName: "quickfood.GRPC",
 	HandlerType: (*GRPCServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -151,10 +151,10 @@ var GRPC_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _GRPC_Status_Handler,
 		},
 		{
-			MethodName: "RatePizza",
-			Handler:    _GRPC_RatePizza_Handler,
+			MethodName: "RateFood",
+			Handler:    _GRPC_RateFood_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/quickpizza.proto",
+	Metadata: "proto/quickfood.proto",
 }

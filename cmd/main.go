@@ -13,10 +13,10 @@ import (
 	"log/slog"
 
 	"github.com/grafana/pyroscope-go"
-	"github.com/grafana/quickpizza/pkg/database"
-	qpgrpc "github.com/grafana/quickpizza/pkg/grpc"
-	qphttp "github.com/grafana/quickpizza/pkg/http"
-	"github.com/grafana/quickpizza/pkg/logging"
+	"github.com/hvkong/ulam-gen/pkg/database"
+	qpgrpc "github.com/hvkong/ulam-gen/pkg/grpc"
+	qphttp "github.com/hvkong/ulam-gen/pkg/http"
+	"github.com/hvkong/ulam-gen/pkg/logging"
 	"github.com/hashicorp/go-retryablehttp"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/propagation"
@@ -266,7 +266,7 @@ func envPyroscopeConfig() (pyroscope.Config, bool) {
 		Tags: map[string]string{
 			svcNamespaceLabel:    svcNamespace,
 			"service_git_ref":    svcGitRef,
-			"service_repository": "https://github.com/grafana/quickpizza",
+			"service_repository": "https://github.com/hvkong/ulam-gen",
 		},
 	}, true
 }

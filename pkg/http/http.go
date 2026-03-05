@@ -39,21 +39,21 @@ import (
 	"go.opentelemetry.io/otel/trace"
 
 	k6 "github.com/grafana/pyroscope-go/x/k6"
-	"github.com/grafana/quickpizza/pkg/database"
-	"github.com/grafana/quickpizza/pkg/errorinjector"
-	"github.com/grafana/quickpizza/pkg/logging"
-	"github.com/grafana/quickpizza/pkg/model"
-	"github.com/grafana/quickpizza/pkg/util"
-	"github.com/grafana/quickpizza/pkg/web"
+	"github.com/hvkong/ulam-gen/pkg/database"
+	"github.com/hvkong/ulam-gen/pkg/errorinjector"
+	"github.com/hvkong/ulam-gen/pkg/logging"
+	"github.com/hvkong/ulam-gen/pkg/model"
+	"github.com/hvkong/ulam-gen/pkg/util"
+	"github.com/hvkong/ulam-gen/pkg/web"
 )
 
 // Variables storing prometheus metrics.
 var (
-	pizzaRecommendations = promauto.NewCounterVec(prometheus.CounterOpts{
+	foodRecommendations = promauto.NewCounterVec(prometheus.CounterOpts{
 		Namespace: "quickpizza",
 		Subsystem: "server",
-		Name:      "pizza_recommendations_total",
-		Help:      "The total number of pizza recommendations",
+		Name:      "food_recommendations_total",
+		Help:      "The total number of food recommendations",
 	}, []string{"vegetarian", "tool"})
 
 	numberOfIngredientsPerPizza = promauto.NewHistogram(prometheus.HistogramOpts{
@@ -159,8 +159,8 @@ var (
 	})
 )
 
-// PizzaRecommendation is the object returned by the /api/pizza endpoint.
-type PizzaRecommendation struct {
+// FoodRecommendation is the object returned by the /api/food endpoint.
+type FoodRecommendation struct {
 	Pizza      model.Pizza `json:"pizza"`
 	Calories   int         `json:"calories"`
 	Vegetarian bool        `json:"vegetarian"`
@@ -461,7 +461,7 @@ func (s *Server) AddGateway(catalogUrl, copyUrl, wsUrl, recommendationsUrl, conf
 					u, _ = url.Parse(catalogUrl)
 				case "/api/internal/recommendations":
 					u, _ = url.Parse(catalogUrl)
-				case "/api/pizza":
+				case "/api/food":
 					u, _ = url.Parse(recommendationsUrl)
 				case "/api/config":
 					u, _ = url.Parse(configUrl)
@@ -1324,7 +1324,7 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 			})
 		})
 
-		r.Get("/api/pizza/{id:\\d+}", func(w http.ResponseWriter, r *http.Request) {
+		r.Get("/api/food/{id:\\d+}", func(w http.ResponseWriter, r *http.Request) {
 
 			util.DelayIfEnvSet("QUICKPIZZA_DELAY_RECOMMENDATIONS_API_PIZZA_GET")
 			id, err := strconv.Atoi(chi.URLParam(r, "id"))
@@ -1348,7 +1348,7 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 			s.writeJSONResponse(w, r, pizza, http.StatusOK)
 		})
 
-		r.Post("/api/pizza", func(w http.ResponseWriter, r *http.Request) {
+		r.Post("/api/food", func(w http.ResponseWriter, r *http.Request) {
 
 			util.DelayIfEnvSet("QUICKPIZZA_DELAY_RECOMMENDATIONS_API_PIZZA_POST")
 
@@ -1534,9 +1534,7 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 			}
 			pizzaSpan.End()
 
-			pizzaRecommendation := PizzaRecommendation{
-				Pizza:      p,
-				Calories:   p.CalculateCalories(),
+		foodRecommendation := FoodRecommendation{
 				Vegetarian: p.IsVegetarian(),
 			}
 
@@ -1549,20 +1547,20 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 
 			// Update the .Pizza property we received from calling the catalog client.
 			// This allows us to return the generated pizza's ID to the client.
-			pizzaRecommendation.Pizza = *result
+			foodRecommendation.Pizza = *result
 
-			pizzaRecommendations.With(prometheus.Labels{
-				"vegetarian": strconv.FormatBool(pizzaRecommendation.Vegetarian),
-				"tool":       pizzaRecommendation.Pizza.Tool,
+			foodRecommendations.With(prometheus.Labels{
+				"vegetarian": strconv.FormatBool(foodRecommendation.Vegetarian),
+				"tool":       foodRecommendation.Pizza.Tool,
 			}).Inc()
 
 			numberOfIngredientsPerPizza.Observe(float64(len(p.Ingredients)))
 			numberOfIngredientsPerPizzaNativeHistogram.Observe(float64(len(p.Ingredients)))
-			pizzaCaloriesPerSlice.Observe(float64(pizzaRecommendation.Calories))
-			pizzaCaloriesPerSliceNativeHistogram.Observe(float64(pizzaRecommendation.Calories))
+			pizzaCaloriesPerSlice.Observe(float64(foodRecommendation.Calories))
+			pizzaCaloriesPerSliceNativeHistogram.Observe(float64(foodRecommendation.Calories))
 
-			s.log.InfoContext(r.Context(), "New pizza recommendation", "pizza", pizzaRecommendation.Pizza.Name)
-			s.writeJSONResponse(w, r, pizzaRecommendation, http.StatusOK)
+			s.log.InfoContext(r.Context(), "New food recommendation", "food", foodRecommendation.Pizza.Name)
+			s.writeJSONResponse(w, r, foodRecommendation, http.StatusOK)
 		})
 	})
 }

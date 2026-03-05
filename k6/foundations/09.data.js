@@ -56,7 +56,7 @@ export function getPizza() {
     maxNumberOfToppings: 6,
     minNumberOfToppings: 2
   }
-  let res = http.post(`${BASE_URL}/api/pizza`, JSON.stringify(restrictions), {
+  let res = http.post(`${BASE_URL}/api/food`, JSON.stringify(restrictions), {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Token ' + tokens[Math.floor(Math.random() * tokens.length)],

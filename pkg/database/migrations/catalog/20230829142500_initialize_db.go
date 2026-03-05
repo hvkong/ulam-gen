@@ -3,7 +3,7 @@ package catalog
 import (
 	"context"
 
-	"github.com/grafana/quickpizza/pkg/model"
+	"github.com/hvkong/ulam-gen/pkg/model"
 	"github.com/uptrace/bun"
 )
 

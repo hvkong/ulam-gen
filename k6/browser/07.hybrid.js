@@ -70,7 +70,7 @@ export async function getPizza() {
     maxNumberOfToppings: 6,
     minNumberOfToppings: 2
   }
-  let res = http.post(`${BASE_URL}/api/pizza`, JSON.stringify(restrictions), {
+  let res = http.post(`${BASE_URL}/api/food`, JSON.stringify(restrictions), {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'token abcdef0123456789',
@@ -106,7 +106,7 @@ export async function pizzaRecommendations() {
     await pageUtils.addPerformanceMark('page-visit');
 
     check(recommendationsPage, {
-      header: await recommendationsPage.getHeadingTextContent() == "Looking to break out of your pizza routine?",
+      header: await recommendationsPage.getHeadingTextContent() == "Looking to break out of your food routine?",
     });
 
     await recommendationsPage.getPizzaRecommendation();

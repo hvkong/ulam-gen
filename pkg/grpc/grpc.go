@@ -8,7 +8,7 @@ import (
 	"net"
 	"net/http"
 
-	pb "github.com/grafana/quickpizza/pkg/grpc/quickpizza"
+	pb "github.com/hvkong/ulam-gen/pkg/grpc/quickfood"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
@@ -28,7 +28,7 @@ func (s *serverImplementation) Status(_ context.Context, in *pb.StatusRequest) (
 	return &pb.StatusResponse{Ready: true}, nil
 }
 
-func (s *serverImplementation) RatePizza(_ context.Context, in *pb.PizzaRatingRequest) (*pb.PizzaRatingResponse, error) {
+func (s *serverImplementation) RateFood(_ context.Context, in *pb.FoodRatingRequest) (*pb.FoodRatingResponse, error) {
 	var rating int32
 	if len(in.Ingredients) > 0 {
 		rating = rand.Int31n(6)
@@ -36,7 +36,7 @@ func (s *serverImplementation) RatePizza(_ context.Context, in *pb.PizzaRatingRe
 	if in.Dough != "" && rating < 5 {
 		rating += rand.Int31n(2)
 	}
-	return &pb.PizzaRatingResponse{
+	return &pb.FoodRatingResponse{
 		StarsRating: rating,
 	}, nil
 }
@@ -61,7 +61,7 @@ func (s *Server) listenHealthz() {
 		Handler: h2c.NewHandler(mux, &http2.Server{}),
 	}
 
-	slog.Info("Starting QuickPizza gRPC health check server", "listenAddress", s.healthzListen)
+	slog.Info("Starting QuickFood gRPC health check server", "listenAddress", s.healthzListen)
 	if err := health.ListenAndServe(); err != nil {
 		slog.Error("Error listening for gRPC health check server", "err", err)
 	}
@@ -75,6 +75,6 @@ func (s *Server) ListenAndServe() error {
 
 	go s.listenHealthz()
 
-	slog.Info("Starting QuickPizza gRPC server", "listenAddress", s.listen)
+	slog.Info("Starting QuickFood gRPC server", "listenAddress", s.listen)
 	return s.grpcServer.Serve(lis)
 }

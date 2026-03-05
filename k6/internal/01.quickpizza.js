@@ -146,7 +146,7 @@ function testMetrics() {
 }
 
 function testPizzaRecommendation() {
-  var res = http.post(`${BASE_URL}/api/pizza`, JSON.stringify({
+  var res = http.post(`${BASE_URL}/api/food`, JSON.stringify({
     customName: "a".repeat(100)
   }), {
     headers: {

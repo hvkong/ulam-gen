@@ -1,8 +1,8 @@
 package migrations
 
 import (
-	"github.com/grafana/quickpizza/pkg/database/migrations/catalog"
-	"github.com/grafana/quickpizza/pkg/database/migrations/copy"
+	"github.com/hvkong/ulam-gen/pkg/database/migrations/catalog"
+	"github.com/hvkong/ulam-gen/pkg/database/migrations/copy"
 )
 
 var Catalog = catalog.Migrations

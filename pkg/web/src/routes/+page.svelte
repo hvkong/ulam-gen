@@ -158,7 +158,7 @@ async function getPizza() {
 		headers['Authorization'] = 'Token ' + anonymousToken;
 	}
 
-	const res = await fetch(`${PUBLIC_BACKEND_ENDPOINT}/api/pizza`, {
+	const res = await fetch(`${PUBLIC_BACKEND_ENDPOINT}/api/food`, {
 		method: 'POST',
 		body: JSON.stringify(restrictions),
 		headers,
@@ -269,13 +269,13 @@ async function getTools() {
 	<section class="mt-4 flex flex-column justify-center items-center">
 		<div class="text-center">
 			<h1 class="text-2xl md:text-4xl mt-14 font-semibold">
-				Looking to break out of your pizza routine?
+				Looking to break out of your food routine? <!-- Updated for food theme -->
 			</h1>
 			<h2 class="text-xl md:text-2xl mt-2 font-semibold">
-				<span class="text-red-600">QuickPizza</span> has your back!
+				<span class="text-red-600">QuickFood</span> has your back!
 			</h2>
 			<p class="m-2 text-gray-700">
-				With just one click, you'll discover new and exciting pizza combinations that you never knew
+			With just one click, you'll discover new and exciting food combinations that you never knew
 				existed.
 			</p>
 			{#if advanced}
@@ -374,7 +374,7 @@ async function getTools() {
 					on:click={getPizza}
 					class="mt-6 text-white bg-gradient-to-br from-red-500 to-orange-400 hover:bg-gradient-to-bl font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
 				>
-					Pizza, Please!</button
+					Food, Please!</button
 				>
 				<Confetti
 					y={[-0.5, 0.5]}

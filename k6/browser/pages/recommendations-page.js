@@ -2,7 +2,7 @@ export class RecommendationsPage {
   constructor(page) {
     this.page = page
     this.headingTextContent = page.locator("h1");
-    this.getPizzaRecommendationsButton = page.getByRole('button', { name: "Pizza, Please!" });
+    this.getFoodRecommendationsButton = page.getByRole('button', { name: "Food, Please!" });
     this.pizzaRecommendations = page.locator("div#recommendations");
   }
 
@@ -11,7 +11,7 @@ export class RecommendationsPage {
   }
 
   async getPizzaRecommendation() {
-    await this.getPizzaRecommendationsButton.click();
+    await this.getFoodRecommendationsButton.click();
     await this.page.waitForTimeout(500);
     await this.page.screenshot({ path: "screenshot.png" });
   }

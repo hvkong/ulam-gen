@@ -17,7 +17,7 @@ export default function () {
     maxNumberOfToppings: 6,
     minNumberOfToppings: 2
   }
-  let res = http.post(`${BASE_URL}/api/pizza`, JSON.stringify(restrictions), {
+  let res = http.post(`${BASE_URL}/api/food`, JSON.stringify(restrictions), {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'token abcdef0123456789',

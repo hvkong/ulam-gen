@@ -9,7 +9,7 @@ import (
 
 	"log/slog"
 
-	"github.com/grafana/quickpizza/pkg/logging"
+	"github.com/hvkong/ulam-gen/pkg/logging"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
@@ -41,9 +41,9 @@ func initializeDB(connString string) (*bun.DB, error) {
 			return nil, err
 		}
 	}
-	dbName, ok := os.LookupEnv("QUICKPIZZA_OTEL_DB_NAME")
+	dbName, ok := os.LookupEnv("QUICKFOOD_OTEL_DB_NAME")
 	if !ok {
-		dbName = "quickpizza-database"
+		dbName = "quickfood-database"
 	}
 	db.AddQueryHook(logging.NewBunSlogHook(slog.Default()))
 	db.AddQueryHook(bunotel.NewQueryHook(

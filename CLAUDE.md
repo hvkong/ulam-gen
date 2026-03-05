@@ -4,14 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-QuickPizza is a demonstration web application that generates pizza recommendations. It's built with a Go backend and SvelteKit frontend, designed for k6 load testing workshops and observability demonstrations.
+QuickFood is a demonstration web application that generates food recommendations. It's built with a Go backend and SvelteKit frontend, designed for k6 load testing workshops and observability demonstrations.
 
 ## Key Commands
 
 ### Building & Running
 - `make build` - Build frontend and backend together
 - `make build-go` - Build only Go backend (doesn't rebuild frontend)
-- `docker run --rm -it -p 3333:3333 ghcr.io/grafana/quickpizza-local:latest` - Run with Docker
+- `docker run --rm -it -p 3333:3333 ghcr.io/hvkong/quickfood-local:latest` - Run with Docker
 
 ### Frontend Development
 - `cd pkg/web && npm install` - Install frontend dependencies

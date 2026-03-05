@@ -12,4 +12,4 @@ Customize the look and feel of the frontend via the below locations.
 | Local dev‑only tweaks (e.g. proxy to vite server) |	dev.html (not used in prod) | |
 
 
-Once you’ve edited any of the Svelte/HTML files, rebuild the frontend and then the Go binary (via `docker buildx` or your normal build command) to package the updates.
+Once you’ve edited any of the Svelte/HTML files, rebuild the frontend and then the Go binary (via `docker buildx build -t quickfood-local:latest --load .` or your normal build command) to package the updates.

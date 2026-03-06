@@ -50,14 +50,14 @@ import (
 // Variables storing prometheus metrics.
 var (
 	foodRecommendations = promauto.NewCounterVec(prometheus.CounterOpts{
-		Namespace: "quickpizza",
+		Namespace: "quickfood",
 		Subsystem: "server",
 		Name:      "food_recommendations_total",
 		Help:      "The total number of food recommendations",
 	}, []string{"vegetarian", "tool"})
 
 	numberOfIngredientsPerFood = promauto.NewHistogram(prometheus.HistogramOpts{
-		Namespace: "quickpizza",
+		Namespace: "quickfood",
 		Subsystem: "server",
 		Name:      "number_of_ingredients_per_food",
 		Help:      "The number of ingredients per food",
@@ -65,7 +65,7 @@ var (
 	})
 
 	numberOfIngredientsPerFoodNativeHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
-		Namespace:                       "quickpizza",
+		Namespace:                       "quickfood",
 		Subsystem:                       "server",
 		Name:                            "number_of_ingredients_per_food_native",
 		Help:                            "The number of ingredients per food (Native Histogram)",
@@ -74,40 +74,40 @@ var (
 		NativeHistogramMinResetDuration: 1 * time.Hour,
 	})
 
-	pizzaCaloriesPerSlice = promauto.NewHistogram(prometheus.HistogramOpts{
-		Namespace: "quickpizza",
+	foodCaloriesPerSlice = promauto.NewHistogram(prometheus.HistogramOpts{
+		Namespace: "quickfood",
 		Subsystem: "server",
-		Name:      "pizza_calories_per_slice",
-		Help:      "The number of calories per slice of pizza",
+		Name:      "food_calories_per_slice",
+		Help:      "The number of calories per slice of food",
 		Buckets:   []float64{100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000},
 	})
 
-	pizzaCaloriesPerSliceNativeHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
-		Namespace:                       "quickpizza",
+	foodCaloriesPerSliceNativeHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
+		Namespace:                       "quickfood",
 		Subsystem:                       "server",
-		Name:                            "pizza_calories_per_slice_native",
-		Help:                            "The number of calories per slice of pizza (Native Histogram)",
+		Name:                            "food_calories_per_slice_native",
+		Help:                            "The number of calories per slice of food (Native Histogram)",
 		NativeHistogramBucketFactor:     1.1,
 		NativeHistogramMaxBucketNumber:  100,
 		NativeHistogramMinResetDuration: 1 * time.Hour,
 	})
 
 	httpRequests = promauto.NewCounterVec(prometheus.CounterOpts{
-		Namespace: "quickpizza",
+		Namespace: "quickfood",
 		Subsystem: "server",
 		Name:      "http_requests_total",
 		Help:      "The total number of HTTP requests",
 	}, []string{"method", "path", "status"})
 
 	httpRequestDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
-		Namespace: "quickpizza",
+		Namespace: "quickfood",
 		Subsystem: "server",
 		Name:      "http_request_duration_seconds",
 		Help:      "The duration of HTTP requests",
 	}, []string{"method", "path", "status"})
 
 	httpRequestDurationNativeHistogram = promauto.NewHistogramVec(prometheus.HistogramOpts{
-		Namespace:                       "quickpizza",
+		Namespace:                       "quickfood",
 		Subsystem:                       "server",
 		Name:                            "http_request_duration_seconds_native",
 		Help:                            "The duration of HTTP requests (Native Histogram)",
@@ -117,7 +117,7 @@ var (
 	}, []string{"method", "path", "status"})
 
 	httpRequestDurationGauge = promauto.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace: "quickpizza",
+		Namespace: "quickfood",
 		Subsystem: "server",
 		Name:      "http_request_duration_seconds_gauge",
 		Help:      "The duration of HTTP requests (Gauge)",
@@ -125,14 +125,14 @@ var (
 
 	// WebSocket metrics
 	wsConnectionsActive = promauto.NewGauge(prometheus.GaugeOpts{
-		Namespace: "quickpizza",
+		Namespace: "quickfood",
 		Subsystem: "server",
 		Name:      "ws_connections_active",
 		Help:      "Number of active WebSocket connections",
 	})
 
 	wsConnectionDuration = promauto.NewHistogram(prometheus.HistogramOpts{
-		Namespace:                       "quickpizza",
+		Namespace:                       "quickfood",
 		Subsystem:                       "server",
 		Name:                            "ws_connection_duration_seconds",
 		Help:                            "Duration of WebSocket connections",
@@ -142,14 +142,14 @@ var (
 	})
 
 	wsMessagesReceived = promauto.NewCounter(prometheus.CounterOpts{
-		Namespace: "quickpizza",
+		Namespace: "quickfood",
 		Subsystem: "server",
 		Name:      "ws_messages_received_total",
 		Help:      "Total number of messages received via WebSocket",
 	})
 
 	wsMessageProcessingDuration = promauto.NewHistogram(prometheus.HistogramOpts{
-		Namespace:                       "quickpizza",
+		Namespace:                       "quickfood",
 		Subsystem:                       "server",
 		Name:                            "ws_message_processing_duration_seconds",
 		Help:                            "Time to process and broadcast incoming WebSocket messages",
@@ -166,7 +166,7 @@ type FoodRecommendation struct {
 	Vegetarian bool       `json:"vegetarian"`
 }
 
-// Restrictions are sent by the client to further specify how the target pizza should look like
+// Restrictions are sent by the client to further specify how the target food should look like
 type Restrictions struct {
 	MaxCaloriesPerSlice int      `json:"maxCaloriesPerSlice"`
 	MustBeVegetarian    bool     `json:"mustBeVegetarian"`
@@ -254,7 +254,7 @@ func LogUser(next http.Handler) http.Handler {
 	})
 }
 
-// Server is the object that handles HTTP requests and computes pizza recommendations.
+// Server is the object that handles HTTP requests and computes food recommendations.
 // Routes are divided into serveral groups that can be instantiated independently as microservices, or all together
 // as one single big service.
 type Server struct {
@@ -267,7 +267,7 @@ type Server struct {
 func NewServer(profiling bool, traceInstaller *OTelInstaller) *Server {
 	logger := slog.New(logging.NewContextLogger(slog.Default().Handler()))
 
-	reqLogger := httplog.NewLogger("quickpizza", httplog.Options{
+	reqLogger := httplog.NewLogger("quickfood", httplog.Options{
 		JSON:             true,
 		Writer:           os.Stderr,
 		LogLevel:         logging.GetLogLevel(),
@@ -675,7 +675,7 @@ func (s *Server) AddHTTPTesting() {
 		r.Put("/api/put", fn)
 		r.Patch("/api/patch", fn)
 
-		// Cookies are a type of pizza (without cheese).
+		// Cookies are a type of food (without cheese).
 		r.Get("/api/cookies", func(w http.ResponseWriter, r *http.Request) {
 			cookies := map[string]string{}
 
@@ -1257,7 +1257,7 @@ func (s *Server) AddCopyHandler(db *database.Copy) {
 		// if env var is set, apply delay to all endpoints of this service
 		r.Use(func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				util.DelayIfEnvSet("QUICKPIZZA_DELAY_COPY")
+				util.DelayIfEnvSet("QUICKFOOD_DELAY_COPY")
 				next.ServeHTTP(w, r)
 			})
 		})
@@ -1265,7 +1265,7 @@ func (s *Server) AddCopyHandler(db *database.Copy) {
 		r.Get("/api/quotes", func(w http.ResponseWriter, r *http.Request) {
 			s.log.DebugContext(r.Context(), "Quotes requested")
 
-			util.DelayIfEnvSet("QUICKPIZZA_DELAY_COPY_API_QUOTES")
+			util.DelayIfEnvSet("QUICKFOOD_DELAY_COPY_API_QUOTES")
 
 			quotes, err := db.GetQuotes(r.Context())
 			if err != nil {
@@ -1279,7 +1279,7 @@ func (s *Server) AddCopyHandler(db *database.Copy) {
 		r.Get("/api/names", func(w http.ResponseWriter, r *http.Request) {
 			s.log.DebugContext(r.Context(), "Names requested")
 
-			util.DelayIfEnvSet("QUICKPIZZA_DELAY_COPY_API_NAMES")
+			util.DelayIfEnvSet("QUICKFOOD_DELAY_COPY_API_NAMES")
 
 			names, err := db.GetClassicalNames(r.Context())
 			if err != nil {
@@ -1293,7 +1293,7 @@ func (s *Server) AddCopyHandler(db *database.Copy) {
 		r.Get("/api/adjectives", func(w http.ResponseWriter, r *http.Request) {
 			s.log.DebugContext(r.Context(), "Adjectives requested")
 
-			util.DelayIfEnvSet("QUICKPIZZA_DELAY_COPY_API_ADJECTIVES")
+			util.DelayIfEnvSet("QUICKFOOD_DELAY_COPY_API_ADJECTIVES")
 
 			adjs, err := db.GetAdjectives(r.Context())
 			if err != nil {
@@ -1319,40 +1319,40 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 		// if env var is set, apply delay to all endpoints of this service
 		r.Use(func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				util.DelayIfEnvSet("QUICKPIZZA_DELAY_RECOMMENDATIONS")
+				util.DelayIfEnvSet("QUICKFOOD_DELAY_RECOMMENDATIONS")
 				next.ServeHTTP(w, r)
 			})
 		})
 
 		r.Get("/api/food/{id:\\d+}", func(w http.ResponseWriter, r *http.Request) {
 
-			util.DelayIfEnvSet("QUICKPIZZA_DELAY_RECOMMENDATIONS_API_PIZZA_GET")
+			util.DelayIfEnvSet("QUICKFOOD_DELAY_RECOMMENDATIONS_API_FOOD_GET")
 			id, err := strconv.Atoi(chi.URLParam(r, "id"))
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
 
-			pizza, err := catalogClient.GetRecommendation(id)
+			food, err := catalogClient.GetRecommendation(id)
 			if err != nil {
 				s.log.ErrorContext(r.Context(), "Failed to fetch recommendation from catalog", "err", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 
-			if pizza == nil {
+			if food == nil {
 				w.WriteHeader(http.StatusNotFound)
 				return
 			}
 
-			s.writeJSONResponse(w, r, pizza, http.StatusOK)
+			s.writeJSONResponse(w, r, food, http.StatusOK)
 		})
 
 		r.Post("/api/food", func(w http.ResponseWriter, r *http.Request) {
 
-			util.DelayIfEnvSet("QUICKPIZZA_DELAY_RECOMMENDATIONS_API_PIZZA_POST")
+			util.DelayIfEnvSet("QUICKFOOD_DELAY_RECOMMENDATIONS_API_FOOD_POST")
 
-			if util.FailRandomlyIfEnvSet("QUICKPIZZA_FAIL_RATE_RECOMMENDATIONS_API_PIZZA_POST") {
+			if util.FailRandomlyIfEnvSet("QUICKFOOD_FAIL_RATE_RECOMMENDATIONS_API_FOOD_POST") {
 				s.log.ErrorContext(r.Context(), "Simulated random failure: Food service temporarily unavailable")
 				s.writeJSONErrorResponse(w, r, errors.New("Food service temporarily unavailable"), http.StatusServiceUnavailable)
 				return
@@ -1366,7 +1366,7 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 
 			tracer := trace.SpanFromContext(r.Context()).TracerProvider().Tracer("")
 
-			s.log.DebugContext(r.Context(), "Received pizza recommendation request")
+			s.log.DebugContext(r.Context(), "Received food recommendation request")
 			var restrictions Restrictions
 			if s.decodeJSONBody(w, r, &restrictions) != nil {
 				return
@@ -1471,13 +1471,13 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 				return
 			}
 
-			pizzaCtx, pizzaSpan := tracer.Start(r.Context(), "pizza-generation")
+			foodCtx, foodSpan := tracer.Start(r.Context(), "food-generation")
 			var p model.Food
 			for range 10 {
 				randomName := restrictions.CustomName
 
 				if randomName == "" {
-					_, nameSpan := tracer.Start(pizzaCtx, "name-generation")
+					_, nameSpan := tracer.Start(foodCtx, "name-generation")
 
 					for {
 						randomName = fmt.Sprintf("%s %s", adjectives[rand.Intn(len(adjectives))], names[rand.Intn(len(names))])
@@ -1532,7 +1532,7 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 
 				break
 			}
-			pizzaSpan.End()
+			foodSpan.End()
 
 		foodRecommendation := FoodRecommendation{
 			Food:       p,
@@ -1558,8 +1558,8 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 
 		numberOfIngredientsPerFood.Observe(float64(len(p.Ingredients)))
 		numberOfIngredientsPerFoodNativeHistogram.Observe(float64(len(p.Ingredients)))
-		pizzaCaloriesPerSlice.Observe(float64(foodRecommendation.Calories))
-		pizzaCaloriesPerSliceNativeHistogram.Observe(float64(foodRecommendation.Calories))
+		foodCaloriesPerSlice.Observe(float64(foodRecommendation.Calories))
+		foodCaloriesPerSliceNativeHistogram.Observe(float64(foodRecommendation.Calories))
 
 		s.log.InfoContext(r.Context(), "New food recommendation", "food", foodRecommendation.Food.Name)
 			s.writeJSONResponse(w, r, foodRecommendation, http.StatusOK)
@@ -1588,10 +1588,10 @@ func SvelteKitHandler() http.Handler {
 
 		// Delay CSS resources
 		if strings.HasSuffix(strings.ToLower(path), ".css") {
-			util.DelayIfEnvSet("QUICKPIZZA_DELAY_FRONTEND_CSS_ASSETS")
+			util.DelayIfEnvSet("QUICKFOOD_DELAY_FRONTEND_CSS_ASSETS")
 		}
 		if strings.HasSuffix(strings.ToLower(path), ".png") {
-			util.DelayIfEnvSet("QUICKPIZZA_DELAY_FRONTEND_PNG_ASSETS")
+			util.DelayIfEnvSet("QUICKFOOD_DELAY_FRONTEND_PNG_ASSETS")
 		}
 
 		// try if file exists at path, if not append .html (SvelteKit adapter-static specific)

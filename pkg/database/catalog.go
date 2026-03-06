@@ -56,12 +56,12 @@ func NewCatalog(connString string) (*Catalog, error) {
 
 	c := &Catalog{
 		db:           db,
-		fixedFoods:   envInt("QUICKPIZZA_DB_FIXED_PIZZAS", 100),
-		fixedUsers:   envInt("QUICKPIZZA_DB_FIXED_USERS", 10),
-		fixedRatings: envInt("QUICKPIZZA_DB_FIXED_RATINGS", 10),
-		maxFoods:     envInt("QUICKPIZZA_DB_MAX_PIZZAS", 5000),
-		maxUsers:     envInt("QUICKPIZZA_DB_MAX_USERS", 5000),
-		maxRatings:   envInt("QUICKPIZZA_DB_MAX_RATINGS", 10000),
+		fixedFoods:   envInt("QUICKFOOD_DB_FIXED_FOODS", 100),
+		fixedUsers:   envInt("QUICKFOOD_DB_FIXED_USERS", 10),
+		fixedRatings: envInt("QUICKFOOD_DB_FIXED_RATINGS", 10),
+		maxFoods:     envInt("QUICKFOOD_DB_MAX_FOODS", 5000),
+		maxUsers:     envInt("QUICKFOOD_DB_MAX_USERS", 5000),
+		maxRatings:   envInt("QUICKFOOD_DB_MAX_RATINGS", 10000),
 	}
 
 	log.Info(
@@ -261,7 +261,7 @@ func (c *Catalog) LoginUser(ctx context.Context, username, passwordText string) 
 
 // Authenticate finds the corresponding user for token.
 // If a user is not found, then a default user is returned, with ID 1. This is done
-// in order to simplify the testing/usage of QuickPizza in general. This function
+// in order to simplify the testing/usage of QuickFood in general. This function
 // will always return a user, unless it returns a non-nil error.
 func (c *Catalog) Authenticate(ctx context.Context, token string) (*model.User, error) {
 	var user model.User

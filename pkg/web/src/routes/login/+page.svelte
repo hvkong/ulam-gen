@@ -88,7 +88,7 @@ async function updateRatings() {
 	var newRatings = [];
 	json.ratings.forEach((rating) => {
 		newRatings.push(
-			`Rating ID: ${rating.id} (stars=${rating.stars}, pizza_id=${rating.pizza_id})`,
+			`Rating ID: ${rating.id} (stars=${rating.stars}, food_id=${rating.food_id})`,
 		);
 	});
 	ratings = newRatings;

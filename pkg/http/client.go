@@ -15,13 +15,13 @@ import (
 
 var errNotFound = errors.New("Entity not found")
 
-// httpClient is a convenience wrapper for an HTTP client that GETs and POSTs JSON requests with QuickPizza-specifics.
+// httpClient is a convenience wrapper for an HTTP client that GETs and POSTs JSON requests with QuickFood-specifics.
 type httpClient struct {
 	client *http.Client
 }
 
 // getJSON queries the specified URL, expecting a JSON response which gets unmarshalled in dest.
-// If present in parentCtx, trace id and QuickPizza user id are propagated in the request.
+// If present in parentCtx, trace id and QuickFood user id are propagated in the request.
 // parentCtx may not be nil.
 func (hc httpClient) getJSON(parentCtx context.Context, url string, dest any) error {
 	request, err := http.NewRequestWithContext(parentCtx, http.MethodGet, url, nil)
@@ -60,7 +60,7 @@ func (hc httpClient) getJSON(parentCtx context.Context, url string, dest any) er
 }
 
 // postJSON performs an HTTP POST request, marshalling src into the request body.
-// If present in parentCtx, trace id and QuickPizza user id are propagated in the request.
+// If present in parentCtx, trace id and QuickFood user id are propagated in the request.
 // parentCtx may not be nil.
 func (hc httpClient) postJSON(parentCtx context.Context, url string, src any, dest any) error {
 	buf := &bytes.Buffer{}
@@ -125,7 +125,7 @@ type CatalogClient struct {
 	client     httpClient
 }
 
-// NewCatalogClient returns a ready-to-use client for the QuickPizza catalog, service given its URL.
+// NewCatalogClient returns a ready-to-use client for the QuickFood catalog, service given its URL.
 func NewCatalogClient(url string) CatalogClient {
 	return CatalogClient{
 		catalogUrl: url,
@@ -143,7 +143,7 @@ func (c CatalogClient) WithClient(client *http.Client) CatalogClient {
 // WithRequestContext returns a copy of the CatalogClient that will use the supplied context.
 // This context should come from a http.Request, and if provided, CatalogClient will:
 // - Extract parent tracer and trace IDs from it and propagate it to the requests it makes.
-// - Extract the QuickPizza user ID from it and propagate it as well.
+// - Extract the QuickFood user ID from it and propagate it as well.
 func (c CatalogClient) WithRequestContext(ctx context.Context) CatalogClient {
 	c.ctx = ctx
 	return c

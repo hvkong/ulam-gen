@@ -9,25 +9,25 @@ You can inject delays to endpoints and assets using environment variables.
 This is useful for testing scenarios where you want to simulate slow responses across multiple endpoints. 
 
 ```shell
-export QUICKPIZZA_DELAY_RECOMMENDATIONS_API_PIZZA_POST=1000
+export QUICKFOOD_DELAY_RECOMMENDATIONS_API_FOOD_POST=1000
 ```
 The delay values should be specified in **milliseconds**.
 
 The following environment variables are supported: 
 
-- **QUICKPIZZA_DELAY_COPY**: Adds delay to all copy-related endpoints
-     - **QUICKPIZZA_DELAY_COPY_API_QUOTES**: Adds delay specifically to the quotes API endpoint
-     - **QUICKPIZZA_DELAY_COPY_API_NAMES**: Adds delay specifically to the names API endpoint  
-     - **QUICKPIZZA_DELAY_COPY_API_ADJECTIVES**: Adds delay specifically to the adjectives API endpoint
+- **QUICKFOOD_DELAY_COPY**: Adds delay to all copy-related endpoints
+     - **QUICKFOOD_DELAY_COPY_API_QUOTES**: Adds delay specifically to the quotes API endpoint
+     - **QUICKFOOD_DELAY_COPY_API_NAMES**: Adds delay specifically to the names API endpoint  
+     - **QUICKFOOD_DELAY_COPY_API_ADJECTIVES**: Adds delay specifically to the adjectives API endpoint
 
-- **QUICKPIZZA_DELAY_RECOMMENDATIONS**: Adds delay to all recommendation-related endpoints
-     - **QUICKPIZZA_DELAY_RECOMMENDATIONS_API_PIZZA_GET**: Adds delay specifically to the GET pizza recommendations endpoint
-     - **QUICKPIZZA_DELAY_RECOMMENDATIONS_API_PIZZA_POST**: Adds delay specifically to the POST pizza recommendations endpoint
+- **QUICKFOOD_DELAY_RECOMMENDATIONS**: Adds delay to all recommendation-related endpoints
+     - **QUICKFOOD_DELAY_RECOMMENDATIONS_API_FOOD_GET**: Adds delay specifically to the GET food recommendations endpoint
+     - **QUICKFOOD_DELAY_RECOMMENDATIONS_API_FOOD_POST**: Adds delay specifically to the POST food recommendations endpoint
 
-- **QUICKPIZZA_DELAY_FRONTEND_CSS_ASSETS**: Adds delay when serving CSS assets
-- **QUICKPIZZA_DELAY_FRONTEND_PNG_ASSETS**: Adds delay when serving PNG image assets
+- **QUICKFOOD_DELAY_FRONTEND_CSS_ASSETS**: Adds delay when serving CSS assets
+- **QUICKFOOD_DELAY_FRONTEND_PNG_ASSETS**: Adds delay when serving PNG image assets
 
-- **QUICKPIZZA_FAIL_RATE_RECOMMENDATIONS_API_PIZZA_POST**: Set to a number to fail `<number>%` of pizza POST requests randomly.
+- **QUICKFOOD_FAIL_RATE_RECOMMENDATIONS_API_FOOD_POST**: Set to a number to fail `<number>%` of food POST requests randomly.
 
 ## Using HTTP Headers
 

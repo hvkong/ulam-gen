@@ -1,6 +1,6 @@
-# QuickPizza Prometheus Metrics
+# QuickFood Prometheus Metrics
 
-This document provides a comprehensive list of Prometheus metrics collected by the QuickPizza application. All metrics are identified by the labels `namespace=quickpizza` or `service_namespace=quickpizza`.
+This document provides a comprehensive list of Prometheus metrics collected by the QuickFood application. All metrics are identified by the labels `namespace=quickfood` or `service_namespace=quickfood`.
 
 ## Go Runtime Metrics
 
@@ -46,27 +46,27 @@ Request duration metrics are implemented as **classic histograms** with `_bucket
 
 These metrics are generated from distributed traces and are configured in Grafana Alloy or enabled automatically in Grafana Cloud. They provide service-to-service relationship data and span-level metrics from traces.
 
-## QuickPizza Application Metrics
+## QuickFood Application Metrics
 
-`quickpizza_server_*`
+`quickfood_server_*`
 
-These are custom application metrics specific to the QuickPizza application, implemented using the Prometheus Go client library. 
+These are custom application metrics specific to the QuickFood application, implemented using the Prometheus Go client library. 
 
-- `quickpizza_server_pizza_recommendations_total`: Total number of pizza recommendations served (Counter metric).
+- `quickfood_server_food_recommendations_total`: Total number of food recommendations served (Counter metric).
 
-- `quickpizza_server_number_of_ingredients_per_pizza`: Distribution of ingredients per pizza (Classic Histogram).
+- `quickfood_server_number_of_ingredients_per_food`: Distribution of ingredients per food (Classic Histogram).
 
-- `quickpizza_server_number_of_ingredients_per_pizza_native`: Distribution of ingredients per pizza (Native Histogram).
+- `quickfood_server_number_of_ingredients_per_food_native`: Distribution of ingredients per food (Native Histogram).
 
-- `quickpizza_server_pizza_calories_per_slice`: Distribution of calories per pizza slice (Classic Histogram).
+- `quickfood_server_food_calories_per_slice`: Distribution of calories per food slice (Classic Histogram).
 
-- `quickpizza_server_pizza_calories_per_slice_native`: Distribution of calories per pizza slice (Native Histogram).
+- `quickfood_server_food_calories_per_slice_native`: Distribution of calories per food slice (Native Histogram).
 
-- `quickpizza_server_http_request_duration_seconds`: Duration of HTTP request processing (Classic Histogram).
+- `quickfood_server_http_request_duration_seconds`: Duration of HTTP request processing (Classic Histogram).
 
-- `quickpizza_server_http_request_duration_seconds_native`: Duration of HTTP request processing (Native Histogram).
+- `quickfood_server_http_request_duration_seconds_native`: Duration of HTTP request processing (Native Histogram).
 
-- `quickpizza_server_http_request_duration_seconds_gauge`: Duration of HTTP request processing (Gauge).
+- `quickfood_server_http_request_duration_seconds_gauge`: Duration of HTTP request processing (Gauge).
 
 - `quickpizza_server_http_requests_total`: Total number of HTTP requests received (Counter metric).
 

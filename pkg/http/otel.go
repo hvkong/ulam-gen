@@ -213,15 +213,15 @@ func (t *OTelInstaller) Insecure() {
 func (t *OTelInstaller) Install(r chi.Router, serviceComponent string, extraOpts ...otelhttp.Option) error {
 
 	// TODO: can leverage default OTEL_SERVICE_NAME, OTEL_RESOURCE_ATTRIBUTES env vars
-	serviceName, ok := os.LookupEnv("QUICKPIZZA_OTEL_SERVICE_NAME")
+	serviceName, ok := os.LookupEnv("QUICKFOOD_OTEL_SERVICE_NAME")
 	if !ok {
-		serviceName = "quickpizza"
+		serviceName = "quickfood"
 	}
-	serviceNamespace, ok := os.LookupEnv("QUICKPIZZA_OTEL_SERVICE_NAMESPACE")
+	serviceNamespace, ok := os.LookupEnv("QUICKFOOD_OTEL_SERVICE_NAMESPACE")
 	if !ok {
-		serviceNamespace = "quickpizza"
+		serviceNamespace = "quickfood"
 	}
-	serviceInstanceID, ok := os.LookupEnv("QUICKPIZZA_OTEL_SERVICE_INSTANCE_ID")
+	serviceInstanceID, ok := os.LookupEnv("QUICKFOOD_OTEL_SERVICE_INSTANCE_ID")
 	if !ok {
 		serviceInstanceID = "local"
 	}

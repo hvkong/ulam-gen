@@ -34,8 +34,7 @@ docker compose -f compose.grafana-cloud.microservices.yaml down
 ```
 docker compose down -v
 docker rmi quickfood-local:latest
-docker image prune -af
-docker builder prune -af
+docker system prune --all --volumes
 ```
 
 

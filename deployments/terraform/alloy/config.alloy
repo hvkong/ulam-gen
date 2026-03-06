@@ -98,7 +98,7 @@ prometheus.scrape "application_pods" {
   scrape_interval = "10s"
   scrape_native_histograms = true
   forward_to = [prometheus.remote_write.grafana_cloud.receiver]
-  targets = concat(discovery.relabel.application_pods.output, discovery.relabel.database_observability_postgres_quickpizza.output)
+  targets = concat(discovery.relabel.application_pods.output, discovery.relabel.database_observability_postgres_quickfood.output)
 }
 
 // Logs: application pods
@@ -266,8 +266,8 @@ otelcol.processor.transform "drop_unneeded_resource_attributes" {
   trace_statements {
     context    = "span"
     statements = [
-      // Without this, servicegraph would use physical addresses (e.g., "localhost:3333", "quickpizza-db:5432")
-      // instead of logical service names (e.g., "quickpizza", "database")
+      // Without this, servicegraph would use physical addresses (e.g., "localhost:3333", "quickfood-db:5432")
+      // instead of logical service names (e.g., "quickfood", "database")
       "delete_key(attributes, \"server.address\")",
     ]
   }
@@ -364,7 +364,7 @@ otelcol.exporter.otlphttp "otlpEndpoint" {
 
 
 // DB o11y
-prometheus.exporter.postgres "postgres_quickpizza" {
+prometheus.exporter.postgres "postgres_quickfood" {
   data_source_names  = [env("DB_O11Y_CONNECTION")]
   enabled_collectors = ["stat_statements"]
 
@@ -373,14 +373,14 @@ prometheus.exporter.postgres "postgres_quickpizza" {
   }
 }
 
-database_observability.postgres "postgres_quickpizza" {
+database_observability.postgres "postgres_quickfood" {
   data_source_name  = env("DB_O11Y_CONNECTION")
-  forward_to        = [loki.relabel.database_observability_postgres_quickpizza.receiver]
-  targets           = prometheus.exporter.postgres.postgres_quickpizza.targets
+  forward_to        = [loki.relabel.database_observability_postgres_quickfood.receiver]
+  targets           = prometheus.exporter.postgres.postgres_quickfood.targets
   enable_collectors = ["query_details", "query_samples", "schema_details", "explain_plans"]
 }
 
-loki.relabel "database_observability_postgres_quickpizza" {
+loki.relabel "database_observability_postgres_quickfood" {
   forward_to = [grafana_cloud.stack.receivers.logs]
 
   rule {
@@ -389,7 +389,7 @@ loki.relabel "database_observability_postgres_quickpizza" {
   }
   rule {
     target_label = "instance"
-    replacement = "postgres-quickpizza"
+    replacement = "postgres-quickfood"
   }
   rule {
     target_label = "service_namespace"
@@ -409,8 +409,8 @@ loki.relabel "database_observability_postgres_quickpizza" {
   }
 }
 
-discovery.relabel "database_observability_postgres_quickpizza" {
-  targets = database_observability.postgres.postgres_quickpizza.targets
+discovery.relabel "database_observability_postgres_quickfood" {
+  targets = database_observability.postgres.postgres_quickfood.targets
 
   rule {
     target_label = "job"
@@ -418,7 +418,7 @@ discovery.relabel "database_observability_postgres_quickpizza" {
   }
   rule {
     target_label = "instance"
-    replacement = "postgres-quickpizza"
+    replacement = "postgres-quickfood"
   }
   rule {
     target_label = "service_namespace"

@@ -208,8 +208,8 @@ otelcol.processor.transform "drop_unneeded_resource_attributes" {
   trace_statements {
     context    = "span"
     statements = [
-      // Without this, servicegraph would use physical addresses (e.g., "localhost:3333", "quickpizza-db:5432")
-      // instead of logical service names (e.g., "quickpizza", "database")
+      // Without this, servicegraph would use physical addresses (e.g., "localhost:3333", "quickfood-db:5432")
+      // instead of logical service names (e.g., "quickfood", "database")
       "delete_key(attributes, \"server.address\")",
     ]
   }

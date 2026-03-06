@@ -88,7 +88,7 @@ resource "kubernetes_deployment_v1" "catalog" {
           }
           env {
             name  = "QUICKPIZZA_OTEL_DB_NAME"
-            value = "quickpizza-db"
+            value = "quickfood-db"
           }
           env {
             name = "QUICKPIZZA_DB"

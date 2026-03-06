@@ -2,31 +2,31 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: quickpizza-db-credentials
+  name: quickfood-db-credentials
 type: Opaque
 stringData:
-  DATABASE_PASSWORD: quickpizza
-  CONNECTION_STRING: postgres://quickpizza:quickpizza@quickpizza-db/quickpizza?sslmode=disable
+  DATABASE_PASSWORD: quickfood
+  CONNECTION_STRING: postgres://quickfood:quickfood@quickfood-db/quickfood_db?sslmode=disable
 
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: quickpizza-db
+  name: quickfood-db
   labels:
     environment: production
     app.k8s.io/name: quickpizza-app
     app.kubernetes.io/component: database
-    app.kubernetes.io/instance: quickpizza-db
+    app.kubernetes.io/instance: quickfood-db
 spec:
   replicas: 1
-  serviceName: quickpizza-db
+  serviceName: quickfood-db
   selector:
     matchLabels:
       environment: production
       app.k8s.io/name: quickpizza-app
       app.kubernetes.io/component: database
-      app.kubernetes.io/instance: quickpizza-db
+      app.kubernetes.io/instance: quickfood-db
   volumeClaimTemplates:
     - metadata:
         name: data
@@ -42,7 +42,7 @@ spec:
         environment: production
         app.k8s.io/name: quickpizza-app
         app.kubernetes.io/component: database
-        app.kubernetes.io/instance: quickpizza-db
+        app.kubernetes.io/instance: quickfood-db
     spec:
       containers:
         - name: postgres
@@ -60,12 +60,12 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: quickpizza-db-credentials
+                  name: quickfood-db-credentials
                   key: DATABASE_PASSWORD
             - name: POSTGRES_DB
-              value: quickpizza
+              value: quickfood
             - name: POSTGRES_USER
-              value: quickpizza
+              value: quickfood
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql
@@ -74,7 +74,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: quickpizza-db
+  name: quickfood-db
 spec:
   type: ClusterIP
   ports:
@@ -85,4 +85,4 @@ spec:
     environment: production
     app.k8s.io/name: quickpizza-app
     app.kubernetes.io/component: database
-    app.kubernetes.io/instance: quickpizza-db
+    app.kubernetes.io/instance: quickfood-db

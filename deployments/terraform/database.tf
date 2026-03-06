@@ -3,7 +3,7 @@ locals {
     "environment"                 = var.deployment_environment
     "app.k8s.io/name"            = "quickpizza-app"
     "app.kubernetes.io/component" = "database"
-    "app.kubernetes.io/instance"  = "quickpizza-db"
+    "app.kubernetes.io/instance"  = "quickfood-db"
   }
 }
 
@@ -19,7 +19,7 @@ resource "kubernetes_config_map_v1" "postgres_init_script" {
 
 resource "kubernetes_secret_v1" "quickpizza_postgres_credentials" {
   metadata {
-    name      = "quickpizza-db-credentials"
+    name      = "quickfood-db-credentials"
     namespace = kubernetes_namespace_v1.quickpizza.metadata[0].name
   }
   data = {
@@ -32,7 +32,7 @@ resource "kubernetes_secret_v1" "quickpizza_postgres_credentials" {
 
 resource "kubernetes_stateful_set_v1" "postgres_statefulset" {
   metadata {
-    name      = "quickpizza-db"
+    name      = "quickfood-db"
     namespace = kubernetes_namespace_v1.quickpizza.metadata[0].name
     labels    = local.database_component_labels
   }
@@ -130,7 +130,7 @@ resource "kubernetes_stateful_set_v1" "postgres_statefulset" {
 
 resource "kubernetes_service_v1" "postgres" {
   metadata {
-    name      = "quickpizza-db"
+    name      = "quickfood-db"
     namespace = kubernetes_namespace_v1.quickpizza.metadata[0].name
   }
   spec {

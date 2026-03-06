@@ -77,7 +77,7 @@ resource "kubernetes_deployment_v1" "alloy" {
           {
             # Add database-related labels for Database Observability
             "db.service.namespace" = kubernetes_namespace_v1.quickpizza.metadata[0].name
-            "db.service.name"      = "quickpizza-db"
+            "db.service.name"      = "quickfood-db"
           }
         )
       }

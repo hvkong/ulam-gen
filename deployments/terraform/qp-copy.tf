@@ -82,7 +82,7 @@ resource "kubernetes_deployment_v1" "copy" {
           }
           env {
             name  = "QUICKPIZZA_OTEL_DB_NAME"
-            value = "quickpizza-db"
+            value = "quickfood-db"
           }
           env {
             name = "QUICKPIZZA_DB"

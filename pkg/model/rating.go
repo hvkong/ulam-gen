@@ -8,12 +8,12 @@ import (
 
 type Rating struct {
 	bun.BaseModel
-	ID      int64  `json:"id" bun:",pk,autoincrement"`
-	Stars   int    `json:"stars"`
-	UserID  int64  `json:"-"`
-	User    *User  `json:"-" bun:"rel:belongs-to,join:user_id=id"`
-	PizzaID int64  `json:"pizza_id"`
-	Pizza   *Pizza `json:"-" bun:"rel:belongs-to,join:pizza_id=id"`
+	ID     int64 `json:"id" bun:",pk,autoincrement"`
+	Stars  int   `json:"stars"`
+	UserID int64 `json:"-"`
+	User   *User `json:"-" bun:"rel:belongs-to,join:user_id=id"`
+	FoodID int64 `json:"food_id"`
+	Food   *Food `json:"-" bun:"rel:belongs-to,join:food_id=id"`
 }
 
 func (r *Rating) Validate() error {

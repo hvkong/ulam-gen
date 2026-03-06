@@ -8,7 +8,7 @@ const BASE_URL = __ENV.BASE_URL || 'http://localhost:3333';
 export const options = {
   scenarios: {
     constant_request_rate: {
-      exec: "getPizza",
+      exec: "getFood",
       executor: 'constant-arrival-rate',
       duration: '30s',
 
@@ -39,7 +39,7 @@ export function setup() {
   }
 }
 
-export function getPizza() {
+export function getFood() {
   let restrictions = {
     maxCaloriesPerSlice: 500,
     mustBeVegetarian: false,

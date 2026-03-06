@@ -76,11 +76,11 @@ function updateRecommendations() {
 	})
 		.then((res) => res.json())
 		.then((json) => {
-			window.faro?.api?.pushEvent('Update Recent Pizza Recommendations');
+			window.faro?.api?.pushEvent('Update Recent Food Recommendations');
 			var newRec: string[] = [];
-			json.pizzas.forEach((pizza: string) => {
+			json.foods.forEach((food: string) => {
 				newRec.push(`
-                ${pizza.name} (tool=${pizza.tool}, ingredients_number=${pizza.ingredients.length})`);
+                ${food.name} (tool=${food.tool}, ingredients_number=${food.ingredients.length})`);
 			});
 			if (newRec.length >= 15) {
 				window.faro?.api?.pushError(new Error('Too Many Recommendations'));

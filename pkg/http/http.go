@@ -56,19 +56,19 @@ var (
 		Help:      "The total number of food recommendations",
 	}, []string{"vegetarian", "tool"})
 
-	numberOfIngredientsPerPizza = promauto.NewHistogram(prometheus.HistogramOpts{
+	numberOfIngredientsPerFood = promauto.NewHistogram(prometheus.HistogramOpts{
 		Namespace: "quickpizza",
 		Subsystem: "server",
-		Name:      "number_of_ingredients_per_pizza",
-		Help:      "The number of ingredients per pizza",
+		Name:      "number_of_ingredients_per_food",
+		Help:      "The number of ingredients per food",
 		Buckets:   []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20},
 	})
 
-	numberOfIngredientsPerPizzaNativeHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
+	numberOfIngredientsPerFoodNativeHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
 		Namespace:                       "quickpizza",
 		Subsystem:                       "server",
-		Name:                            "number_of_ingredients_per_pizza_native",
-		Help:                            "The number of ingredients per pizza (Native Histogram)",
+		Name:                            "number_of_ingredients_per_food_native",
+		Help:                            "The number of ingredients per food (Native Histogram)",
 		NativeHistogramBucketFactor:     1.1,
 		NativeHistogramMaxBucketNumber:  100,
 		NativeHistogramMinResetDuration: 1 * time.Hour,
@@ -161,9 +161,9 @@ var (
 
 // FoodRecommendation is the object returned by the /api/food endpoint.
 type FoodRecommendation struct {
-	Pizza      model.Pizza `json:"pizza"`
-	Calories   int         `json:"calories"`
-	Vegetarian bool        `json:"vegetarian"`
+	Food       model.Food `json:"food"`
+	Calories   int        `json:"calories"`
+	Vegetarian bool       `json:"vegetarian"`
 }
 
 // Restrictions are sent by the client to further specify how the target pizza should look like
@@ -1151,7 +1151,7 @@ func (s *Server) AddCatalogHandler(db *database.Catalog) {
 				return
 			}
 
-			var latestRecommendation model.Pizza
+			var latestRecommendation model.Food
 			if s.decodeJSONBody(w, r, &latestRecommendation) != nil {
 				return
 			}
@@ -1206,7 +1206,7 @@ func (s *Server) AddCatalogHandler(db *database.Catalog) {
 				return
 			}
 
-			s.writeJSONResponse(w, r, map[string][]model.Pizza{"pizzas": history}, http.StatusOK)
+			s.writeJSONResponse(w, r, map[string][]model.Food{"foods": history}, http.StatusOK)
 		})
 
 		r.HandleFunc("/api/admin/login", func(w http.ResponseWriter, r *http.Request) {
@@ -1353,8 +1353,8 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 			util.DelayIfEnvSet("QUICKPIZZA_DELAY_RECOMMENDATIONS_API_PIZZA_POST")
 
 			if util.FailRandomlyIfEnvSet("QUICKPIZZA_FAIL_RATE_RECOMMENDATIONS_API_PIZZA_POST") {
-				s.log.ErrorContext(r.Context(), "Simulated random failure: Pizza service temporarily unavailable")
-				s.writeJSONErrorResponse(w, r, errors.New("Pizza service temporarily unavailable"), http.StatusServiceUnavailable)
+				s.log.ErrorContext(r.Context(), "Simulated random failure: Food service temporarily unavailable")
+				s.writeJSONErrorResponse(w, r, errors.New("Food service temporarily unavailable"), http.StatusServiceUnavailable)
 				return
 			}
 			// Add request context to catalog and copy clients. This context contains a reference to the tracer used
@@ -1374,8 +1374,8 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 
 			restrictions = restrictions.WithDefaults()
 
-			if len(restrictions.CustomName) > model.MaxPizzaNameLength {
-				restrictions.CustomName = restrictions.CustomName[:model.MaxPizzaNameLength]
+			if len(restrictions.CustomName) > model.MaxFoodNameLength {
+				restrictions.CustomName = restrictions.CustomName[:model.MaxFoodNameLength]
 			}
 
 			oils, err := catalogClient.Ingredients("olive_oil")
@@ -1472,7 +1472,7 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 			}
 
 			pizzaCtx, pizzaSpan := tracer.Start(r.Context(), "pizza-generation")
-			var p model.Pizza
+			var p model.Food
 			for range 10 {
 				randomName := restrictions.CustomName
 
@@ -1500,7 +1500,7 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 					nameSpan.End()
 				}
 
-				p = model.Pizza{
+				p = model.Food{
 					Name:        randomName,
 					Dough:       doughs[rand.Intn(len(doughs))],
 					Ingredients: []model.Ingredient{validOliveOils[rand.Intn(len(validOliveOils))], validTomatoes[rand.Intn(len(validTomatoes))], validMozzarellas[rand.Intn(len(validMozzarellas))]},
@@ -1535,31 +1535,33 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 			pizzaSpan.End()
 
 		foodRecommendation := FoodRecommendation{
-				Vegetarian: p.IsVegetarian(),
-			}
+			Food:       p,
+			Calories:   p.CalculateCalories(),
+			Vegetarian: p.IsVegetarian(),
+		}
 
-			result, err := catalogClient.RecordRecommendation(p)
-			if err != nil {
-				s.log.ErrorContext(r.Context(), "Storing recommendation in catalog", "err", err)
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
+		result, err := catalogClient.RecordRecommendation(p)
+		if err != nil {
+			s.log.ErrorContext(r.Context(), "Storing recommendation in catalog", "err", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-			// Update the .Pizza property we received from calling the catalog client.
-			// This allows us to return the generated pizza's ID to the client.
-			foodRecommendation.Pizza = *result
+		// Update the .Food property we received from calling the catalog client.
+		// This allows us to return the generated food's ID to the client.
+		foodRecommendation.Food = *result
 
-			foodRecommendations.With(prometheus.Labels{
-				"vegetarian": strconv.FormatBool(foodRecommendation.Vegetarian),
-				"tool":       foodRecommendation.Pizza.Tool,
-			}).Inc()
+		foodRecommendations.With(prometheus.Labels{
+			"vegetarian": strconv.FormatBool(foodRecommendation.Vegetarian),
+			"tool":       foodRecommendation.Food.Tool,
+		}).Inc()
 
-			numberOfIngredientsPerPizza.Observe(float64(len(p.Ingredients)))
-			numberOfIngredientsPerPizzaNativeHistogram.Observe(float64(len(p.Ingredients)))
-			pizzaCaloriesPerSlice.Observe(float64(foodRecommendation.Calories))
-			pizzaCaloriesPerSliceNativeHistogram.Observe(float64(foodRecommendation.Calories))
+		numberOfIngredientsPerFood.Observe(float64(len(p.Ingredients)))
+		numberOfIngredientsPerFoodNativeHistogram.Observe(float64(len(p.Ingredients)))
+		pizzaCaloriesPerSlice.Observe(float64(foodRecommendation.Calories))
+		pizzaCaloriesPerSliceNativeHistogram.Observe(float64(foodRecommendation.Calories))
 
-			s.log.InfoContext(r.Context(), "New food recommendation", "food", foodRecommendation.Pizza.Name)
+		s.log.InfoContext(r.Context(), "New food recommendation", "food", foodRecommendation.Food.Name)
 			s.writeJSONResponse(w, r, foodRecommendation, http.StatusOK)
 		})
 	})

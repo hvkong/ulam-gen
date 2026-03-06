@@ -11,13 +11,13 @@ const BASE_URL = __ENV.BASE_URL || 'http://localhost:3333';
 export const options = {
   scenarios: {
     smoke: {
-      exec: "getPizza",
+      exec: "getFood",
       executor: "constant-vus",
       vus: SmokeOptions.vus,
       duration: SmokeOptions.duration,
     },
     stress: {
-      exec: "getPizza",
+      exec: "getFood",
       executor: "ramping-vus",
       stages: StressStages,
       startTime: "10s",
@@ -37,13 +37,13 @@ export const options = {
   thresholds: {
     http_req_failed: ['rate<0.01'],
     http_req_duration: ['p(95)<500', 'p(99)<1000'],
-    quickpizza_ingredients: [{ threshold: 'avg<8', abortOnFail: false }],
+    quickfood_ingredients: [{ threshold: 'avg<8', abortOnFail: false }],
     checks: ["rate > 0.95"]
   },
 };
 
-const pizzas = new Counter('quickpizza_number_of_pizzas');
-const ingredients = new Trend('quickpizza_ingredients');
+const foods = new Counter('quickfood_number_of_foods');
+const ingredients = new Trend('quickfood_ingredients');
 
 const tokens = new SharedArray('all tokens', function () {
   return JSON.parse(open('./data/tokens.json')).tokens;
@@ -56,7 +56,7 @@ export function setup() {
   }
 }
 
-export function getPizza() {
+export function getFood() {
   let restrictions = {
     maxCaloriesPerSlice: 500,
     mustBeVegetarian: false,
@@ -72,9 +72,9 @@ export function getPizza() {
     },
   });
   check(res, { "status is 200": (res) => res.status === 200 });
-  console.log(`${res.json().pizza.name} (${res.json().pizza.ingredients.length} ingredients)`);
-  pizzas.add(1);
-  ingredients.add(res.json().pizza.ingredients.length);
+  console.log(`${res.json().food.name} (${res.json().food.ingredients.length} ingredients)`);
+  foods.add(1);
+  ingredients.add(res.json().food.ingredients.length);
   sleep(1);
 }
 

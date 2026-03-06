@@ -10,13 +10,13 @@ const BASE_URL = __ENV.BASE_URL || "http://localhost:3333";
 export const options = {
   scenarios: {
     smoke: {
-      exec: "getPizza",
+      exec: "getFood",
       executor: "constant-vus",
       vus: 1,
       duration: "10s",
     },
     stress: {
-      exec: "getPizza",
+      exec: "getFood",
       executor: "ramping-vus",
       stages: [
         { duration: "5s", target: 5 },
@@ -61,7 +61,7 @@ export function setup() {
   }
 }
 
-export function getPizza() {
+export function getFood() {
   let restrictions = {
     maxCaloriesPerSlice: 500,
     mustBeVegetarian: false,

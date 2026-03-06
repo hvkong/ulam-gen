@@ -34,9 +34,9 @@ export const options = {
 export function sender() {
     const ws = new WebSocket(`${BASE_URL}/ws`);
     ws.addEventListener('open', () => {
-        ws.send(JSON.stringify({ ws_visitor_id: `VU ${__VU}`, msg: "order_pizza" }));
+        ws.send(JSON.stringify({ ws_visitor_id: `VU ${__VU}`, msg: "order_food" }));
         sleep(0.2);
-        ws.send(JSON.stringify({ ws_visitor_id: `VU ${__VU}`, msg: "pizza_status?" }));
+        ws.send(JSON.stringify({ ws_visitor_id: `VU ${__VU}`, msg: "food_status?" }));
         sleep(0.1);
         ws.close();
     });

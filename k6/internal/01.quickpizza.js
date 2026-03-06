@@ -145,7 +145,7 @@ function testMetrics() {
   });
 }
 
-function testPizzaRecommendation() {
+function testFoodRecommendation() {
   var res = http.post(`${BASE_URL}/api/food`, JSON.stringify({
     customName: "a".repeat(100)
   }), {
@@ -154,7 +154,7 @@ function testPizzaRecommendation() {
     }
   });
 
-  expect(res.json().pizza.name, "pizza name").to.equal("a".repeat(64));
+  expect(res.json().food.name, "food name").to.equal("a".repeat(64));
 }
 
 function testLegacyTestK6IOEndpoint() {
@@ -167,7 +167,7 @@ export default function() {
   testCreateUserLogin();
   testDatabaseCreatedUserLogin();
   testTokenValidation();
-  testPizzaRecommendation();
+  testFoodRecommendation();
   testMetrics();
   testLegacyTestK6IOEndpoint();
 }

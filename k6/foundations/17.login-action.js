@@ -35,7 +35,7 @@ export default function () {
   sleep(0.5);
 
   let token = res.json().token;
-  let pizzaData = {
+  let foodData = {
     maxCaloriesPerSlice: 500,
     mustBeVegetarian: false,
     excludedIngredients: ["pepperoni"],
@@ -43,16 +43,16 @@ export default function () {
     maxNumberOfToppings: 6,
     minNumberOfToppings: 2,
   };
-  res = http.post(`${BASE_URL}/api/food`, JSON.stringify(pizzaData), {
+  res = http.post(`${BASE_URL}/api/food`, JSON.stringify(foodData), {
     headers: {
       "Content-Type": "application/json",
       Authorization: `token ${token}`,
     },
   });
-  check(res, { "pizza status is 200": (res) => res.status === 200 });
+  check(res, { "food status is 200": (res) => res.status === 200 });
 
   let ratingsData = {
-    pizza_id: res.json().pizza.id,
+    food_id: res.json().food.id,
     stars: 5, // Love it!
   };
   res = http.post(`${BASE_URL}/api/ratings`, JSON.stringify(ratingsData), {

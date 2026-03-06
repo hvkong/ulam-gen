@@ -8,8 +8,8 @@ function setupFaro() {
 		.then((data) => data.json())
 		.then((config) => {
 			const url = config.faro_url;
-			const faroAppName = config.faro_app_name || 'QuickPizza';
-			const faroAppNamespace = config.faro_app_namespace || 'quickpizza';
+			const faroAppName = config.faro_app_name || 'QuickFood';
+			const faroAppNamespace = config.faro_app_namespace || 'quickfood';
 			const faroAppVersion = config.faro_app_version || '1.0.0';
 			const faroAppEnvironment = config.faro_app_environment || 'production';
 			const faroInstrumentationEnableReplay =

@@ -9,7 +9,7 @@ import (
 
 func init() {
 	Migrations.MustRegister(func(ctx context.Context, db *bun.DB) error {
-		db.RegisterModel(&model.PizzaToIngredients{})
+		db.RegisterModel(&model.FoodToIngredients{})
 		models := []interface{}{
 			&model.Ingredient{},
 			&model.Dough{},
@@ -22,7 +22,7 @@ func init() {
 			}
 		}
 		_, err := db.NewCreateTable().
-			Model(&model.Pizza{}).
+			Model(&model.Food{}).
 			ForeignKey(`("dough_id") REFERENCES "doughs" ("id")`).
 			ForeignKey(`("tool") REFERENCES "tools" ("name")`).
 			IfNotExists().
@@ -34,15 +34,15 @@ func init() {
 		_, err = db.NewCreateTable().
 			Model(&model.Rating{}).
 			ForeignKey(`("user_id") REFERENCES "users" ("id") ON DELETE CASCADE`).
-			ForeignKey(`("pizza_id") REFERENCES "pizzas" ("id") ON DELETE CASCADE`).
+			ForeignKey(`("food_id") REFERENCES "foods" ("id") ON DELETE CASCADE`).
 			IfNotExists().
 			Exec(ctx)
 		if err != nil {
 			return err
 		}
 		_, err = db.NewCreateTable().
-			Model(&model.PizzaToIngredients{}).
-			ForeignKey(`("pizza_id") REFERENCES "pizzas" ("id") ON DELETE CASCADE`).
+			Model(&model.FoodToIngredients{}).
+			ForeignKey(`("food_id") REFERENCES "foods" ("id") ON DELETE CASCADE`).
 			ForeignKey(`("ingredient_id") REFERENCES "ingredients" ("id")`).
 			IfNotExists().
 			Exec(ctx)

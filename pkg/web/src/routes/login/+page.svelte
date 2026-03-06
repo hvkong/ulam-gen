@@ -141,7 +141,7 @@ async function handleLogout() {
 		<div class="text-center">
 			<div class="mt-4 mb-12">
 				<h2 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl mb-2">
-					Your Pizza Ratings:
+					Your Food Ratings:
 				</h2>
 				<ul>
 					{#if ratings.length === 0}

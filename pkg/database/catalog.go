@@ -23,10 +23,10 @@ import (
 type Catalog struct {
 	db *bun.DB
 
-	fixedPizzas  int
+	fixedFoods   int
 	fixedUsers   int
 	fixedRatings int
-	maxPizzas    int
+	maxFoods     int
 	maxUsers     int
 	maxRatings   int
 }
@@ -52,24 +52,24 @@ func NewCatalog(connString string) (*Catalog, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.RegisterModel((*model.PizzaToIngredients)(nil))
+	db.RegisterModel((*model.FoodToIngredients)(nil))
 
 	c := &Catalog{
 		db:           db,
-		fixedPizzas:  envInt("QUICKPIZZA_DB_FIXED_PIZZAS", 100),
+		fixedFoods:   envInt("QUICKPIZZA_DB_FIXED_PIZZAS", 100),
 		fixedUsers:   envInt("QUICKPIZZA_DB_FIXED_USERS", 10),
 		fixedRatings: envInt("QUICKPIZZA_DB_FIXED_RATINGS", 10),
-		maxPizzas:    envInt("QUICKPIZZA_DB_MAX_PIZZAS", 5000),
+		maxFoods:     envInt("QUICKPIZZA_DB_MAX_PIZZAS", 5000),
 		maxUsers:     envInt("QUICKPIZZA_DB_MAX_USERS", 5000),
 		maxRatings:   envInt("QUICKPIZZA_DB_MAX_RATINGS", 10000),
 	}
 
 	log.Info(
 		"Catalog parameters",
-		"fixedPizzas", c.fixedPizzas,
+		"fixedFoods", c.fixedFoods,
 		"fixedUsers", c.fixedUsers,
 		"fixedRatings", c.fixedRatings,
-		"maxPizzas", c.maxPizzas,
+		"maxFoods", c.maxFoods,
 		"maxUsers", c.maxUsers,
 		"maxRatings", c.maxRatings,
 	)
@@ -101,24 +101,24 @@ func (c *Catalog) GetTools(ctx context.Context) ([]string, error) {
 	return tools, err
 }
 
-func (c *Catalog) GetHistory(ctx context.Context, limit int) ([]model.Pizza, error) {
-	var history []model.Pizza
+func (c *Catalog) GetHistory(ctx context.Context, limit int) ([]model.Food, error) {
+	var history []model.Food
 	err := c.db.NewSelect().Model(&history).Relation("Dough").Relation("Ingredients").Order("created_at DESC").Limit(limit).Scan(ctx)
 	return history, err
 }
 
-func (c *Catalog) GetRecommendation(ctx context.Context, id int) (*model.Pizza, error) {
-	var pizza model.Pizza
-	err := c.db.NewSelect().Model(&pizza).Relation("Dough").Relation("Ingredients").Where("pizza.id = ?", id).Limit(1).Scan(ctx)
+func (c *Catalog) GetRecommendation(ctx context.Context, id int) (*model.Food, error) {
+	var food model.Food
+	err := c.db.NewSelect().Model(&food).Relation("Dough").Relation("Ingredients").Where("food.id = ?", id).Limit(1).Scan(ctx)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
-	return &pizza, err
+	return &food, err
 }
 
 func (c *Catalog) GetRatings(ctx context.Context, user *model.User) ([]*model.Rating, error) {
 	ratings := make([]*model.Rating, 0)
-	err := c.db.NewSelect().Model((*model.Rating)(nil)).Relation("User").Relation("Pizza").Where("rating.user_id = ?", user.ID).Limit(getRatingsMax).Scan(ctx, &ratings)
+	err := c.db.NewSelect().Model((*model.Rating)(nil)).Relation("User").Relation("Food").Where("rating.user_id = ?", user.ID).Limit(getRatingsMax).Scan(ctx, &ratings)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -127,7 +127,7 @@ func (c *Catalog) GetRatings(ctx context.Context, user *model.User) ([]*model.Ra
 
 func (c *Catalog) GetRating(ctx context.Context, user *model.User, ratingID int) (*model.Rating, error) {
 	var rating model.Rating
-	err := c.db.NewSelect().Model(&rating).Relation("User").Relation("Pizza").Where("rating.id = ? AND rating.user_id = ?", ratingID, user.ID).Limit(1).Scan(ctx)
+	err := c.db.NewSelect().Model(&rating).Relation("User").Relation("Food").Where("rating.id = ? AND rating.user_id = ?", ratingID, user.ID).Limit(1).Scan(ctx)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -187,13 +187,13 @@ func (c *Catalog) UpdateRating(ctx context.Context, user *model.User, rating *mo
 }
 
 func (c *Catalog) RecordRating(ctx context.Context, rating *model.Rating) error {
-	pizza, err := c.GetRecommendation(ctx, int(rating.PizzaID))
+	food, err := c.GetRecommendation(ctx, int(rating.FoodID))
 	if err != nil {
 		return err
 	}
 
-	if pizza == nil {
-		return fmt.Errorf("pizza ID %v not found", rating.PizzaID)
+	if food == nil {
+		return fmt.Errorf("food ID %v not found", rating.FoodID)
 	}
 
 	rating.ID = 0
@@ -277,27 +277,27 @@ func (c *Catalog) Authenticate(ctx context.Context, token string) (*model.User, 
 	return &user, err
 }
 
-func (c *Catalog) RecordRecommendation(ctx context.Context, pizza *model.Pizza) error {
+func (c *Catalog) RecordRecommendation(ctx context.Context, food *model.Food) error {
 	// Inject an artificial error for testing purposes
 	err := errorinjector.InjectErrors(ctx, "record-recommendation")
 	if err != nil {
 		return err
 	}
 
-	pizza.DoughID = pizza.Dough.ID
+	food.DoughID = food.Dough.ID
 	return c.db.RunInTx(ctx, nil, func(ctx context.Context, tx bun.Tx) error {
-		_, err := tx.NewInsert().Model(pizza).Exec(ctx)
+		_, err := tx.NewInsert().Model(food).Exec(ctx)
 		if err != nil {
 			return err
 		}
-		for _, i := range pizza.Ingredients {
-			_, err = tx.NewInsert().Model(&model.PizzaToIngredients{PizzaID: pizza.ID, IngredientID: i.ID}).Exec(ctx)
+		for _, i := range food.Ingredients {
+			_, err = tx.NewInsert().Model(&model.FoodToIngredients{FoodID: food.ID, IngredientID: i.ID}).Exec(ctx)
 			if err != nil {
 				return err
 			}
 		}
 
-		return c.enforceTableSizeLimits(ctx, tx, (*model.Pizza)(nil), c.fixedPizzas, c.maxPizzas)
+		return c.enforceTableSizeLimits(ctx, tx, (*model.Food)(nil), c.fixedFoods, c.maxFoods)
 	})
 }
 

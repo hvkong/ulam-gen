@@ -32,8 +32,8 @@ export default function () {
   });
   check(res, { "status is 200": (res) => res.status === 200 });
   console.log(
-    `${res.json().pizza.name} (${
-      res.json().pizza.ingredients.length
+    `${res.json().food.name} (${
+      res.json().food.ingredients.length
     } ingredients)`
   );
   sleep(1);

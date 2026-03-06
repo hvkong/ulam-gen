@@ -22,7 +22,7 @@ func init() {
 		// Reset PostgreSQL sequence after loading fixtures with explicit IDs
 		// SQLite handles autoincrement correctly without this
 		if _, ok := db.Dialect().(*pgdialect.Dialect); ok {
-			_, err := db.ExecContext(ctx, "SELECT setval('pizzas_id_seq', (SELECT MAX(id) FROM pizzas))")
+			_, err := db.ExecContext(ctx, "SELECT setval('foods_id_seq', (SELECT MAX(id) FROM foods))")
 			return err
 		}
 

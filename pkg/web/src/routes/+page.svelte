@@ -34,9 +34,9 @@ var anonymousToken = '';
 
 var render = false;
 var quote = '';
-var pizza = '';
+var food = '';
 var tools: string[] = [];
-var pizzaCount = 0;
+var foodCount = 0;
 let restrictions = defaultRestrictions;
 var advanced = false;
 var rateResult = null;
@@ -44,10 +44,10 @@ var errorResult = null;
 var isLoggedIn = false;
 
 $: if (advanced) {
-	pizza = '';
+	food = '';
 	restrictions = defaultRestrictions;
 } else {
-	pizza = '';
+	food = '';
 	restrictions = defaultRestrictions;
 }
 
@@ -98,7 +98,7 @@ onMount(async () => {
 		const data = JSON.parse(event.data);
 		if (data.msg === 'new_pizza') {
 			if (data.ws_visitor_id !== wsVisitorID) {
-				pizzaCount++;
+				foodCount++;
 			}
 		}
 	});
@@ -107,20 +107,20 @@ onMount(async () => {
 	window.faro?.api?.pushEvent('Navigation', { url: window.location.href });
 });
 
-async function ratePizza(stars) {
-	window.faro?.api?.pushEvent('Submit Pizza Rating', {
-		pizza_id: pizza['pizza']['id'],
+async function rateFood(stars) {
+	window.faro?.api?.pushEvent('Submit Food Rating', {
+		food_id: food['food']['id'],
 		stars: stars,
 	});
 	window.faro?.api?.startUserAction(
-		'ratePizza', // name of the user action
-		{ pizza_id: pizza['pizza']['id'], stars: stars }, // custom attributes attached to the user action
-		{ triggerName: 'ratePizzaButtonClick' }, // custom config
+		'rateFood', // name of the user action
+		{ food_id: food['food']['id'], stars: stars }, // custom attributes attached to the user action
+		{ triggerName: 'rateFoodButtonClick' }, // custom config
 	);
 	const res = await fetch(`${PUBLIC_BACKEND_ENDPOINT}/api/ratings`, {
 		method: 'POST',
 		body: JSON.stringify({
-			pizza_id: pizza['pizza']['id'],
+			food_id: food['food']['id'],
 			stars: stars,
 		}),
 		headers: {
@@ -137,14 +137,14 @@ async function ratePizza(stars) {
 	}
 }
 
-async function getPizza() {
-	window.faro?.api?.pushEvent('Get Pizza Recommendation', {
+async function getFood() {
+	window.faro?.api?.pushEvent('Get Food Recommendation', {
 		restrictions: restrictions,
 	});
 	window.faro?.api?.startUserAction(
-		'getPizza', // name of the user action
+		'getFood', // name of the user action
 		{ restrictions: restrictions }, // custom attributes attached to the user action
-		{ triggerName: 'getPizzaButtonClick' }, // custom config
+		{ triggerName: 'getFoodButtonClick' }, // custom config
 	);
 	if (restrictions.minNumberOfToppings > restrictions.maxNumberOfToppings) {
 		window.faro?.api?.pushError(new Error('Invalid Restrictions, Min > Max'));
@@ -169,21 +169,21 @@ async function getPizza() {
 	rateResult = null;
 	errorResult = null;
 	if (!res.ok) {
-		pizza = '';
+		food = '';
 		errorResult =
-			json.error || 'Failed to get pizza recommendation. Please try again.';
+			json.error || 'Failed to get food recommendation. Please try again.';
 		window.faro?.api?.pushError(new Error(errorResult));
 		return;
 	}
 
-	pizza = json;
+	food = json;
 	const wsMsg = JSON.stringify({
 		// FIXME: The 'user' key is present in order not to break
 		// existing examples using QP WS. Remove it at some point.
 		// It has no connection to the user auth itself.
 		user: wsVisitorID,
 		ws_visitor_id: wsVisitorID,
-		msg: 'new_pizza',
+		msg: 'new_food',
 	});
 	if (socket.readyState === WebSocket.OPEN) {
 		socket.send(wsMsg);
@@ -199,17 +199,17 @@ async function getPizza() {
 		);
 	}
 
-	if (pizza['pizza']['ingredients'].find((e) => e.name === 'Pineapple')) {
+	if (food['food']['ingredients'].find((e) => e.name === 'Pineapple')) {
 		window.faro?.api?.pushError(
 			new Error(
-				'Pizza Error: Pineapple detected! This is a violation of ancient pizza law. Proceed at your own risk!',
+				'Food Error: Pineapple detected! This is a violation of ancient food law. Proceed at your own risk!',
 			),
 		);
 	}
 }
 
 async function getTools() {
-	window.faro?.api?.pushEvent('Get Pizza Tools', { tools: tools });
+	window.faro?.api?.pushEvent('Get Food Tools', { tools: tools });
 
 	// Build headers: use cookie auth if logged in, otherwise use anonymous token
 	const headers: Record<string, string> = {};
@@ -356,7 +356,7 @@ async function getTools() {
 					</div>
 					<div class="flex mt-8 justify-center items-center">
 						<div clas="flex items-center ml-16">
-							<label for="pizza-name" class="ml-2 text-sm text-gray-900">Custom Pizza Name:</label>
+							<label for="food-name" class="ml-2 text-sm text-gray-900">Custom Food Name:</label>
 							<input
 								id="pizza-name"
 								bind:value={restrictions.customName}
@@ -371,7 +371,7 @@ async function getTools() {
 					slot="label"
 					type="button"
 					name="pizza-please"
-					on:click={getPizza}
+					on:click={getFood}
 					class="mt-6 text-white bg-gradient-to-br from-red-500 to-orange-400 hover:bg-gradient-to-bl font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
 				>
 					Food, Please!</button
@@ -392,31 +392,31 @@ async function getTools() {
 					>
 				</div>
 			{/if}
-			{#if pizzaCount > 0 && !pizza['pizza']}
+			{#if foodCount > 0 && !food['food']}
 				<div class="mt-4">
 					<span class="bg-purple-100 text-purple-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded"
-						>What are you waiting for? We have already given {pizzaCount} recommendations since you opened
+						>What are you waiting for? We have already given {foodCount} recommendations since you opened
 						the site!</span
 					>
 				</div>
 			{/if}
 			<p>
-				{#if pizza['pizza']}
+				{#if food['food']}
 					<div class="flex justify-center" id="recommendations">
 						<div class="w-[300px] sm:w-[500px] mt-6 bg-gray-50 border border-gray-200 rounded-lg">
 							<div class="text-left p-4">
-								<h2 class="font-medium" id="pizza-name">Our recommendation:</h2>
+								<h2 class="font-medium" id="food-name">Our recommendation:</h2>
 								<div class="ml-2">
-									<p>Name: {pizza['pizza']['name']}</p>
-									<p>Dough: {pizza['pizza']['dough']['name']}</p>
+									<p>Name: {food['food']['name']}</p>
+									<p>Dough: {food['food']['dough']['name']}</p>
 									<p>Ingredients:</p>
 									<ul class="list-disc list-inside">
-										{#each pizza['pizza']['ingredients'] as ingredient}
+										{#each food['food']['ingredients'] as ingredient}
 											<li class="pl-5 list-inside">{ingredient['name']}</li>
 										{/each}
 									</ul>
-									<p>Tool: {pizza['pizza']['tool']}</p>
-									<p>Calories per slice: {pizza['calories']}</p>
+									<p>Tool: {food['food']['tool']}</p>
+									<p>Calories per slice: {food['calories']}</p>
 								</div>
 							</div>
 						</div>
@@ -424,7 +424,7 @@ async function getTools() {
 					<button
 						type="button"
 						name="rate-1"
-						on:click={() => ratePizza(1)}
+						on:click={() => rateFood(1)}
 						class="mt-6 text-white bg-gray-400 font-medium rounded-lg text-sm px-4 py-1.5 text-center mr-2 mb-2"
 					>
 						No thanks</button
@@ -432,7 +432,7 @@ async function getTools() {
 					<button
 						type="button"
 						name="rate-5"
-						on:click={() => ratePizza(5)}
+						on:click={() => rateFood(5)}
 						class="mt-6 text-white bg-red-400 font-medium rounded-lg text-sm px-4 py-1.5 text-center mr-2 mb-2"
 					>
 						Love it!</button

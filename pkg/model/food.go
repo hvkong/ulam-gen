@@ -4,20 +4,20 @@ import (
 	"time"
 )
 
-type Pizza struct {
+type Food struct {
 	ID          int64        `json:"id" bun:",pk,autoincrement"`
 	CreatedAt   time.Time    `json:"-" bun:",nullzero,notnull,default:current_timestamp"`
 	Name        string       `json:"name"`
 	DoughID     int64        `json:"-"`
 	Dough       Dough        `json:"dough" bun:"rel:belongs-to,join:dough_id=id"`
-	Ingredients []Ingredient `json:"ingredients" bun:"m2m:pizza_to_ingredients,join:Pizza=Ingredient"`
+	Ingredients []Ingredient `json:"ingredients" bun:"m2m:food_to_ingredients,join:Food=Ingredient"`
 	Tool        string       `json:"tool"`
 }
 
-const MaxPizzaNameLength = 64
+const MaxFoodNameLength = 64
 
-func (p Pizza) IsVegetarian() bool {
-	for _, ingredient := range p.Ingredients {
+func (f Food) IsVegetarian() bool {
+	for _, ingredient := range f.Ingredients {
 		if !ingredient.Vegetarian {
 			return false
 		}
@@ -25,17 +25,17 @@ func (p Pizza) IsVegetarian() bool {
 	return true
 }
 
-func (p Pizza) CalculateCalories() int {
+func (f Food) CalculateCalories() int {
 	calories := 0
-	for _, ingredient := range p.Ingredients {
+	for _, ingredient := range f.Ingredients {
 		calories += ingredient.CaloriesPerSlice
 	}
 	return calories
 }
 
-type PizzaToIngredients struct {
-	PizzaID      int64       `bun:",pk"`
-	Pizza        *Pizza      `bun:"rel:belongs-to,join:pizza_id=id"`
+type FoodToIngredients struct {
+	FoodID       int64       `bun:",pk"`
+	Food         *Food       `bun:"rel:belongs-to,join:food_id=id"`
 	IngredientID int64       `bun:",pk"`
 	Ingredient   *Ingredient `bun:"rel:belongs-to,join:ingredient_id=id"`
 }

@@ -189,8 +189,8 @@ func (c CatalogClient) Doughs() ([]model.Dough, error) {
 	return doughs.Doughs, nil
 }
 
-func (c CatalogClient) GetRecommendation(id int) (*model.Pizza, error) {
-	result := model.Pizza{}
+func (c CatalogClient) GetRecommendation(id int) (*model.Food, error) {
+	result := model.Food{}
 	err := c.client.getJSON(c.ctx, c.catalogUrl+"/api/internal/recommendations/"+fmt.Sprint(id), &result)
 	if err == errNotFound {
 		return nil, nil
@@ -201,8 +201,8 @@ func (c CatalogClient) GetRecommendation(id int) (*model.Pizza, error) {
 	return &result, nil
 }
 
-func (c CatalogClient) RecordRecommendation(p model.Pizza) (*model.Pizza, error) {
-	result := model.Pizza{}
+func (c CatalogClient) RecordRecommendation(p model.Food) (*model.Food, error) {
+	result := model.Food{}
 	err := c.client.postJSON(c.ctx, c.catalogUrl+"/api/internal/recommendations", p, &result)
 	if err != nil {
 		return nil, err

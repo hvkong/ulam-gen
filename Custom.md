@@ -29,3 +29,37 @@ To stop and remove containers, networks and other resources.
 ```
 docker compose -f compose.grafana-cloud.microservices.yaml down
 ```
+
+# 1. PURGE everything
+```
+docker compose down -v
+docker rmi quickfood-local:latest
+docker image prune -af
+docker builder prune -af
+```
+
+
+# 2. REBUILD from scratch
+```
+docker buildx build -t quickfood-local:latest --load .
+```
+
+# 3. START fresh  
+```
+QUICKPIZZA_IMAGE=quickfood-local:latest docker compose -f compose.grafana-cloud.microservices.yaml up -d
+```
+
+
+# 4. TEST the API
+```
+curl -X POST http://localhost:3333/api/food \
+  -H "Authorization: Token abcdef0123456789" \
+  -H "Content-Type: application/json" \
+  -d '{"maxCaloriesPerSlice": 1000, "mustBeVegetarian": false}'
+```
+
+
+# 5. RUN a k6 test if you want to verify load tests work
+```
+k6 run k6/foundations/14.basic.tracing.js -u http://localhost:3333
+```

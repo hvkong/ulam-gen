@@ -17,60 +17,60 @@ services:
       - "4317:4317" # OTLP gRPC
       - "4318:4318" # OTLP HTTP
     environment:
-      QUICKPIZZA_HOST: quickpizza:3333
+      QUICKFOOD_HOST: quickfood:3333
       METRICS_ENDPOINT: http://prometheus:9090/api/v1/write
       TRACES_ENDPOINT: http://tempo:4317
       LOGS_ENDPOINT: http://loki:3100/loki/api/v1/push
       PROFILES_ENDPOINT: http://pyroscope:4040
       DEPLOYMENT_ENVIRONMENT: ${DEPLOYMENT_ENVIRONMENT:-development}
-      # Default uses the same DB connection as the Quickpizza service. Use empty string to disable.
-      DB_O11Y_CONNECTION: "${DB_O11Y_CONNECTION-postgres://postgres:postgres@quickpizza-db:5432/quickpizza_db?sslmode=disable}"
-      SERVICE_NAMESPACE: "${SERVICE_NAMESPACE:-quickpizza}"
-      DB_SERVICE_NAME: "quickpizza-db"
+      # Default uses the same DB connection as the Quickfood service. Use empty string to disable.
+      DB_O11Y_CONNECTION: "${DB_O11Y_CONNECTION-postgres://postgres:postgres@quickfood-db:5432/quickfood_db?sslmode=disable}"
+      SERVICE_NAMESPACE: "${SERVICE_NAMESPACE:-quickfood}"
+      DB_SERVICE_NAME: "quickfood-db"
     depends_on:
-      - quickpizza
+      - quickfood
       - prometheus
       - tempo
       - loki
       - pyroscope
-  quickpizza:
-    # The QUICKPIZZA_IMAGE env. variable enables the use of a locally built image,
+  quickfood:
+    # The QUICKFOOD_IMAGE env. variable enables the use of a locally built image,
     # created with `make docker-build`.
-    image: ${QUICKPIZZA_IMAGE:-ghcr.io/grafana/quickpizza-local:0.15.21@sha256:de839571c65ce9ac6e96290f44a7122869f31744d93bd235903ecb9429158d32}
-    container_name: quickpizza
+    image: ${QUICKFOOD_IMAGE:-ghcr.io/grafana/quickfood-local:0.15.21@sha256:de839571c65ce9ac6e96290f44a7122869f31744d93bd235903ecb9429158d32}
+    container_name: quickfood
     labels:
       - "service.type=application"
-      - "service.namespace=${SERVICE_NAMESPACE:-quickpizza}"
+      - "service.namespace=${SERVICE_NAMESPACE:-quickfood}"
     ports:
       - "3333:3333"
       - "3334:3334" # gRPC
     environment:
-      QUICKPIZZA_OTLP_ENDPOINT: http://alloy:4318
-      QUICKPIZZA_TRUST_CLIENT_TRACEID: 1
-      QUICKPIZZA_ENABLE_ALL_SERVICES: 1 # 1 for monolithic mode
-      QUICKPIZZA_OTEL_SERVICE_INSTANCE_ID: "quickpizza"
-      QUICKPIZZA_OTEL_SERVICE_NAME: "quickpizza"
-      OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${DEPLOYMENT_ENVIRONMENT:-development},service.version=quickpizza-local"
-      # QUICKPIZZA_DB unset set to postgres. If empty, set to sqlite.
-      QUICKPIZZA_DB: "${QUICKPIZZA_DB-postgres://postgres:postgres@quickpizza-db:5432/quickpizza_db?sslmode=disable}"
+      QUICKFOOD_OTLP_ENDPOINT: http://alloy:4318
+      QUICKFOOD_TRUST_CLIENT_TRACEID: 1
+      QUICKFOOD_ENABLE_ALL_SERVICES: 1 # 1 for monolithic mode
+      QUICKFOOD_OTEL_SERVICE_INSTANCE_ID: "quickfood"
+      QUICKFOOD_OTEL_SERVICE_NAME: "quickfood"
+      OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${DEPLOYMENT_ENVIRONMENT:-development},service.version=quickfood-local"
+      # QUICKFOOD_DB unset set to postgres. If empty, set to sqlite.
+      QUICKFOOD_DB: "${QUICKFOOD_DB-postgres://postgres:postgres@quickfood-db:5432/quickfood_db?sslmode=disable}"
       # Enable logging. Possible values: error, warn, debug. Default: info
-      # QUICKPIZZA_LOG_LEVEL: debug
+      # QUICKFOOD_LOG_LEVEL: debug
     depends_on:
-      quickpizza-db:
+      quickfood-db:
         condition: service_healthy
 
-  quickpizza-db:
+  quickfood-db:
     image: postgres:18.1@sha256:5773fe724c49c42a7a9ca70202e11e1dff21fb7235b335a73f39297d200b73a2
-    container_name: quickpizza-db
+    container_name: quickfood-db
     labels:
       - "service.type=database"
-      - "service.namespace=${SERVICE_NAMESPACE:-quickpizza}"
+      - "service.namespace=${SERVICE_NAMESPACE:-quickfood}"
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: quickpizza_db
+      POSTGRES_DB: quickfood_db
     volumes:
       - postgres_data:/var/lib/postgresql
     healthcheck:

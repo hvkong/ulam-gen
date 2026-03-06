@@ -1,15 +1,15 @@
-x-quickpizza-env-common: &quickpizza-env-common
-  QUICKPIZZA_OTLP_ENDPOINT: http://alloy:4318
-  QUICKPIZZA_TRUST_CLIENT_TRACEID: true
-  QUICKPIZZA_ENABLE_ALL_SERVICES: 0 # 0 for microservice mode
-  QUICKPIZZA_CATALOG_ENDPOINT: http://catalog:3333
-  QUICKPIZZA_COPY_ENDPOINT: http://copy:3333
-  QUICKPIZZA_WS_ENDPOINT: http://ws:3333
-  QUICKPIZZA_RECOMMENDATIONS_ENDPOINT: http://recommendations:3333
-  QUICKPIZZA_CONFIG_ENDPOINT: http://config:3333
-  OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${DEPLOYMENT_ENVIRONMENT:-development},service.version=quickpizza-local"
+x-quickfood-env-common: &quickfood-env-common
+  QUICKFOOD_OTLP_ENDPOINT: http://alloy:4318
+  QUICKFOOD_TRUST_CLIENT_TRACEID: true
+  QUICKFOOD_ENABLE_ALL_SERVICES: 0 # 0 for microservice mode
+  QUICKFOOD_CATALOG_ENDPOINT: http://catalog:3333
+  QUICKFOOD_COPY_ENDPOINT: http://copy:3333
+  QUICKFOOD_WS_ENDPOINT: http://ws:3333
+  QUICKFOOD_RECOMMENDATIONS_ENDPOINT: http://recommendations:3333
+  QUICKFOOD_CONFIG_ENDPOINT: http://config:3333
+  OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${DEPLOYMENT_ENVIRONMENT:-development},service.version=quickfood-local"
 
-name: quickpizza
+name: quickfood
 services:
   alloy:
     image: grafana/alloy:v1.12.2@sha256:f94b1c82957accb77cd11385fd5e3600758ef1b1ab79557c97319ad28590735a
@@ -29,16 +29,16 @@ services:
       - "4317:4317" # OTLP gRPC
       - "4318:4318" # OTLP HTTP
     environment:
-      QUICKPIZZA_HOST: quickpizza:3333
+      QUICKFOOD_HOST: quickfood:3333
       METRICS_ENDPOINT: http://prometheus:9090/api/v1/write
       TRACES_ENDPOINT: http://tempo:4317
       LOGS_ENDPOINT: http://loki:3100/loki/api/v1/push
       PROFILES_ENDPOINT: http://pyroscope:4040
       DEPLOYMENT_ENVIRONMENT: ${DEPLOYMENT_ENVIRONMENT:-development}
-      # Default uses the same DB connection as the Quickpizza service. Use empty string to disable.
-      DB_O11Y_CONNECTION: "${DB_O11Y_CONNECTION-postgres://postgres:postgres@quickpizza-db:5432/quickpizza_db?sslmode=disable}"
-      SERVICE_NAMESPACE: "${SERVICE_NAMESPACE:-quickpizza}"
-      DB_SERVICE_NAME: "quickpizza-db"
+      # Default uses the same DB connection as the Quickfood service. Use empty string to disable.
+      DB_O11Y_CONNECTION: "${DB_O11Y_CONNECTION-postgres://postgres:postgres@quickfood-db:5432/quickfood_db?sslmode=disable}"
+      SERVICE_NAMESPACE: "${SERVICE_NAMESPACE:-quickfood}"
+      DB_SERVICE_NAME: "quickfood-db"
     depends_on:
       - prometheus
       - tempo
@@ -52,117 +52,117 @@ services:
       - grpc
 
   catalog:
-    image: ${QUICKPIZZA_IMAGE:-ghcr.io/grafana/quickpizza-local:0.15.21@sha256:de839571c65ce9ac6e96290f44a7122869f31744d93bd235903ecb9429158d32}
+    image: ${QUICKFOOD_IMAGE:-ghcr.io/grafana/quickfood-local:0.15.21@sha256:de839571c65ce9ac6e96290f44a7122869f31744d93bd235903ecb9429158d32}
     container_name: catalog
     labels:
       - "service.type=application"
-      - "service.namespace=${SERVICE_NAMESPACE:-quickpizza}"
+      - "service.namespace=${SERVICE_NAMESPACE:-quickfood}"
     environment:
-      <<: *quickpizza-env-common
-      QUICKPIZZA_ENABLE_CATALOG_SERVICE: "1"
-      QUICKPIZZA_OTEL_SERVICE_INSTANCE_ID: "catalog"
-      QUICKPIZZA_OTEL_SERVICE_NAME: "catalog"
-      # QUICKPIZZA_DB unset set to postgres. If empty, set to sqlite.
-      QUICKPIZZA_DB: "${QUICKPIZZA_DB-postgres://postgres:postgres@quickpizza-db:5432/quickpizza_db?sslmode=disable}"
+      <<: *quickfood-env-common
+      QUICKFOOD_ENABLE_CATALOG_SERVICE: "1"
+      QUICKFOOD_OTEL_SERVICE_INSTANCE_ID: "catalog"
+      QUICKFOOD_OTEL_SERVICE_NAME: "catalog"
+      # QUICKFOOD_DB unset set to postgres. If empty, set to sqlite.
+      QUICKFOOD_DB: "${QUICKFOOD_DB-postgres://postgres:postgres@quickfood-db:5432/quickfood_db?sslmode=disable}"
     depends_on:
-      quickpizza-db:
+      quickfood-db:
         condition: service_healthy
 
   config:
-    image: ${QUICKPIZZA_IMAGE:-ghcr.io/grafana/quickpizza-local:0.15.21@sha256:de839571c65ce9ac6e96290f44a7122869f31744d93bd235903ecb9429158d32}
+    image: ${QUICKFOOD_IMAGE:-ghcr.io/grafana/quickfood-local:0.15.21@sha256:de839571c65ce9ac6e96290f44a7122869f31744d93bd235903ecb9429158d32}
     container_name: config
     labels:
       - "service.type=application"
-      - "service.namespace=${SERVICE_NAMESPACE:-quickpizza}"
+      - "service.namespace=${SERVICE_NAMESPACE:-quickfood}"
     environment:
-      <<: *quickpizza-env-common
-      QUICKPIZZA_ENABLE_CONFIG_SERVICE: "1"
-      QUICKPIZZA_OTEL_SERVICE_INSTANCE_ID: "config"
-      QUICKPIZZA_OTEL_SERVICE_NAME: "config"
+      <<: *quickfood-env-common
+      QUICKFOOD_ENABLE_CONFIG_SERVICE: "1"
+      QUICKFOOD_OTEL_SERVICE_INSTANCE_ID: "config"
+      QUICKFOOD_OTEL_SERVICE_NAME: "config"
   copy:
-    image: ${QUICKPIZZA_IMAGE:-ghcr.io/grafana/quickpizza-local:0.15.21@sha256:de839571c65ce9ac6e96290f44a7122869f31744d93bd235903ecb9429158d32}
+    image: ${QUICKFOOD_IMAGE:-ghcr.io/grafana/quickfood-local:0.15.21@sha256:de839571c65ce9ac6e96290f44a7122869f31744d93bd235903ecb9429158d32}
     container_name: copy
     labels:
       - "service.type=application"
-      - "service.namespace=${SERVICE_NAMESPACE:-quickpizza}"
+      - "service.namespace=${SERVICE_NAMESPACE:-quickfood}"
     environment:
-      <<: *quickpizza-env-common
-      QUICKPIZZA_ENABLE_COPY_SERVICE: "1"
-      QUICKPIZZA_OTEL_SERVICE_INSTANCE_ID: "copy"
-      QUICKPIZZA_OTEL_SERVICE_NAME: "copy"
-      # QUICKPIZZA_DB unset set to postgres. If empty, set to sqlite.
-      QUICKPIZZA_DB: "${QUICKPIZZA_DB-postgres://postgres:postgres@quickpizza-db:5432/quickpizza_db?sslmode=disable}"
+      <<: *quickfood-env-common
+      QUICKFOOD_ENABLE_COPY_SERVICE: "1"
+      QUICKFOOD_OTEL_SERVICE_INSTANCE_ID: "copy"
+      QUICKFOOD_OTEL_SERVICE_NAME: "copy"
+      # QUICKFOOD_DB unset set to postgres. If empty, set to sqlite.
+      QUICKFOOD_DB: "${QUICKFOOD_DB-postgres://postgres:postgres@quickfood-db:5432/quickfood_db?sslmode=disable}"
     depends_on:
-      quickpizza-db:
+      quickfood-db:
         condition: service_healthy
       catalog:
         condition: service_started
 
   public-api:
-    image: ${QUICKPIZZA_IMAGE:-ghcr.io/grafana/quickpizza-local:0.15.21@sha256:de839571c65ce9ac6e96290f44a7122869f31744d93bd235903ecb9429158d32}
+    image: ${QUICKFOOD_IMAGE:-ghcr.io/grafana/quickfood-local:0.15.21@sha256:de839571c65ce9ac6e96290f44a7122869f31744d93bd235903ecb9429158d32}
     container_name: public-api
     labels:
       - "service.type=application"
-      - "service.namespace=${SERVICE_NAMESPACE:-quickpizza}"
+      - "service.namespace=${SERVICE_NAMESPACE:-quickfood}"
     ports:
       - "3333:3333"
     environment:
-      <<: *quickpizza-env-common
-      QUICKPIZZA_ENABLE_PUBLIC_API_SERVICE: "1"
-      QUICKPIZZA_OTEL_SERVICE_INSTANCE_ID: "public-api"
-      QUICKPIZZA_OTEL_SERVICE_NAME: "public-api"
+      <<: *quickfood-env-common
+      QUICKFOOD_ENABLE_PUBLIC_API_SERVICE: "1"
+      QUICKFOOD_OTEL_SERVICE_INSTANCE_ID: "public-api"
+      QUICKFOOD_OTEL_SERVICE_NAME: "public-api"
 
   recommendations:
-    image: ${QUICKPIZZA_IMAGE:-ghcr.io/grafana/quickpizza-local:0.15.21@sha256:de839571c65ce9ac6e96290f44a7122869f31744d93bd235903ecb9429158d32}
+    image: ${QUICKFOOD_IMAGE:-ghcr.io/grafana/quickfood-local:0.15.21@sha256:de839571c65ce9ac6e96290f44a7122869f31744d93bd235903ecb9429158d32}
     container_name: recommendations
     labels:
       - "service.type=application"
-      - "service.namespace=${SERVICE_NAMESPACE:-quickpizza}"
+      - "service.namespace=${SERVICE_NAMESPACE:-quickfood}"
     environment:
-      <<: *quickpizza-env-common
-      QUICKPIZZA_ENABLE_RECOMMENDATIONS_SERVICE: "1"
-      QUICKPIZZA_OTEL_SERVICE_INSTANCE_ID: "recommendations"
-      QUICKPIZZA_OTEL_SERVICE_NAME: "recommendations"
+      <<: *quickfood-env-common
+      QUICKFOOD_ENABLE_RECOMMENDATIONS_SERVICE: "1"
+      QUICKFOOD_OTEL_SERVICE_INSTANCE_ID: "recommendations"
+      QUICKFOOD_OTEL_SERVICE_NAME: "recommendations"
 
   ws:
-    image: ${QUICKPIZZA_IMAGE:-ghcr.io/grafana/quickpizza-local:0.15.21@sha256:de839571c65ce9ac6e96290f44a7122869f31744d93bd235903ecb9429158d32}
+    image: ${QUICKFOOD_IMAGE:-ghcr.io/grafana/quickfood-local:0.15.21@sha256:de839571c65ce9ac6e96290f44a7122869f31744d93bd235903ecb9429158d32}
     container_name: ws
     labels:
       - "service.type=application"
-      - "service.namespace=${SERVICE_NAMESPACE:-quickpizza}"
+      - "service.namespace=${SERVICE_NAMESPACE:-quickfood}"
     environment:
-      <<: *quickpizza-env-common
-      QUICKPIZZA_ENABLE_WS_SERVICE: "1"
-      QUICKPIZZA_OTEL_SERVICE_INSTANCE_ID: "ws"
-      QUICKPIZZA_OTEL_SERVICE_NAME: "ws"
+      <<: *quickfood-env-common
+      QUICKFOOD_ENABLE_WS_SERVICE: "1"
+      QUICKFOOD_OTEL_SERVICE_INSTANCE_ID: "ws"
+      QUICKFOOD_OTEL_SERVICE_NAME: "ws"
 
   grpc:
-    image: ${QUICKPIZZA_IMAGE:-ghcr.io/grafana/quickpizza-local:0.15.19@sha256:9bb274e6178bfccc8da2f7d28dd65285fd6f6f8fd9d006febec65c7da655cfde}
+    image: ${QUICKFOOD_IMAGE:-ghcr.io/grafana/quickfood-local:0.15.19@sha256:9bb274e6178bfccc8da2f7d28dd65285fd6f6f8fd9d006febec65c7da655cfde}
     container_name: grpc
     labels:
       - "service.type=application"
-      - "service.namespace=${SERVICE_NAMESPACE:-quickpizza}"
+      - "service.namespace=${SERVICE_NAMESPACE:-quickfood}"
     ports:
       - "3334:3334"
       - "3335:3335"
     environment:
-      <<: *quickpizza-env-common
-      QUICKPIZZA_ENABLE_GRPC_SERVICE: "1"
-      QUICKPIZZA_OTEL_SERVICE_INSTANCE_ID: "grpc"
-      QUICKPIZZA_OTEL_SERVICE_NAME: "grpc"
+      <<: *quickfood-env-common
+      QUICKFOOD_ENABLE_GRPC_SERVICE: "1"
+      QUICKFOOD_OTEL_SERVICE_INSTANCE_ID: "grpc"
+      QUICKFOOD_OTEL_SERVICE_NAME: "grpc"
 
-  quickpizza-db:
+  quickfood-db:
     image: postgres:18.1@sha256:5773fe724c49c42a7a9ca70202e11e1dff21fb7235b335a73f39297d200b73a2
-    container_name: quickpizza-db
+    container_name: quickfood-db
     labels:
       - "service.type=database"
-      - "service.namespace=${SERVICE_NAMESPACE:-quickpizza}"
+      - "service.namespace=${SERVICE_NAMESPACE:-quickfood}"
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: quickpizza_db
+      POSTGRES_DB: quickfood_db
     volumes:
       - postgres_data:/var/lib/postgresql
     healthcheck:

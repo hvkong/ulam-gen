@@ -36,7 +36,7 @@ docker compose down -v
 docker rmi quickfood-local:latest
 docker system prune --all --volumes
 ```
-
+To clear the build history `docker buildx history rm --all`
 
 # 2. REBUILD from scratch
 ```

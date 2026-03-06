@@ -1,26 +1,26 @@
 openapi: 3.0.3
 info:
-  title: QuickPizza API
+  title: QuickFood API
   description: |-
-    QuickPizza is a web application that generates new and exciting pizza combinations.
+    QuickFood is a web application that generates new and exciting food combinations.
 
-    This API allows you to get random pizza recommendations, rate pizzas, and manage ingredients, tools and other pizza-related data.
+    This API allows you to get random food recommendations, rate foods, and manage ingredients, tools and other food-related data.
   contact:
-    email: support@quickpizza.example
+    email: support@quickfood.example
   version: 1.0.0
 servers:
   - url: http://localhost:3333
     description: Default local server
-  - url: https://quickpizza.grafana.com
+  - url: https://quickfood.grafana.com
     description: Production server
 
 tags:
   - name: food
     description: Food related endpoints including recommendations, and catalog of ingredients, doughs and tools
-  - name: pizza-text
-    description: Text content for pizza naming and description
+  - name: food-text
+    description: Text content for food naming and description
   - name: ratings
-    description: Pizza rating operations
+    description: Food rating operations
   - name: users
     description: User management
   - name: system
@@ -32,14 +32,14 @@ paths:
   /api/food:
     post:
       tags:
-        - pizza
+        - food
       summary: Get a food recommendation
       description: Returns a randomly generated food recommendation with ingredients, tool, and calories
       operationId: getFoodRecommendation
       security:
         - authToken: []
       requestBody:
-        description: Restrictions for the pizza recommendation
+        description: Restrictions for the food recommendation
         content:
           application/json:
             schema:
@@ -60,7 +60,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/FoodRecommendation'
               example:
-                pizza:
+                food:
                   id: 1
                   name: "The Savory Margherita"
                   dough:
@@ -95,7 +95,7 @@ paths:
   /api/food/{id}:
     get:
       tags:
-        - pizza
+        - food
       summary: Get a specific food recommendation
       description: Returns a specific food recommendation by ID
       operationId: getFoodById
@@ -104,7 +104,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: ID of the pizza to get
+          description: ID of the food to get
           required: true
           schema:
             type: integer
@@ -116,16 +116,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Pizza'
+                $ref: '#/components/schemas/Food'
         '404':
-          description: Pizza not found
+          description: Food not found
         '500':
           description: Internal server error
 
   /api/ingredients/{type}:
     get:
       tags:
-        - pizza
+        - food
       summary: Get ingredients by type
       description: Returns ingredients of a specific type (olive_oil, tomato, mozzarella, topping)
       operationId: getIngredientsByType
@@ -172,7 +172,7 @@ paths:
   /api/doughs:
     get:
       tags:
-        - pizza
+        - food
       summary: Get all doughs
       description: Returns all available dough types
       operationId: getDoughs
@@ -209,9 +209,9 @@ paths:
   /api/tools:
     get:
       tags:
-        - pizza
+        - food
       summary: Get all tools
-      description: Returns all available pizza-making tools
+      description: Returns all available food-making tools
       operationId: getTools
       security:
         - authToken: []
@@ -230,7 +230,7 @@ paths:
               example:
                 tools:
                   - "Wood Fired Oven"
-                  - "Pizza Stone"
+                  - "Stone Grill"
                   - "Gas Oven"
                   - "Electric Oven"
         '401':
@@ -243,7 +243,7 @@ paths:
       tags:
         - ratings
       summary: Create a new rating
-      description: Record a new pizza rating
+      description: Record a new food rating
       operationId: createRating
       security:
         - authToken: []
@@ -255,7 +255,7 @@ paths:
               $ref: '#/components/schemas/Rating'
             example:
               stars: 5
-              pizza_id: 1
+              food_id: 1
         required: true
       responses:
         '201':
@@ -267,7 +267,7 @@ paths:
               example:
                 id: 1
                 stars: 5
-                pizza_id: 1
+                food_id: 1
         '400':
           description: Invalid input
         '401':
@@ -296,10 +296,10 @@ paths:
                 ratings:
                   - id: 1
                     stars: 5
-                    pizza_id: 1
+                    food_id: 1
                   - id: 2
                     stars: 4
-                    pizza_id: 2
+                    food_id: 2
         '401':
           description: Unauthorized
         '500':
@@ -348,7 +348,7 @@ paths:
               example:
                 id: 1
                 stars: 5
-                pizza_id: 1
+                food_id: 1
         '401':
           description: Unauthorized
         '404':
@@ -380,7 +380,7 @@ paths:
               $ref: '#/components/schemas/Rating'
             example:
               stars: 4
-              pizza_id: 1
+              food_id: 1
         required: true
       responses:
         '200':
@@ -392,7 +392,7 @@ paths:
               example:
                 id: 1
                 stars: 4
-                pizza_id: 1
+                food_id: 1
         '400':
           description: Invalid input
         '401':
@@ -435,7 +435,7 @@ paths:
               example:
                 id: 1
                 stars: 3
-                pizza_id: 1
+                food_id: 1
         '400':
           description: Invalid input
         '401':
@@ -490,7 +490,7 @@ paths:
                 - username
                 - password
             example:
-              username: "pizzalover123"
+              username: "foodlover123"
               password: "securepassword"
         required: true
       responses:
@@ -508,7 +508,7 @@ paths:
                     type: string
               example:
                 id: 1
-                username: "pizzalover123"
+                username: "foodlover123"
         '400':
           description: Invalid input or username already taken
 
@@ -544,7 +544,7 @@ paths:
                 - username
                 - password
             example:
-              username: "pizzalover123"
+              username: "foodlover123"
               password: "securepassword"
               csrf: "abc123def456ghi789"
         required: true
@@ -641,9 +641,9 @@ paths:
   /api/quotes:
     get:
       tags:
-        - pizza-text
-      summary: Get pizza quotes
-      description: Returns a list of pizza-related quotes
+        - food-text
+      summary: Get food quotes
+      description: Returns a list of food-related quotes
       operationId: getQuotes
       responses:
         '200':
@@ -659,8 +659,8 @@ paths:
                       type: string
               example:
                 quotes:
-                  - "Life is too short for bad pizza."
-                  - "A slice a day keeps the sadness away."
+                  - "Life is too short for bad food."
+                  - "A bite a day keeps the sadness away."
                   - "In crust we trust."
         '500':
           description: Internal server error
@@ -668,9 +668,9 @@ paths:
   /api/names:
     get:
       tags:
-        - pizza-text
+        - food-text
       summary: Get classical names
-      description: Returns a list of classical names for pizza naming
+      description: Returns a list of classical names for food naming
       operationId: getNames
       responses:
         '200':
@@ -696,9 +696,9 @@ paths:
   /api/adjectives:
     get:
       tags:
-        - pizza-text
+        - food-text
       summary: Get adjectives
-      description: Returns a list of adjectives for pizza naming
+      description: Returns a list of adjectives for food naming
       operationId: getAdjectives
       responses:
         '200':
@@ -1115,21 +1115,21 @@ paths:
 
 components:
   schemas:
-    PizzaRecommendation:
+    FoodRecommendation:
       type: object
       properties:
-        pizza:
-          $ref: '#/components/schemas/Pizza'
+        food:
+          $ref: '#/components/schemas/Food'
         calories:
           type: integer
           description: Total calories per slice
           example: 505
         vegetarian:
           type: boolean
-          description: Whether the pizza is vegetarian
+          description: Whether the food is vegetarian
           example: true
 
-    Pizza:
+    Food:
       type: object
       properties:
         id:
@@ -1148,7 +1148,7 @@ components:
             $ref: '#/components/schemas/Ingredient'
         tool:
           type: string
-          description: Tool used to make the pizza
+          description: Tool used to make the food
           example: "Wood Fired Oven"
 
     Dough:
@@ -1196,14 +1196,14 @@ components:
           maximum: 5
           description: Rating score (1-5)
           example: 5
-        pizza_id:
+        food_id:
           type: integer
           format: int64
-          description: ID of the pizza being rated
+          description: ID of the food being rated
           example: 1
       required:
         - stars
-        - pizza_id
+        - food_id
 
     Restrictions:
       type: object
@@ -1215,7 +1215,7 @@ components:
           example: 800
         mustBeVegetarian:
           type: boolean
-          description: Whether the pizza must be vegetarian
+          description: Whether the food must be vegetarian
           default: false
           example: true
         excludedIngredients:
@@ -1242,9 +1242,9 @@ components:
           example: 2
         customName:
           type: string
-          description: Custom name for the pizza
+          description: Custom name for the food
           maxLength: 64
-          example: "My Special Pizza"
+          example: "My Special Food"
 
   securitySchemes:
     authToken:

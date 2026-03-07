@@ -27,13 +27,13 @@ export const options = {
   thresholds: {
     http_req_failed: ['rate<0.01'],
     http_req_duration: ['p(95)<500', 'p(99)<1000'],
-    quickpizza_ingredients: [{ threshold: 'avg<8', abortOnFail: false }],
+    quickfood_ingredients: [{ threshold: 'avg<8', abortOnFail: false }],
     checks: ["rate > 0.95"]
   },
 };
 
-const pizzas = new Counter('quickpizza_number_of_pizzas');
-const ingredients = new Trend('quickpizza_ingredients');
+const pizzas = new Counter('quickfood_number_of_foods');
+const ingredients = new Trend('quickfood_ingredients');
 
 export function setup() {
   let res = http.get(BASE_URL)

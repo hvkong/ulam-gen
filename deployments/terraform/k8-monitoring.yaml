@@ -12,8 +12,8 @@ logs:
   enabled: true
   pod_logs:
     enabled: true
-    # The Alloy pod in quickpizza ns collects quickpizza logs
-    excludeNamespaces: [quickpizza]
+    # The Alloy pod in quickfood ns collects quickfood logs
+    excludeNamespaces: [quickfood]
 
 traces:
   enabled: false

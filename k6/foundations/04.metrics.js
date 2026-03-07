@@ -12,8 +12,8 @@ export const options = {
   ],
 };
 
-const pizzas = new Counter('quickpizza_number_of_pizzas');
-const ingredients = new Trend('quickpizza_ingredients');
+const pizzas = new Counter('quickfood_number_of_foods');
+const ingredients = new Trend('quickfood_ingredients');
 
 export function setup() {
   let res = http.get(BASE_URL)

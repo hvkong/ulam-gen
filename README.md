@@ -215,11 +215,11 @@ Label and attributes follow OpenTelemetry semantic conventions for service-orien
   <summary>Microservices mode</summary>
   
   Observability labels:
-  - `service_namespace=quickpizza`
+  - `service_namespace=quickfood`
   - `service_name={catalog, config, public-api, ...}`
   
   OTEL resource attributes:
-  - `service.namespace=quickpizza`
+  - `service.namespace=quickfood`
   - `service.name={catalog, config, public-api, ...}`
 </details>
 
@@ -227,12 +227,12 @@ Label and attributes follow OpenTelemetry semantic conventions for service-orien
   <summary>Monolithic mode</summary>
   
   Observability labels:
-  - `service_namespace=quickpizza`
-  - `service_name=quickpizza`
+  - `service_namespace=quickfood`
+  - `service_name=quickfood`
   
   OTEL resource attributes:
-  - `service.namespace=quickpizza`
-  - `service.name=quickpizza`
+  - `service.namespace=quickfood`
+  - `service.name=quickfood`
   - `service.component={catalog, config, public-api, ...}`
 </details>
 

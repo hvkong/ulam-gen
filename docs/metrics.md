@@ -68,18 +68,18 @@ These are custom application metrics specific to the QuickFood application, impl
 
 - `quickfood_server_http_request_duration_seconds_gauge`: Duration of HTTP request processing (Gauge).
 
-- `quickpizza_server_http_requests_total`: Total number of HTTP requests received (Counter metric).
+- `quickfood_server_http_requests_total`: Total number of HTTP requests received (Counter metric).
 
-## QuickPizza WebSocket Metrics
+## QuickFood WebSocket Metrics
 
-`quickpizza_server_ws_*`
+`quickfood_server_ws_*`
 
 These metrics track WebSocket connection lifecycle and message processing. They are separate from HTTP metrics because WebSocket connections are long-lived and would skew HTTP latency results.
 
-- `quickpizza_server_ws_connections_active`: Number of currently active WebSocket connections (Gauge).
+- `quickfood_server_ws_connections_active`: Number of currently active WebSocket connections (Gauge).
 
-- `quickpizza_server_ws_connection_duration_seconds`: Duration of WebSocket connections in seconds (Native Histogram).
+- `quickfood_server_ws_connection_duration_seconds`: Duration of WebSocket connections in seconds (Native Histogram).
 
-- `quickpizza_server_ws_messages_received_total`: Total number of messages received via WebSocket (Counter).
+- `quickfood_server_ws_messages_received_total`: Total number of messages received via WebSocket (Counter).
 
-- `quickpizza_server_ws_message_processing_duration_seconds`: Time to process and broadcast incoming WebSocket messages (Native Histogram).
+- `quickfood_server_ws_message_processing_duration_seconds`: Time to process and broadcast incoming WebSocket messages (Native Histogram).

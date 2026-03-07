@@ -1,5 +1,5 @@
 # Uncomment the following line to deploy the application on a non-default namespace
-# namespace: quickpizza
+# namespace: quickfood
 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization

@@ -13,13 +13,13 @@ const BASE_URL = __ENV.BASE_URL || "http://localhost:3333";
 export const options = {
   scenarios: {
     smoke: {
-      exec: "getPizza",
+      exec: "getFood",
       executor: "constant-vus",
       vus: 1,
       duration: "10s",
     },
     stress: {
-      exec: "getPizza",
+      exec: "getFood",
       executor: "ramping-vus",
       stages: [
         { duration: '5s', target: 5 },
@@ -28,7 +28,7 @@ export const options = {
       ],
       startTime: "10s",
     },
-    pizzaRecommendations: {
+    foodRecommendations: {
       executor: "constant-vus",
       vus: 1,
       duration: "30s",
@@ -37,7 +37,7 @@ export const options = {
           type: "chromium",
         },
       },
-      exec: 'pizzaRecommendations'
+      exec: 'foodRecommendations'
     },
     admin: {
       executor: "constant-vus",
@@ -61,7 +61,7 @@ export const options = {
 
 const myTrend = new Trend('totalActionTime');
 
-export async function getPizza() {
+export async function getFood() {
   let restrictions = {
     maxCaloriesPerSlice: 500,
     mustBeVegetarian: false,
@@ -96,7 +96,7 @@ export async function admin() {
   }
 }
 
-export async function pizzaRecommendations() {
+export async function foodRecommendations() {
   const page = await browser.newPage();
   const recommendationsPage = new RecommendationsPage(page);
   const pageUtils = new PageUtils(page);
@@ -109,14 +109,14 @@ export async function pizzaRecommendations() {
       header: await recommendationsPage.getHeadingTextContent() == "Looking to break out of your food routine?",
     });
 
-    await recommendationsPage.getPizzaRecommendation();
+    await recommendationsPage.getFoodRecommendation();
     await pageUtils.addPerformanceMark('recommendations-returned');
 
     check(recommendationsPage, {
-      recommendation: await recommendationsPage.getPizzaRecommendationsContent() != "",
+      recommendation: await recommendationsPage.getFoodRecommendationsContent() != "",
     });
 
-    //Get time difference between visiting the page and pizza recommendations returned
+    //Get time difference between visiting the page and food recommendations returned
     await pageUtils.measurePerformance('total-action-time', 'page-visit', 'recommendations-returned')
 
     const totalActionTime = await pageUtils.getPerformanceDuration('total-action-time');

@@ -63,9 +63,9 @@ export function getFood() {
     },
   });
   check(res, { "status is 200": (res) => res.status === 200 });
-  console.log(`${res.json().pizza.name} (${res.json().pizza.ingredients.length} ingredients)`);
+  console.log(`${res.json().food.name} (${res.json().food.ingredients.length} ingredients)`);
   pizzas.add(1);
-  ingredients.add(res.json().pizza.ingredients.length);
+  ingredients.add(res.json().food.ingredients.length);
   sleep(1);
 }
 

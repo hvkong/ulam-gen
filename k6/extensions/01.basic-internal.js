@@ -26,11 +26,11 @@ export default function() {
   });
   check(res, { "status is 200": (res) => res.status === 200 });
 
-  console.log(`${res.json().pizza.name} (${res.json().pizza.ingredients.length} ingredients)`);
-  check (res, { "pizza follows restrictions": (res) => { 
-    const followRestrictions = internal.checkRestrictions(res.json().pizza, restrictions);
+  console.log(`${res.json().food.name} (${res.json().food.ingredients.length} ingredients)`);
+  check (res, { "food follows restrictions": (res) => { 
+    const followRestrictions = internal.checkRestrictions(res.json().food, restrictions);
     if (!followRestrictions) {
-      console.log(`${res.json().pizza.name} does not follow restrictions: ${internal.getCheckResult()}`);
+      console.log(`${res.json().food.name} does not follow restrictions: ${internal.getCheckResult()}`);
     }
     return followRestrictions;
   }});

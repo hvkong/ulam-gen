@@ -17,8 +17,8 @@ export const options = {
 };
 
 export default async function () {
-  const pizzaContext = await browser.newContext();
-  await pizzaContext.addCookies([
+  const foodContext = await browser.newContext();
+  await foodContext.addCookies([
     {
       name: "FooBar",
       value: 123456,
@@ -26,19 +26,19 @@ export default async function () {
       path: '/',
     },
   ]);
-  const pizzaPage = await pizzaContext.newPage();
-  const cookies = await pizzaContext.cookies();
+  const foodPage = await foodContext.newPage();
+  const cookies = await foodContext.cookies();
 
-  await pizzaPage.goto(BASE_URL);
+  await foodPage.goto(BASE_URL);
 
   check(cookies, {
-    "cookie length of QuickPizza page": cookies => cookies.length === 1,
+    "cookie length of QuickFood page": cookies => cookies.length === 1,
     "cookie name": cookies => cookies[0].name === "FooBar",
     "cookie value": cookies => cookies[0].value === "123456"
   });
 
-  await pizzaPage.close();
-  await pizzaContext.close();
+  await foodPage.close();
+  await foodContext.close();
 
   const anotherContext = await browser.newContext();
   const anotherPage = await anotherContext.newPage();

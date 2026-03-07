@@ -6,14 +6,14 @@ const BASE_URL = __ENV.BASE_URL || "http://localhost:3333";
 
 export const options = {
   scenarios: {
-    pizzaRecommendations: {
+    foodRecommendations: {
       executor: "shared-iterations",
       options: {
         browser: {
           type: "chromium",
         },
       },
-      exec: "pizzaRecommendations",
+      exec: "foodRecommendations",
     },
     admin: {
       executor: "shared-iterations",
@@ -49,7 +49,7 @@ export async function admin() {
   }
 }
 
-export async function pizzaRecommendations() {
+export async function foodRecommendations() {
   let checkData;
   const page = await browser.newPage();
   try {
@@ -69,7 +69,7 @@ export async function pizzaRecommendations() {
     check(checkData, {
       recommendation: checkData != "",
     });
-    //Get time difference between visiting the page and pizza recommendations returned
+    //Get time difference between visiting the page and food recommendations returned
     await page.evaluate(() =>
       window.performance.measure(
         "total-action-time",

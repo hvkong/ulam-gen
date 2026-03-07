@@ -10,14 +10,14 @@ const BASE_URL = __ENV.BASE_URL || "http://localhost:3333";
 
 export const options = {
   scenarios: {
-    pizzaRecommendations: {
+    foodRecommendations: {
       executor: "shared-iterations",
       options: {
         browser: {
           type: "chromium",
         },
       },
-      exec: 'pizzaRecommendations'
+      exec: 'foodRecommendations'
     },
     admin: {
       executor: "shared-iterations",
@@ -53,7 +53,7 @@ export async function admin() {
   }
 }
 
-export async function pizzaRecommendations() {
+export async function foodRecommendations() {
   const page = await browser.newPage();
   const recommendationsPage = new RecommendationsPage(page);
   const pageUtils = new PageUtils(page);
@@ -66,14 +66,14 @@ export async function pizzaRecommendations() {
       header: await recommendationsPage.getHeadingTextContent() == "Looking to break out of your food routine?",
     });
 
-    await recommendationsPage.getPizzaRecommendation();
+    await recommendationsPage.getFoodRecommendation();
     await pageUtils.addPerformanceMark('recommendations-returned');
 
     check(recommendationsPage, {
-      recommendation: await recommendationsPage.getPizzaRecommendationsContent() != "",
+      recommendation: await recommendationsPage.getFoodRecommendationsContent() != "",
     });
 
-    //Get time difference between visiting the page and pizza recommendations returned
+    //Get time difference between visiting the page and food recommendations returned
     await pageUtils.measurePerformance('total-action-time', 'page-visit', 'recommendations-returned')
 
     const totalActionTime = await pageUtils.getPerformanceDuration('total-action-time');

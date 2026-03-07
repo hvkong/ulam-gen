@@ -4,7 +4,7 @@ You can send k6 test results to a local Prometheus instance or a Grafana Cloud P
 
 To send k6 results to your local Prometheus instance:
 
-1. Follow the instructions to [run QuickPizza and observe it locally with Grafana OSS](../README.md).
+1. Follow the instructions to [run QuickFood and observe it locally with Grafana OSS](../README.md).
 
 2. Execute the `k6 run` command with the value of the `output` flag set to `experimental-prometheus-rw` as follows:
 
@@ -20,7 +20,7 @@ For detailed instructions about the different options of the k6 Prometheus outpu
 
 To send k6 results to your Grafana Cloud Prometheus instance:
 
-1. Follow the instructions to [observe QuickPizza with Grafana Cloud](../README.md).
+1. Follow the instructions to [observe QuickFood with Grafana Cloud](../README.md).
 
 2. Run the `k6` execution command as in the local setup, including the additional settings:
 

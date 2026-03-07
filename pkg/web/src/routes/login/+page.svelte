@@ -171,7 +171,7 @@ async function handleLogout() {
 			<div class="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
 				<div class="p-6 space-y-4 md:space-y-6 sm:p-8">
 					<h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-						QuickPizza User Login
+						QuickFood User Login
 					</h1>
 					<form class="space-y-4 md:space-y-6" on:submit|preventDefault={handleSubmit}>
 						<input type="hidden" name="csrftoken" id="csrf-token" value="" />
@@ -209,7 +209,7 @@ async function handleLogout() {
 					</form>
 					<p class="text-sm">
 						<b>Tip:</b> You can create a new user via the
-						<code>POST http://quickpizza.grafana.com/api/users</code>
+						<code>POST http://quickfood.grafana.com/api/users</code>
 						endpoint. Attach a JSON payload with <code>username</code> and <code>password</code> keys.
 					</p>
 					{#if loginError}

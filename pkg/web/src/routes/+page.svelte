@@ -227,16 +227,16 @@ async function getTools() {
 </script>
 
 <svelte:head>
-	<title>QuickPizza</title>
-	<meta name="description" content="QuickPizza" />
+	<title>QuickFood</title>
+	<meta name="description" content="QuickFood" />
 </svelte:head>
 {#if render}
 	<section class="mt-4 flow-root">
 		<div class="flex float-left">
-			<a href="https://quickpizza.grafana.com"
-				><img class="w-7 h-7 mr-2" src="/images/pizza.png" alt="logo" /></a
+			<a href="https://quickfood.grafana.com"
+				><img class="w-7 h-7 mr-2" src="/images/food.png" alt="logo" /></a
 			>
-			<p class="text-xl font-bold text-red-600">QuickPizza</p>
+			<p class="text-xl font-bold text-red-600">QuickFood</p>
 		</div>
 		<div class="flex float-right">
 			<span class="relative inline-flex items-center mb-5 mt-1 mr-6">
@@ -446,7 +446,7 @@ async function getTools() {
 	</section>
 	<footer>
 		<div class="flex justify-center mt-8 m-1">
-			<p class="text-sm">Made with ❤️ by QuickPizza Labs.</p>
+			<p class="text-sm">Made with ❤️ by QuickFood Labs.</p>
 		</div>
 		<div class="flex justify-center">
 			<p class="text-xs">WebSocket visitor ID: {wsVisitorID}</p>
@@ -460,7 +460,7 @@ async function getTools() {
 		</div>
 		<div class="flex justify-center">
 			<p class="text-xs">
-				Contribute to QuickPizza on <a
+				Contribute to QuickFood on <a
 					class="text-blue-500"
 					href="https://github.com/grafana/quickpizza">GitHub</a
 				>

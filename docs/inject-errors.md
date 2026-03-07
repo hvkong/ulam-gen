@@ -1,6 +1,6 @@
 # Injecting Delays and Errors 
 
-QuickPizza supports two methods for injecting delays and errors to simulate various failure scenarios and performance issues during testing and demos.
+QuickFood supports two methods for injecting delays and errors to simulate various failure scenarios and performance issues during testing and demos.
 
 ## Using Environment Variables
 
@@ -55,7 +55,7 @@ curl -X POST http://localhost:3333/api/food \
 
 ## Inject Errors Running k6 Disruptor Tests (Kubernetes) 
 
-When deploying QuickPizza on Kubernetes, you can run k6 tests using [xk6-disruptor](https://grafana.com/docs/k6/latest/testing-guides/injecting-faults-with-xk6-disruptor/first-steps/) to inject HTTP errors.
+When deploying QuickFood on Kubernetes, you can run k6 tests using [xk6-disruptor](https://grafana.com/docs/k6/latest/testing-guides/injecting-faults-with-xk6-disruptor/first-steps/) to inject HTTP errors.
 
 To run a basic xk6-disruptor test, follow the installation instructions and run the tests in the `k6/disruptor` folder:
 

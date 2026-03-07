@@ -1,6 +1,6 @@
-# QuickPizza Development
+# QuickFood Development
 
-Running QuickPizza locally.
+Running QuickFood locally.
 
 **Prerequisites**: Go 1.21+ and Node.js 18+
 

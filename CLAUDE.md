@@ -23,7 +23,7 @@ QuickFood is a demonstration web application that generates food recommendations
 ### Go Development
 - `make format` - Format Go code with goimports
 - `make format-check` - Check Go formatting
-- `make proto` - Generate protobuf files from proto/quickpizza.proto
+- `make proto` - Generate protobuf files from proto/quickfood.proto
 
 ### Testing
 - `./k6/run-tests.sh` - Run k6 tests (requires k6 installed)
@@ -39,29 +39,29 @@ QuickFood is a demonstration web application that generates food recommendations
 ### Microservices Architecture
 The application is designed as a modular monolith that can be deployed as separate microservices. Services are controlled by environment variables:
 
-- **PublicAPI** (`QUICKPIZZA_ENABLE_PUBLIC_API_SERVICE`) - Serves Frontend and Gateway
+- **PublicAPI** (`QUICKFOOD_ENABLE_PUBLIC_API_SERVICE`) - Serves Frontend and Gateway
 - **Frontend** -  Serves SvelteKit UI
 - **Gateway** - Routes requests between services in microservice deployments
-- **Catalog** (`QUICKPIZZA_ENABLE_CATALOG_SERVICE`) - Manages ingredients, tools, doughs, users, ratings
-- **Copy** (`QUICKPIZZA_ENABLE_COPY_SERVICE`) - Handles quotes, names, adjectives for pizza generation
-- **Recommendations** (`QUICKPIZZA_ENABLE_RECOMMENDATIONS_SERVICE`) - Core pizza recommendation logic
-- **WebSocket** (`QUICKPIZZA_ENABLE_WS_SERVICE`) - Real-time communication
-- **gRPC** (`QUICKPIZZA_ENABLE_GRPC_SERVICE`) - gRPC service on ports 3334/3335
-- **Config** (`QUICKPIZZA_ENABLE_CONFIG_SERVICE`) - Configuration endpoint
-- **HTTP Testing** (`QUICKPIZZA_ENABLE_HTTP_TESTING_SERVICE`) - HTTP testing utilities
-- **Test K6 IO** (`QUICKPIZZA_ENABLE_TEST_K6_IO_SERVICE`) - Legacy test.k6.io replacement endpoints
+- **Catalog** (`QUICKFOOD_ENABLE_CATALOG_SERVICE`) - Manages ingredients, tools, doughs, users, ratings
+- **Copy** (`QUICKFOOD_ENABLE_COPY_SERVICE`) - Handles quotes, names, adjectives for food generation
+- **Recommendations** (`QUICKFOOD_ENABLE_RECOMMENDATIONS_SERVICE`) - Core food recommendation logic
+- **WebSocket** (`QUICKFOOD_ENABLE_WS_SERVICE`) - Real-time communication
+- **gRPC** (`QUICKFOOD_ENABLE_GRPC_SERVICE`) - gRPC service on ports 3334/3335
+- **Config** (`QUICKFOOD_ENABLE_CONFIG_SERVICE`) - Configuration endpoint
+- **HTTP Testing** (`QUICKFOOD_ENABLE_HTTP_TESTING_SERVICE`) - HTTP testing utilities
+- **Test K6 IO** (`QUICKFOOD_ENABLE_TEST_K6_IO_SERVICE`) - Legacy test.k6.io replacement endpoints
 
 ### Key Packages
 - `pkg/http/` - Main HTTP server and route handlers
 - `pkg/database/` - Database abstraction (supports SQLite and PostgreSQL)
 - `pkg/grpc/` - gRPC server implementation
 - `pkg/web/` - SvelteKit frontend embedded in Go binary
-- `pkg/model/` - Data models (Pizza, User, Ingredient, etc.)
+- `pkg/model/` - Data models (Food, User, Ingredient, etc.)
 - `pkg/errorinjector/` - Error injection for testing via headers
 
 ### Database
 - Default: In-memory SQLite (`file::memory:?cache=shared`)
-- Configurable via `QUICKPIZZA_DB` environment variable
+- Configurable via `QUICKFOOD_DB` environment variable
 - Supports PostgreSQL with `postgres://` connection strings
 - Uses Bun ORM with migrations in `pkg/database/migrations/`
 
@@ -74,11 +74,11 @@ Comprehensive observability built-in:
 - **Frontend Observability**: Grafana Faro support
 
 ### Environment Configuration
-- `QUICKPIZZA_ENABLE_ALL_SERVICES` - Enable all services (default: true)
-- `QUICKPIZZA_LOG_LEVEL` - Set logging level (default: info)
-- `QUICKPIZZA_OTLP_ENDPOINT` - OpenTelemetry collector endpoint
-- `QUICKPIZZA_PYROSCOPE_ENDPOINT` - Pyroscope server for profiling
-- `QUICKPIZZA_DB` - Database connection string
+- `QUICKFOOD_ENABLE_ALL_SERVICES` - Enable all services (default: true)
+- `QUICKFOOD_LOG_LEVEL` - Set logging level (default: info)
+- `QUICKFOOD_OTLP_ENDPOINT` - OpenTelemetry collector endpoint
+- `QUICKFOOD_PYROSCOPE_ENDPOINT` - Pyroscope server for profiling
+- `QUICKFOOD_DB` - Database connection string
 
 ## Development Notes
 

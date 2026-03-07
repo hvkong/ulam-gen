@@ -7,35 +7,35 @@ resource "kubernetes_namespace_v1" "quickpizza" {
 locals {
   quickpizza_common_env = [
     {
-      name  = "QUICKPIZZA_CATALOG_ENDPOINT"
+      name  = "QUICKFOOD_CATALOG_ENDPOINT"
       value = "http://catalog:3333"
     },
     {
-      name  = "QUICKPIZZA_COPY_ENDPOINT"
+      name  = "QUICKFOOD_COPY_ENDPOINT"
       value = "http://copy:3333"
     },
     {
-      name  = "QUICKPIZZA_WS_ENDPOINT"
+      name  = "QUICKFOOD_WS_ENDPOINT"
       value = "http://ws:3333"
     },
     {
-      name  = "QUICKPIZZA_RECOMMENDATIONS_ENDPOINT"
+      name  = "QUICKFOOD_RECOMMENDATIONS_ENDPOINT"
       value = "http://recommendations:3333"
     },
     {
-      name  = "QUICKPIZZA_CONFIG_ENDPOINT"
+      name  = "QUICKFOOD_CONFIG_ENDPOINT"
       value = "http://config:3333"
     },
     {
-      name  = "QUICKPIZZA_ENABLE_ALL_SERVICES"
+      name  = "QUICKFOOD_ENABLE_ALL_SERVICES"
       value = 0
     },
     {
-      name  = "QUICKPIZZA_OTLP_ENDPOINT"
+      name  = "QUICKFOOD_OTLP_ENDPOINT"
       value = "http://alloy:4318"
     },
     {
-      name  = "QUICKPIZZA_TRUST_CLIENT_TRACEID"
+      name  = "QUICKFOOD_TRUST_CLIENT_TRACEID"
       value = true
     },
     {
@@ -43,7 +43,7 @@ locals {
       value = "deployment.environment=${var.deployment_environment},service.version=${var.quickpizza_image}"
     },
     {
-      name  = "QUICKPIZZA_LOG_LEVEL"
+      name  = "QUICKFOOD_LOG_LEVEL"
       value = var.quickpizza_log_level
     }
   ]

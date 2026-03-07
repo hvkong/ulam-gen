@@ -27,7 +27,7 @@ configMapGenerator:
     - .env
     literals:
       # Enable tracing
-      - QUICKPIZZA_OTLP_ENDPOINT=http://grafana-alloy:4318
+      - QUICKFOOD_OTLP_ENDPOINT=http://grafana-alloy:4318
   - name: alloy-config
     files:
       - ./config/config.alloy

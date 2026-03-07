@@ -34,13 +34,13 @@ spec:
                 name: quickpizza-env
                 optional: true
           env:
-            - name: QUICKPIZZA_ENABLE_GRPC_SERVICE
+            - name: QUICKFOOD_ENABLE_GRPC_SERVICE
               value: "1"
-            - name: QUICKPIZZA_OTEL_SERVICE_INSTANCE_ID
+            - name: QUICKFOOD_OTEL_SERVICE_INSTANCE_ID
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            - name: QUICKPIZZA_OTEL_SERVICE_NAME
+            - name: QUICKFOOD_OTEL_SERVICE_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.labels['app.kubernetes.io/instance']

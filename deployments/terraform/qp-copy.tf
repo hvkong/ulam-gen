@@ -65,15 +65,15 @@ resource "kubernetes_deployment_v1" "copy" {
             }
           }
           env {
-            name  = "QUICKPIZZA_ENABLE_COPY_SERVICE"
+            name  = "QUICKFOOD_ENABLE_COPY_SERVICE"
             value = "1"
           }
           env {
-            name  = "QUICKPIZZA_OTEL_SERVICE_NAME"
+            name  = "QUICKFOOD_OTEL_SERVICE_NAME"
             value = "copy"
           }
           env {
-            name = "QUICKPIZZA_OTEL_SERVICE_INSTANCE_ID"
+            name = "QUICKFOOD_OTEL_SERVICE_INSTANCE_ID"
             value_from {
               field_ref {
                 field_path = "metadata.name"
@@ -81,11 +81,11 @@ resource "kubernetes_deployment_v1" "copy" {
             }
           }
           env {
-            name  = "QUICKPIZZA_OTEL_DB_NAME"
+            name  = "QUICKFOOD_OTEL_DB_NAME"
             value = "quickfood-db"
           }
           env {
-            name = "QUICKPIZZA_DB"
+            name = "QUICKFOOD_DB"
             value_from {
               secret_key_ref {
                 name = kubernetes_secret_v1.quickpizza_postgres_credentials.metadata[0].name

@@ -63,15 +63,15 @@ resource "kubernetes_deployment_v1" "config" {
             }
           }
           env {
-            name  = "QUICKPIZZA_ENABLE_CONFIG_SERVICE"
+            name  = "QUICKFOOD_ENABLE_CONFIG_SERVICE"
             value = "1"
           }
           env {
-            name  = "QUICKPIZZA_OTEL_SERVICE_NAME"
+            name  = "QUICKFOOD_OTEL_SERVICE_NAME"
             value = "config"
           }
           env {
-            name = "QUICKPIZZA_OTEL_SERVICE_INSTANCE_ID"
+            name = "QUICKFOOD_OTEL_SERVICE_INSTANCE_ID"
             value_from {
               field_ref {
                 field_path = "metadata.name"

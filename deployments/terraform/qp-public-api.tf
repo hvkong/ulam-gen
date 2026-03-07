@@ -13,8 +13,8 @@ resource "kubernetes_secret_v1" "public_api" {
     namespace = kubernetes_namespace_v1.quickpizza.id
   }
   data = {
-    QUICKPIZZA_CONF_FARO_URL = var.quickpizza_conf_faro_url
-    QUICKPIZZA_CONF_FARO_APP_NAME = var.quickpizza_conf_faro_app_name
+    QUICKFOOD_CONF_FARO_URL = var.quickpizza_conf_faro_url
+    QUICKFOOD_CONF_FARO_APP_NAME = var.quickpizza_conf_faro_app_name
   }
 }
 
@@ -77,15 +77,15 @@ resource "kubernetes_deployment_v1" "public_api" {
             }
           }
           env {
-            name  = "QUICKPIZZA_ENABLE_PUBLIC_API_SERVICE"
+            name  = "QUICKFOOD_ENABLE_PUBLIC_API_SERVICE"
             value = "1"
           }
           env {
-            name  = "QUICKPIZZA_OTEL_SERVICE_NAME"
+            name  = "QUICKFOOD_OTEL_SERVICE_NAME"
             value = "public-api"
           }
           env {
-            name = "QUICKPIZZA_OTEL_SERVICE_INSTANCE_ID"
+            name = "QUICKFOOD_OTEL_SERVICE_INSTANCE_ID"
             value_from {
               field_ref {
                 field_path = "metadata.name"

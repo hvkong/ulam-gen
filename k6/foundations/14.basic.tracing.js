@@ -26,7 +26,7 @@ export default function () {
     headers: {
       "Content-Type": "application/json",
       Authorization: "token abcdef0123456789",
-      // QuickPizza converts baggage into span attributes
+      // QuickFood converts baggage into span attributes
       baggage: "k6_request=true, user_id=12345",
     },
   });

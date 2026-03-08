@@ -13,8 +13,8 @@ resource "kubernetes_secret_v1" "public_api" {
     namespace = kubernetes_namespace_v1.quickpizza.id
   }
   data = {
-    QUICKFOOD_CONF_FARO_URL = var.quickpizza_conf_faro_url
-    QUICKFOOD_CONF_FARO_APP_NAME = var.quickpizza_conf_faro_app_name
+    QUICKFOOD_CONF_FARO_URL = var.quickfood_conf_faro_url
+    QUICKFOOD_CONF_FARO_APP_NAME = var.quickfood_conf_faro_app_name
   }
 }
 

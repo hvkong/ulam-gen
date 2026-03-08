@@ -10,14 +10,14 @@ variable "grafana_cloud_token" {
   type        = string
 }
 
-variable "quickpizza_conf_faro_url" {
+variable "quickfood_conf_faro_url" {
   default     = null
   description = "The URL for the Faro configuration."
   sensitive   = true
   type        = string
 }
 
-variable "quickpizza_conf_faro_app_name" {
+variable "quickfood_conf_faro_app_name" {
   default     = null
   description = "The App Name for the Faro configuration."
   sensitive   = true

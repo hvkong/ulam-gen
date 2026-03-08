@@ -4,9 +4,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   # unique name for this deployment resource
-  name: quickpizza-catalog
+  name: quickfood-catalog
   labels: &catalogLabels # application name: groups all related resources
-    app.k8s.io/name: quickpizza
+    app.k8s.io/name: quickfood
     # component type: defines the role of this deployment
     app.kubernetes.io/component: service
     # instance id: used for service discovery and telemetry (service.name/service_name attrs)
@@ -20,16 +20,16 @@ spec:
       labels: *catalogLabels
     spec:
       containers:
-        - name: quickpizza
-          image: ghcr.io/grafana/quickpizza-local:0.15.21
+        - name: quickfood
+          image: ghcr.io/grafana/quickfood-local:0.15.21
           ports:
             - name: http
               containerPort: 3333
           envFrom:
             - configMapRef:
-                name: quickpizza-env-common
+                name: quickfood-env-common
             - configMapRef:
-                name: quickpizza-env
+                name: quickfood-env
                 optional: true
           env:
             - name: QUICKFOOD_ENABLE_CATALOG_SERVICE
@@ -47,7 +47,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: quickpizza-catalog
+  name: quickfood-catalog
 spec:
   type: ClusterIP
   selector:

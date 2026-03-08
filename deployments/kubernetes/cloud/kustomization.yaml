@@ -1,5 +1,5 @@
 resources:
-  - ../base/quickpizza
+  - ../base/quickfood
   - ../base/alloy
 
 # Set environment label for all resources (except selectors, which are immutable)
@@ -11,10 +11,10 @@ labels:
     includeTemplates: true
 
 # To use a custom image (e.g., locally built), uncomment `newName` and `newTag` below.
-# Example: docker build -t local-quickpizza:latest . && minikube image load local-quickpizza:latest
+# Example: docker build -t local-quickfood:latest . && minikube image load local-quickfood:latest
 images:
-  - name: ghcr.io/grafana/quickpizza-local
-    # newName: local-quickpizza
+  - name: ghcr.io/grafana/quickfood-local
+    # newName: local-quickfood
     # newTag: latest
 # Note: Do not commit changes to newName/newTag values (leave commented). TODO: consider Kustomize's env var substitution
 
@@ -24,9 +24,9 @@ secretGenerator:
     envs:
       - .env
 
-# You can use the following generator to add additional environment variables to all QuickPizza pods.
+# You can use the following generator to add additional environment variables to all QuickFood pods.
 configMapGenerator:
-  - name: quickpizza-env
+  - name: quickfood-env
     envs:
       # load FARO variables
       - .env
@@ -34,7 +34,7 @@ configMapGenerator:
       # Enable tracing
       - QUICKFOOD_OTLP_ENDPOINT=http://grafana-alloy:4318
       # NOTE: deployment.environment value must match the 'environment' label above
-      - OTEL_RESOURCE_ATTRIBUTES=deployment.environment=production,service.version=quickpizza-local
+      - OTEL_RESOURCE_ATTRIBUTES=deployment.environment=production,service.version=quickfood-local
   - name: alloy-config
     files:
       - ./config/config.alloy

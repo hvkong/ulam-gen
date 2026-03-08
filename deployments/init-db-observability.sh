@@ -16,7 +16,7 @@ DB_O11Y_USER="${DB_O11Y_USER:-db-o11y}"
 DB_O11Y_PASSWORD="${DB_O11Y_PASSWORD:-db-o11y-password}"
 
 # Array of DB_O11Y_DATABASES to configure (default to POSTGRES_DB if not specified)
-DB_O11Y_DATABASES="${DB_O11Y_DATABASES:-quickpizza_db}"
+DB_O11Y_DATABASES="${DB_O11Y_DATABASES:-quickfood_db}"
 
 echo "Configuring DB_O11Y_DATABASES: $DB_O11Y_DATABASES"
 echo "Monitoring user: $DB_O11Y_USER"

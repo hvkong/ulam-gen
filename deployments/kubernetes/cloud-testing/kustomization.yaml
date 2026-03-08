@@ -2,14 +2,14 @@
 
 # This environment is intended to for testing purpose
 resources:
-  - ../base/quickpizza
+  - ../base/quickfood
   - ../base/alloy
 
 # To use a custom image (e.g., locally built), uncomment `newName` and `newTag` below.
-# Example: docker build -t local-quickpizza:latest . && minikube image load local-quickpizza:latest
+# Example: docker build -t local-quickfood:latest . && minikube image load local-quickfood:latest
 images:
-  - name: ghcr.io/grafana/quickpizza-local
-    # newName: local-quickpizza
+  - name: ghcr.io/grafana/quickfood-local
+    # newName: local-quickfood
     # newTag: latest
 # Note: Do not commit changes to newName/newTag values (leave commented). TODO: consider Kustomize's env var substitution 
 
@@ -19,9 +19,9 @@ secretGenerator:
     envs:
     - .env
 
-# You can use the following generator to add additional environment variables to all QuickPizza pods.
+# You can use the following generator to add additional environment variables to all QuickFood pods.
 configMapGenerator:
-  - name: quickpizza-env
+  - name: quickfood-env
     envs:
     # load FARO variables
     - .env

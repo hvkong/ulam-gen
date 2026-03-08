@@ -4,9 +4,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   # unique name for this deployment resource
-  name: quickpizza-grpc
+  name: quickfood-grpc
   labels: &grpcLabels # application name: groups all related resources
-    app.k8s.io/name: quickpizza
+    app.k8s.io/name: quickfood
     # component type: defines the role of this deployment
     app.kubernetes.io/component: service
     # instance id: used for service discovery and telemetry (service.name/service_name attrs)
@@ -20,8 +20,8 @@ spec:
       labels: *grpcLabels
     spec:
       containers:
-        - name: quickpizza
-          image: ghcr.io/grafana/quickpizza-local:0.15.21
+        - name: quickfood
+          image: ghcr.io/grafana/quickfood-local:0.15.21
           ports:
             - name: grpc
               containerPort: 3334
@@ -29,9 +29,9 @@ spec:
               containerPort: 3335
           envFrom:
             - configMapRef:
-                name: quickpizza-env-common
+                name: quickfood-env-common
             - configMapRef:
-                name: quickpizza-env
+                name: quickfood-env
                 optional: true
           env:
             - name: QUICKFOOD_ENABLE_GRPC_SERVICE
@@ -68,7 +68,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: quickpizza-grpc
+  name: quickfood-grpc
 spec:
   type: LoadBalancer
   selector:

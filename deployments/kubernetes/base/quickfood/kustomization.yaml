@@ -15,17 +15,17 @@ resources:
   - ws.yaml
 
 configMapGenerator:
-  - name: quickpizza-env-common
+  - name: quickfood-env-common
     literals:
       # Trust all incoming TraceIDs for demo purposes
       - QUICKFOOD_TRUST_CLIENT_TRACEID=true
         # Microservice mode: Set to 0 to run services in separate pods
       - QUICKFOOD_ENABLE_ALL_SERVICES=0
-      - QUICKFOOD_CATALOG_ENDPOINT=http://quickpizza-catalog:3333
-      - QUICKFOOD_COPY_ENDPOINT=http://quickpizza-copy:3333
-      - QUICKFOOD_WS_ENDPOINT=http://quickpizza-ws:3333
-      - QUICKFOOD_RECOMMENDATIONS_ENDPOINT=http://quickpizza-recommendations:3333
-      - QUICKFOOD_CONFIG_ENDPOINT=http://quickpizza-config:3333
+      - QUICKFOOD_CATALOG_ENDPOINT=http://quickfood-catalog:3333
+      - QUICKFOOD_COPY_ENDPOINT=http://quickfood-copy:3333
+      - QUICKFOOD_WS_ENDPOINT=http://quickfood-ws:3333
+      - QUICKFOOD_RECOMMENDATIONS_ENDPOINT=http://quickfood-recommendations:3333
+      - QUICKFOOD_CONFIG_ENDPOINT=http://quickfood-config:3333
       - QUICKFOOD_OTEL_DB_NAME=quickfood-db
 
 # defines shared properties for all deployments
@@ -71,4 +71,4 @@ patches:
           failureThreshold: 3
     target:
       kind: Deployment
-      name: "!quickpizza-grpc"
+      name: "!quickfood-grpc"

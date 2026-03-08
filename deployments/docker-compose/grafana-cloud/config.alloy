@@ -110,11 +110,11 @@ discovery.relabel "app_containers_profiles" {
   // https://grafana.com/docs/pyroscope/latest/view-and-analyze-profile-data/line-by-line/
   rule {
     target_label = "service_repository"
-    replacement = coalesce(env("QUICKPIZZA_PYROSCOPE_SERVICE_REPOSITORY"), "https://github.com/grafana/quickpizza")
+    replacement = coalesce(env("QUICKFOOD_PYROSCOPE_SERVICE_REPOSITORY"), "https://github.com/grafana/quickpizza")
   }
   rule {
     target_label = "service_git_ref"
-    replacement = coalesce(env("QUICKPIZZA_PYROSCOPE_SERVICE_GIT_REF"), "refs/heads/main")
+    replacement = coalesce(env("QUICKFOOD_PYROSCOPE_SERVICE_GIT_REF"), "refs/heads/main")
   }
   targets = discovery.relabel.app_containers.output
 }

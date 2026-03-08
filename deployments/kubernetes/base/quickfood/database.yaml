@@ -15,7 +15,7 @@ metadata:
   name: quickfood-db
   labels:
     environment: production
-    app.k8s.io/name: quickpizza-app
+    app.k8s.io/name: quickfood
     app.kubernetes.io/component: database
     app.kubernetes.io/instance: quickfood-db
 spec:
@@ -24,7 +24,7 @@ spec:
   selector:
     matchLabels:
       environment: production
-      app.k8s.io/name: quickpizza-app
+      app.k8s.io/name: quickfood
       app.kubernetes.io/component: database
       app.kubernetes.io/instance: quickfood-db
   volumeClaimTemplates:
@@ -40,7 +40,7 @@ spec:
     metadata:
       labels:
         environment: production
-        app.k8s.io/name: quickpizza-app
+        app.k8s.io/name: quickfood
         app.kubernetes.io/component: database
         app.kubernetes.io/instance: quickfood-db
     spec:
@@ -83,6 +83,6 @@ spec:
       name: psql
   selector:
     environment: production
-    app.k8s.io/name: quickpizza-app
+    app.k8s.io/name: quickfood
     app.kubernetes.io/component: database
     app.kubernetes.io/instance: quickfood-db

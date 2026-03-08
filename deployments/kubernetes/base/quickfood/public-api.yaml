@@ -1,38 +1,38 @@
-# service.name: 'copy'
-# service.component: 'copy' (defined in app code)
+# service.name: 'public-api'
+# service.component: 'frontend' and 'gateway' (defined in app code)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   # unique name for this deployment resource
-  name: quickpizza-copy
-  labels: &copyLabels # application name: groups all related resources
-    app.k8s.io/name: quickpizza
+  name: quickfood-public-api
+  labels: &publicAPILabels # application name: groups all related resources
+    app.k8s.io/name: quickfood
     # component type: defines the role of this deployment
     app.kubernetes.io/component: service
     # instance id: used for service discovery and telemetry (service.name/service_name attrs)
-    app.kubernetes.io/instance: copy
+    app.kubernetes.io/instance: public-api
 spec:
   replicas: 1
   selector:
-    matchLabels: *copyLabels
+    matchLabels: *publicAPILabels
   template:
     metadata:
-      labels: *copyLabels
+      labels: *publicAPILabels
     spec:
       containers:
-        - name: quickpizza
-          image: ghcr.io/grafana/quickpizza-local:0.15.21
+        - name: quickfood
+          image: ghcr.io/grafana/quickfood-local:0.15.21
           ports:
             - name: http
               containerPort: 3333
           envFrom:
             - configMapRef:
-                name: quickpizza-env-common
+                name: quickfood-env-common
             - configMapRef:
-                name: quickpizza-env
+                name: quickfood-env
                 optional: true
           env:
-            - name: QUICKFOOD_ENABLE_COPY_SERVICE
+            - name: QUICKFOOD_ENABLE_PUBLIC_API_SERVICE
               value: "1"
             - name: QUICKFOOD_OTEL_SERVICE_INSTANCE_ID
               valueFrom:
@@ -43,16 +43,17 @@ spec:
                 fieldRef:
                   fieldPath: metadata.labels['app.kubernetes.io/instance']
 ---
-# Configures value for QUICKFOOD_COPY_ENDPOINT (set in kustomization.yaml)
+# PUBLIC ENDPOINT to serve API and static assets
 apiVersion: v1
 kind: Service
 metadata:
-  name: quickpizza-copy
+  name: quickfood-public-api
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
-    app.kubernetes.io/instance: copy
+    app.kubernetes.io/instance: public-api
   ports:
     - protocol: TCP
       port: 3333
       targetPort: 3333
+      nodePort: 30333

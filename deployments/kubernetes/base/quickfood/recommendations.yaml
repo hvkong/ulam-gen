@@ -1,38 +1,39 @@
-# service.name: 'ws'
-# service.component: 'ws' (defined in app code)
+# service.name: 'recommendations'
+# service.component: 'recommendations' (defined in app code)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   # unique name for this deployment resource
-  name: quickpizza-ws
-  labels: &wsLabels # application name: groups all related resources
-    app.k8s.io/name: quickpizza
+  name: quickfood-recommendations
+  labels:
+    &recommendationsLabels # application name: groups all related resources
+    app.k8s.io/name: quickfood
     # component type: defines the role of this deployment
     app.kubernetes.io/component: service
     # instance id: used for service discovery and telemetry (service.name/service_name attrs)
-    app.kubernetes.io/instance: ws
+    app.kubernetes.io/instance: recommendations
 spec:
   replicas: 1
   selector:
-    matchLabels: *wsLabels
+    matchLabels: *recommendationsLabels
   template:
     metadata:
-      labels: *wsLabels
+      labels: *recommendationsLabels
     spec:
       containers:
-        - name: quickpizza
-          image: ghcr.io/grafana/quickpizza-local:0.15.21
+        - name: quickfood
+          image: ghcr.io/grafana/quickfood-local:0.15.21
           ports:
             - name: http
               containerPort: 3333
           envFrom:
             - configMapRef:
-                name: quickpizza-env-common
+                name: quickfood-env-common
             - configMapRef:
-                name: quickpizza-env
+                name: quickfood-env
                 optional: true
           env:
-            - name: QUICKFOOD_ENABLE_WS_SERVICE
+            - name: QUICKFOOD_ENABLE_RECOMMENDATIONS_SERVICE
               value: "1"
             - name: QUICKFOOD_OTEL_SERVICE_INSTANCE_ID
               valueFrom:
@@ -43,15 +44,15 @@ spec:
                 fieldRef:
                   fieldPath: metadata.labels['app.kubernetes.io/instance']
 ---
-# Configures value for QUICKFOOD_WS_ENDPOINT (set in kustomization.yaml)
+# Configures value for QUICKFOOD_RECOMMENDATIONS_ENDPOINT (set in kustomization.yaml)
 apiVersion: v1
 kind: Service
 metadata:
-  name: quickpizza-ws
+  name: quickfood-recommendations
 spec:
   type: ClusterIP
   selector:
-    app.kubernetes.io/instance: ws
+    app.kubernetes.io/instance: recommendations
   ports:
     - protocol: TCP
       port: 3333

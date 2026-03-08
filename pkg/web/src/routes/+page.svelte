@@ -43,6 +43,10 @@ var rateResult = null;
 var errorResult = null;
 var isLoggedIn = false;
 
+// Hero image randomization - set total number of hero images available
+const totalHeroImages = 3;
+var heroImageNumber = 1;
+
 $: if (advanced) {
 	food = '';
 	restrictions = defaultRestrictions;
@@ -74,6 +78,9 @@ onMount(async () => {
 
 	// Generate a random token for anonymous API access
 	anonymousToken = randomToken(16);
+
+	// Randomize hero image
+	heroImageNumber = Math.floor(Math.random() * totalHeroImages) + 1;
 
 	// Check if user is logged in via cookie
 	isLoggedIn = await verifyUserLoggedIn();
@@ -234,17 +241,49 @@ async function getTools() {
 	<title>QuickFood</title>
 	<meta name="description" content="QuickFood" />
 </svelte:head>
+
+<style>
+	.hero-container {
+		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin: 2rem auto;
+		max-width: 800px;
+	}
+
+	.ulam-text {
+		position: absolute;
+		font-size: clamp(4rem, 15vw, 12rem);
+		font-weight: bold;
+		color: #ba660b;
+		z-index: 0;
+		user-select: none;
+		pointer-events: none;
+		opacity: 0.8;
+	}
+
+	.hero-image {
+		position: relative;
+		z-index: 1;
+		max-width: 100%;
+		height: auto;
+		max-height: 500px;
+		object-fit: contain;
+	}
+</style>
+
 {#if render}
 	<section class="mt-4 flow-root">
 		<div class="flex float-left">
 			<a href="https://quickfood.grafana.com"
 				><img class="w-7 h-7 mr-2" src="/images/food.png" alt="logo" /></a
 			>
-			<p class="text-xl font-bold text-red-600">QuickFood</p>
+			<p class="text-xl font-bold text-white">QuickFood</p>
 		</div>
 		<div class="flex float-right">
 			<span class="relative inline-flex items-center mb-5 mt-1 mr-6">
-				<span class="ml-3 text-xs text-red-600 font-bold"
+				<span class="ml-3 text-xs text-white font-bold"
 					>{#if isLoggedIn}
 						<a data-sveltekit-reload href="/login">Profile</a>
 					{:else}
@@ -255,16 +294,27 @@ async function getTools() {
 			<label class="relative inline-flex items-center mb-5 cursor-pointer mt-1">
 				<input type="checkbox" bind:checked={advanced} class="sr-only peer" />
 				<div
-					class="w-9 h-5 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-600"
+					class="w-9 h-5 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-orange-500"
 				/>
-				<span class="ml-2 text-xs">Advanced</span>
+				<span class="ml-2 text-xs text-white">Advanced</span>
 			</label>
 		</div>
 	</section>
+
+	<!-- Hero Section with ULAM text -->
+	<section class="hero-container">
+		<div class="ulam-text">ULAM</div>
+		<img 
+			src="/images/hero{heroImageNumber}.png" 
+			alt="QuickFood Hero" 
+			class="hero-image"
+		/>
+	</section>
+
 	<section class="mt-8 flex flex-row justify-center items-center">
 		{#if quote}
 			<br />
-			<div class="bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm">
+			<div class="bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg p-2 text-sm text-white">
 				{quote}
 			</div>
 			<br />
@@ -272,30 +322,30 @@ async function getTools() {
 	</section>
 	<section class="mt-4 flex flex-column justify-center items-center">
 		<div class="text-center">
-			<h1 class="text-2xl md:text-4xl mt-14 font-semibold">
-				Looking to break out of your food routine? <!-- Updated for food theme -->
+			<h1 class="text-2xl md:text-4xl mt-8 font-semibold text-white">
+				Looking to break out of your food routine?
 			</h1>
-			<h2 class="text-xl md:text-2xl mt-2 font-semibold">
-				<span class="text-red-600">QuickFood</span> has your back!
+			<h2 class="text-xl md:text-2xl mt-2 font-semibold text-white">
+				<span class="text-orange-400">QuickFood</span> has your back!
 			</h2>
-			<p class="m-2 text-gray-700">
+			<p class="m-2 text-white">
 			With just one click, you'll discover new and exciting food combinations that you never knew
 				existed.
 			</p>
 			{#if advanced}
-				<div class="mt-6 mb-2 bg-gray-50 border border-gray-200 rounded-lg p-4">
+				<div class="mt-6 mb-2 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg p-4">
 					<div class="flex flex-row">
 						<div class="relative">
 							<input
 								bind:value={restrictions.maxCaloriesPerServing}
 								type="number"
 								id="floating_filled"
-								class="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-red-600 peer"
+								class="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-white bg-white bg-opacity-5 border-0 border-b-2 border-white border-opacity-30 appearance-none focus:outline-none focus:ring-0 focus:border-orange-500 peer"
 								placeholder=" "
 							/>
 							<label
 								for="floating_filled"
-								class="absolute text-sm text-gray-900 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-red-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
+								class="absolute text-sm text-white duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-orange-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
 								>Max Calories per Serving</label
 							>
 						</div>
@@ -304,12 +354,12 @@ async function getTools() {
 								bind:value={restrictions.minNumberOfToppings}
 								type="number"
 								id="floating_filled"
-								class="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-red-600 peer"
+								class="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-white bg-white bg-opacity-5 border-0 border-b-2 border-white border-opacity-30 appearance-none focus:outline-none focus:ring-0 focus:border-orange-500 peer"
 								placeholder=" "
 							/>
 							<label
 								for="floating_filled"
-								class="absolute text-sm text-gray-900 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-red-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
+								class="absolute text-sm text-white duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-orange-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
 								>Min Number of Side Dishes</label
 							>
 						</div>
@@ -318,25 +368,25 @@ async function getTools() {
 								bind:value={restrictions.maxNumberOfToppings}
 								type="number"
 								id="floating_filled"
-								class="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-red-600 peer"
+								class="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-white bg-white bg-opacity-5 border-0 border-b-2 border-white border-opacity-30 appearance-none focus:outline-none focus:ring-0 focus:border-orange-500 peer"
 								placeholder=" "
 							/>
 							<label
 								for="floating_filled"
-								class="absolute text-sm text-gray-900 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-red-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
+								class="absolute text-sm text-white duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-orange-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
 								>Max Number of Side Dishes</label
 							>
 						</div>
 					</div>
 					<div class="flex mt-8 justify-center items-center">
 						<div>
-							<label for="countries_multiple" class="block text-sm text-gray-900"
+							<label for="countries_multiple" class="block text-sm text-white"
 								>Excluded tools</label
 							>
 							<select
 								multiple
 								bind:value={restrictions.excludedTools}
-								class="bg-gray-50 ml-4 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5"
+								class="bg-white bg-opacity-5 ml-4 border border-white border-opacity-30 text-white text-sm rounded-lg block p-2.5"
 							>
 								{#each tools as t}
 									<option value={t}>
@@ -351,20 +401,20 @@ async function getTools() {
 								bind:checked={restrictions.mustBeVegetarian}
 								type="checkbox"
 								value=""
-								class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded accent-red-600"
+								class="w-4 h-4 text-orange-500 bg-gray-100 border-gray-300 rounded accent-orange-500"
 							/>
-							<label for="default-checkbox" class="ml-2 text-sm text-gray-900"
+							<label for="default-checkbox" class="ml-2 text-sm text-white"
 								>Must be vegetarian</label
 							>
 						</div>
 					</div>
 					<div class="flex mt-8 justify-center items-center">
 						<div clas="flex items-center ml-16">
-							<label for="food-name" class="ml-2 text-sm text-gray-900">Custom Food Name:</label>
+							<label for="food-name" class="ml-2 text-sm text-white">Custom Food Name:</label>
 							<input
 								id="pizza-name"
 								bind:value={restrictions.customName}
-								class="h-6 bg-gray-200 border-gray-900 rounded accent-red-600"
+								class="h-6 bg-white bg-opacity-10 border-white border-opacity-30 rounded text-white accent-orange-500"
 							/>
 						</div>
 					</div>
@@ -376,7 +426,7 @@ async function getTools() {
 					type="button"
 					name="pizza-please"
 					on:click={getFood}
-					class="mt-6 text-white bg-gradient-to-br from-red-500 to-orange-400 hover:bg-gradient-to-bl font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+					class="mt-6 text-white bg-orange-500 hover:bg-orange-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 shadow-lg"
 				>
 					Food, Please!</button
 				>
@@ -391,14 +441,14 @@ async function getTools() {
 			<p />
 			{#if errorResult}
 				<div class="mt-4">
-					<span class="bg-red-100 text-red-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded" id="error-message"
+					<span class="bg-red-900 bg-opacity-80 text-white text-sm font-medium mr-2 px-2.5 py-0.5 rounded" id="error-message"
 						>{errorResult}</span
 					>
 				</div>
 			{/if}
 			{#if foodCount > 0 && !food['food']}
 				<div class="mt-4">
-					<span class="bg-purple-100 text-purple-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded"
+					<span class="bg-purple-900 bg-opacity-80 text-white text-sm font-medium mr-2 px-2.5 py-0.5 rounded"
 						>What are you waiting for? We have already given {foodCount} recommendations since you opened
 						the site!</span
 					>
@@ -407,8 +457,8 @@ async function getTools() {
 			<p>
 				{#if food['food']}
 					<div class="flex justify-center" id="recommendations">
-						<div class="w-[300px] sm:w-[500px] mt-6 bg-gray-50 border border-gray-200 rounded-lg">
-							<div class="text-left p-4">
+						<div class="w-[300px] sm:w-[500px] mt-6 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg">
+							<div class="text-left p-4 text-white">
 								<h2 class="font-medium" id="food-name">Our recommendation:</h2>
 								<div class="ml-2">
 									<p>Name: {food['food']['name']}</p>
@@ -429,7 +479,7 @@ async function getTools() {
 						type="button"
 						name="rate-1"
 						on:click={() => rateFood(1)}
-						class="mt-6 text-white bg-gray-400 font-medium rounded-lg text-sm px-4 py-1.5 text-center mr-2 mb-2"
+						class="mt-6 text-white bg-gray-600 hover:bg-gray-700 font-medium rounded-lg text-sm px-4 py-1.5 text-center mr-2 mb-2"
 					>
 						No thanks</button
 					>
@@ -437,12 +487,12 @@ async function getTools() {
 						type="button"
 						name="rate-5"
 						on:click={() => rateFood(5)}
-						class="mt-6 text-white bg-red-400 font-medium rounded-lg text-sm px-4 py-1.5 text-center mr-2 mb-2"
+						class="mt-6 text-white bg-orange-500 hover:bg-orange-600 font-medium rounded-lg text-sm px-4 py-1.5 text-center mr-2 mb-2"
 					>
 						Love it!</button
 					>
 					{#if rateResult}
-						<p class="text-base mt-1 font-bold" id="rate-result">{rateResult}</p>
+						<p class="text-base mt-1 font-bold text-white" id="rate-result">{rateResult}</p>
 					{/if}
 				{/if}
 			</p>
@@ -450,22 +500,22 @@ async function getTools() {
 	</section>
 	<footer>
 		<div class="flex justify-center mt-8 m-1">
-			<p class="text-sm">Made with ❤️ by QuickFood Labs.</p>
+			<p class="text-sm text-white">Made with ❤️ by QuickFood Labs.</p>
 		</div>
 		<div class="flex justify-center">
-			<p class="text-xs">WebSocket visitor ID: {wsVisitorID}</p>
+			<p class="text-xs text-white text-opacity-70">WebSocket visitor ID: {wsVisitorID}</p>
 		</div>
 		<div class="flex justify-center">
-			<p class="text-xs">
-				Looking for the admin page? <a class="text-blue-500" data-sveltekit-reload href="/admin"
+			<p class="text-xs text-white text-opacity-70">
+				Looking for the admin page? <a class="text-orange-400 hover:text-orange-300" data-sveltekit-reload href="/admin"
 					>Click here</a
 				>
 			</p>
 		</div>
 		<div class="flex justify-center">
-			<p class="text-xs">
+			<p class="text-xs text-white text-opacity-70">
 				Contribute to QuickFood on <a
-					class="text-blue-500"
+					class="text-orange-400 hover:text-orange-300"
 					href="https://github.com/grafana/quickpizza">GitHub</a
 				>
 			</p>

@@ -176,17 +176,17 @@ func (c CatalogClient) Tools() ([]string, error) {
 	return tools.Tools, nil
 }
 
-func (c CatalogClient) Doughs() ([]model.Dough, error) {
-	var doughs struct {
-		Doughs []model.Dough
+func (c CatalogClient) Rices() ([]model.Rice, error) {
+	var rices struct {
+		Rices []model.Rice
 	}
-	url := c.catalogUrl + "/api/doughs"
-	err := c.client.getJSON(c.ctx, url, &doughs)
+	url := c.catalogUrl + "/api/rices"
+	err := c.client.getJSON(c.ctx, url, &rices)
 	if err != nil {
 		return nil, fmt.Errorf("querying %s: %w", url, err)
 	}
 
-	return doughs.Doughs, nil
+	return rices.Rices, nil
 }
 
 func (c CatalogClient) GetRecommendation(id int) (*model.Food, error) {

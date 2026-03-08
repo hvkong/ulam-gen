@@ -12,7 +12,7 @@ func init() {
 		db.RegisterModel(&model.FoodToIngredients{})
 		models := []interface{}{
 			&model.Ingredient{},
-			&model.Dough{},
+			&model.Rice{},
 			&model.Tool{},
 			&model.User{},
 		}
@@ -23,7 +23,7 @@ func init() {
 		}
 		_, err := db.NewCreateTable().
 			Model(&model.Food{}).
-			ForeignKey(`("dough_id") REFERENCES "doughs" ("id")`).
+			ForeignKey(`("rice_id") REFERENCES "rices" ("id")`).
 			ForeignKey(`("tool") REFERENCES "tools" ("name")`).
 			IfNotExists().
 			Exec(ctx)

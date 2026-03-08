@@ -199,10 +199,13 @@ async function getFood() {
 		);
 	}
 
-	if (food['food']['ingredients'].find((e) => e.name === 'Pineapple')) {
+	// Check if rice is present - Asian food culture easter egg
+	const hasRice = food['food']['rice'];
+	
+	if (!hasRice) {
 		window.faro?.api?.pushError(
 			new Error(
-				'Food Error: Pineapple detected! This is a violation of ancient food law. Proceed at your own risk!',
+				'Food Error: No Rice Detected! Asians can\'t eat a meal without rice!',
 			),
 		);
 	}
@@ -408,14 +411,14 @@ async function getTools() {
 								<h2 class="font-medium" id="food-name">Our recommendation:</h2>
 								<div class="ml-2">
 									<p>Name: {food['food']['name']}</p>
-									<p>Dough: {food['food']['dough']['name']}</p>
+									<p>Rice: {food['food']['rice']['name']}</p>
 									<p>Ingredients:</p>
 									<ul class="list-disc list-inside">
 										{#each food['food']['ingredients'] as ingredient}
 											<li class="pl-5 list-inside">{ingredient['name']}</li>
 										{/each}
 									</ul>
-									<p>Tool: {food['food']['tool']}</p>
+									<p>Utensil: {food['food']['tool']}</p>
 									<p>Calories per slice: {food['calories']}</p>
 								</div>
 							</div>

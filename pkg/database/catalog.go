@@ -89,10 +89,10 @@ func (c *Catalog) GetIngredients(ctx context.Context, t string) ([]model.Ingredi
 	return ingredients, err
 }
 
-func (c *Catalog) GetDoughs(ctx context.Context) ([]model.Dough, error) {
-	var doughs []model.Dough
-	err := c.db.NewSelect().Model(&doughs).Scan(ctx)
-	return doughs, err
+func (c *Catalog) GetRices(ctx context.Context) ([]model.Rice, error) {
+	var rices []model.Rice
+	err := c.db.NewSelect().Model(&rices).Scan(ctx)
+	return rices, err
 }
 
 func (c *Catalog) GetTools(ctx context.Context) ([]string, error) {
@@ -103,13 +103,13 @@ func (c *Catalog) GetTools(ctx context.Context) ([]string, error) {
 
 func (c *Catalog) GetHistory(ctx context.Context, limit int) ([]model.Food, error) {
 	var history []model.Food
-	err := c.db.NewSelect().Model(&history).Relation("Dough").Relation("Ingredients").Order("created_at DESC").Limit(limit).Scan(ctx)
+	err := c.db.NewSelect().Model(&history).Relation("Rice").Relation("Ingredients").Order("created_at DESC").Limit(limit).Scan(ctx)
 	return history, err
 }
 
 func (c *Catalog) GetRecommendation(ctx context.Context, id int) (*model.Food, error) {
 	var food model.Food
-	err := c.db.NewSelect().Model(&food).Relation("Dough").Relation("Ingredients").Where("food.id = ?", id).Limit(1).Scan(ctx)
+	err := c.db.NewSelect().Model(&food).Relation("Rice").Relation("Ingredients").Where("food.id = ?", id).Limit(1).Scan(ctx)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -284,7 +284,7 @@ func (c *Catalog) RecordRecommendation(ctx context.Context, food *model.Food) er
 		return err
 	}
 
-	food.DoughID = food.Dough.ID
+	food.RiceID = food.Rice.ID
 	return c.db.RunInTx(ctx, nil, func(ctx context.Context, tx bun.Tx) error {
 		_, err := tx.NewInsert().Model(food).Exec(ctx)
 		if err != nil {

@@ -108,7 +108,7 @@ type FoodRatingRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	Ingredients []string `protobuf:"bytes,1,rep,name=ingredients,proto3" json:"ingredients,omitempty"`
-	Dough       string   `protobuf:"bytes,2,opt,name=dough,proto3" json:"dough,omitempty"`
+	Rice        string   `protobuf:"bytes,2,opt,name=rice,proto3" json:"rice,omitempty"`
 }
 
 func (x *FoodRatingRequest) Reset() {
@@ -148,9 +148,9 @@ func (x *FoodRatingRequest) GetIngredients() []string {
 	return nil
 }
 
-func (x *FoodRatingRequest) GetDough() string {
+func (x *FoodRatingRequest) GetRice() string {
 	if x != nil {
-		return x.Dough
+		return x.Rice
 	}
 	return ""
 }

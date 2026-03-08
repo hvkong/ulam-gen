@@ -16,7 +16,7 @@ message StatusResponse {
 
 message FoodRatingRequest {
     repeated string ingredients = 1;
-    string dough = 2;
+    string rice = 2;
 }
 
 message FoodRatingResponse {

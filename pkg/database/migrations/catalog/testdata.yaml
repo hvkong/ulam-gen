@@ -1,261 +1,270 @@
-- model: Dough
+- model: Rice
   rows:
     - id: 1
-      name: Thin
-      calories_per_slice: 100
+      name: Jasmine Rice
+      calories_per_slice: 130
     - id: 2
-      name: Thick
-      calories_per_slice: 200
+      name: Garlic Rice
+      calories_per_slice: 150
     - id: 3
-      name: Stuffed
-      calories_per_slice: 300
+      name: Fried Rice
+      calories_per_slice: 180
+    - id: 4
+      name: Basmati Rice
+      calories_per_slice: 130
+    - id: 5
+      name: Brown Rice
+      calories_per_slice: 140
 - model: Tool
   rows:
-    - name: Knife
-    - name: Pizza cutter
-    - name: Scissors
+    - name: Chopsticks
+    - name: Spoon
+    - name: Fork
+    - name: Spork
 - model: Ingredient
   rows:
     - id: 1
-      name: "Extra virgin olive oil"
-      calories_per_slice: 50
+      name: "Soy Sauce"
+      calories_per_slice: 10
       vegetarian: true
-      type: "olive_oil"
+      type: "sauce"
     - id: 2
-      name: "Olive oil"
-      calories_per_slice: 100
-      vegetarian: true
-      type: "olive_oil"
+      name: "Oyster Sauce"
+      calories_per_slice: 15
+      vegetarian: false
+      type: "sauce"
     - id: 3
-      name: "San Marzano tomatoes"
-      calories_per_slice: 50
-      vegetarian: true
-      type: "tomato"
+      name: "Fish Sauce"
+      calories_per_slice: 10
+      vegetarian: false
+      type: "sauce"
     - id: 4
-      name: "Bianco di Nizza tomatoes"
-      calories_per_slice: 50
+      name: "Hoisin Sauce"
+      calories_per_slice: 20
       vegetarian: true
-      type: "tomato"
+      type: "sauce"
     - id: 5
-      name: "Roma tomatoes"
-      calories_per_slice: 50
+      name: "Teriyaki Sauce"
+      calories_per_slice: 25
       vegetarian: true
-      type: "tomato"
+      type: "sauce"
     - id: 6
-      name: "Mozzarella"
-      calories_per_slice: 100
-      vegetarian: true
-      type: "mozzarella"
+      name: "Chicken"
+      calories_per_slice: 120
+      vegetarian: false
+      type: "protein"
     - id: 7
-      name: "Mozzarella di bufala"
+      name: "Pork"
       calories_per_slice: 150
-      vegetarian: true
-      type: "mozzarella"
+      vegetarian: false
+      type: "protein"
     - id: 8
-      name: "Mozzarella fior di latte"
-      calories_per_slice: 150
-      vegetarian: true
-      type: "mozzarella"
+      name: "Beef"
+      calories_per_slice: 140
+      vegetarian: false
+      type: "protein"
     - id: 9
-      calories_per_slice: 100
-      name: Pepperoni
-      type: topping
-      vegetarian: false
+      name: "Tofu"
+      calories_per_slice: 80
+      vegetarian: true
+      type: "protein"
     - id: 10
-      calories_per_slice: 50
-      name: Mushrooms
-      type: topping
-      vegetarian: true
-    - id: 11
-      calories_per_slice: 50
-      name: Onions
-      type: topping
-      vegetarian: true
-    - id: 12
-      calories_per_slice: 200
-      name: Sausage
-      type: topping
-      vegetarian: false
-    - id: 13
-      calories_per_slice: 250
-      name: Bacon
-      type: topping
-      vegetarian: false
-    - id: 14
+      name: "Shrimp"
       calories_per_slice: 100
-      name: Extra cheese
-      type: topping
+      vegetarian: false
+      type: "protein"
+    - id: 11
+      name: "Fish"
+      calories_per_slice: 110
+      vegetarian: false
+      type: "protein"
+    - id: 12
+      name: "Bok Choy"
+      calories_per_slice: 15
       vegetarian: true
+      type: "vegetable"
+    - id: 13
+      name: "Chinese Cabbage"
+      calories_per_slice: 20
+      vegetarian: true
+      type: "vegetable"
+    - id: 14
+      name: "Bean Sprouts"
+      calories_per_slice: 10
+      vegetarian: true
+      type: "vegetable"
     - id: 15
-      calories_per_slice: 50
-      name: Black olives
-      type: topping
+      name: "Spinach"
+      calories_per_slice: 25
       vegetarian: true
+      type: "vegetable"
     - id: 16
-      calories_per_slice: 50
-      name: Green peppers
-      type: topping
+      name: "Broccoli"
+      calories_per_slice: 30
       vegetarian: true
+      type: "vegetable"
     - id: 17
-      calories_per_slice: 75
-      name: Pineapple
-      type: topping
+      calories_per_slice: 80
+      name: Kimchi
+      type: side_dish
       vegetarian: true
     - id: 18
-      calories_per_slice: 25
-      name: Spinach
-      type: topping
+      calories_per_slice: 30
+      name: Pickled Radish
+      type: side_dish
       vegetarian: true
     - id: 19
-      calories_per_slice: 25
-      name: Garlic
-      type: topping
+      calories_per_slice: 120
+      name: Spring Rolls
+      type: side_dish
       vegetarian: true
     - id: 20
-      calories_per_slice: 50
-      name: Jalapenos
-      type: topping
-      vegetarian: true
+      calories_per_slice: 150
+      name: Dumplings
+      type: side_dish
+      vegetarian: false
     - id: 21
-      calories_per_slice: 50
-      name: Roasted red peppers
-      type: topping
+      calories_per_slice: 60
+      name: Edamame
+      type: side_dish
       vegetarian: true
     - id: 22
       calories_per_slice: 100
-      name: Feta cheese
-      type: topping
-      vegetarian: true
-    - id: 23
-      calories_per_slice: 100
-      name: Prosciutto
-      type: topping
+      name: Gyoza
+      type: side_dish
       vegetarian: false
+    - id: 23
+      calories_per_slice: 50
+      name: Seaweed Salad
+      type: side_dish
+      vegetarian: true
     - id: 24
-      calories_per_slice: 100
-      name: Ricotta cheese
-      type: topping
+      calories_per_slice: 90
+      name: Miso Soup
+      type: side_dish
       vegetarian: true
     - id: 25
-      calories_per_slice: 100
-      name: Salami
-      type: topping
-      vegetarian: false
-    - id: 26
-      calories_per_slice: 50
-      name: Zucchini
-      type: topping
+      calories_per_slice: 70
+      name: Cucumber Salad
+      type: side_dish
       vegetarian: true
+    - id: 26
+      calories_per_slice: 110
+      name: Egg Rolls
+      type: side_dish
+      vegetarian: false
     - id: 27
-      calories_per_slice: 150
-      name: Buffalo mozzarella
-      type: topping
+      calories_per_slice: 85
+      name: Tempura Vegetables
+      type: side_dish
       vegetarian: true
     - id: 28
-      calories_per_slice: 50
-      name: Eggplant
-      type: topping
-      vegetarian: true
+      calories_per_slice: 130
+      name: Pork Buns
+      type: side_dish
+      vegetarian: false
     - id: 29
-      calories_per_slice: 50
-      name: Kalamata olives
-      type: topping
+      calories_per_slice: 75
+      name: Steamed Buns
+      type: side_dish
       vegetarian: true
     - id: 30
-      calories_per_slice: 100
-      name: Parmesan cheese
-      type: topping
-      vegetarian: true
+      calories_per_slice: 95
+      name: Wontons
+      type: side_dish
+      vegetarian: false
     - id: 31
-      calories_per_slice: 100
-      name: Shrimp
-      type: topping
-      vegetarian: false
+      calories_per_slice: 40
+      name: Pickled Ginger
+      type: side_dish
+      vegetarian: true
     - id: 32
-      calories_per_slice: 100
-      name: Chicken
-      type: topping
-      vegetarian: false
+      calories_per_slice: 55
+      name: Daikon Radish
+      type: side_dish
+      vegetarian: true
     - id: 33
-      calories_per_slice: 100
-      name: Beef
-      type: topping
+      calories_per_slice: 120
+      name: Chicken Satay
+      type: side_dish
       vegetarian: false
     - id: 34
       calories_per_slice: 100
-      name: Ham
-      type: topping
-      vegetarian: false
+      name: Tofu Skin Rolls
+      type: side_dish
+      vegetarian: true
     - id: 35
-      calories_per_slice: 50
-      name: Asparagus
-      type: topping
+      calories_per_slice: 65
+      name: Bamboo Shoots
+      type: side_dish
       vegetarian: true
     - id: 36
-      calories_per_slice: 50
-      name: Broccoli
-      type: topping
+      calories_per_slice: 80
+      name: Water Chestnuts
+      type: side_dish
       vegetarian: true
     - id: 37
-      calories_per_slice: 50
-      name: Caramelized onions
-      type: topping
+      calories_per_slice: 90
+      name: Scallion Pancakes
+      type: side_dish
       vegetarian: true
     - id: 38
-      calories_per_slice: 50
-      name: Cherry tomatoes
-      type: topping
-      vegetarian: true
+      calories_per_slice: 110
+      name: Char Siu
+      type: side_dish
+      vegetarian: false
     - id: 39
-      calories_per_slice: 25
-      name: Fresh basil
-      type: topping
+      calories_per_slice: 45
+      name: Sesame Seeds
+      type: side_dish
       vegetarian: true
     - id: 40
-      calories_per_slice: 25
-      name: Fresh oregano
-      type: topping
+      calories_per_slice: 35
+      name: Green Onions
+      type: side_dish
       vegetarian: true
 - model: Food
   rows:
     - id: 1
-      name: A Funny Capricciosa
-      dough_id: 1
-      tool: Scissors
+      name: A Spicy Delight
+      rice_id: 1
+      tool: Chopsticks
     - id: 2
-      name: The Database Special
-      dough_id: 2
-      tool: Knife
+      name: The Comfort Bowl
+      rice_id: 2
+      tool: Spoon
     - id: 3
-      name: The Deep Bolognese
-      dough_id: 3
-      tool: Knife
+      name: The Fusion Feast
+      rice_id: 3
+      tool: Fork
 - model: FoodToIngredients
   rows:
     - food_id: 1
-      ingredient_id: 2
-    - food_id: 1
-      ingredient_id: 5
+      ingredient_id: 1
     - food_id: 1
       ingredient_id: 6
     - food_id: 1
-      ingredient_id: 24
+      ingredient_id: 12
     - food_id: 1
-      ingredient_id: 18
+      ingredient_id: 17
+    - food_id: 1
+      ingredient_id: 21
     - food_id: 2
-      ingredient_id: 3
-    - food_id: 2
-      ingredient_id: 5
+      ingredient_id: 2
     - food_id: 2
       ingredient_id: 7
     - food_id: 2
-      ingredient_id: 22
+      ingredient_id: 13
+    - food_id: 2
+      ingredient_id: 24
     - food_id: 3
-      ingredient_id: 3
-    - food_id: 3
-      ingredient_id: 6
+      ingredient_id: 5
     - food_id: 3
       ingredient_id: 9
+    - food_id: 3
+      ingredient_id: 15
+    - food_id: 3
+      ingredient_id: 19
 - model: User
   rows:
     - id: 1

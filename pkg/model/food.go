@@ -8,8 +8,8 @@ type Food struct {
 	ID          int64        `json:"id" bun:",pk,autoincrement"`
 	CreatedAt   time.Time    `json:"-" bun:",nullzero,notnull,default:current_timestamp"`
 	Name        string       `json:"name"`
-	DoughID     int64        `json:"-"`
-	Dough       Dough        `json:"dough" bun:"rel:belongs-to,join:dough_id=id"`
+	RiceID      int64        `json:"-"`
+	Rice        Rice         `json:"rice" bun:"rel:belongs-to,join:rice_id=id"`
 	Ingredients []Ingredient `json:"ingredients" bun:"m2m:food_to_ingredients,join:Food=Ingredient"`
 	Tool        string       `json:"tool"`
 }

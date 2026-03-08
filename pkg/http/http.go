@@ -794,7 +794,7 @@ func (s *Server) AuthMiddleware(db *database.Catalog) func(http.Handler) http.Ha
 	}
 }
 
-// AddCatalogHandler enables routes related to the ingredients, doughs, tools, ratings and users.
+// AddCatalogHandler enables routes related to the ingredients, rices, tools, ratings and users.
 // A database.InMemoryDatabase is required to enable this endpoint group.
 // This database is safe to be used concurrently and thus may be shared with other endpoint groups.
 func (s *Server) AddCatalogHandler(db *database.Catalog) {
@@ -826,17 +826,17 @@ func (s *Server) AddCatalogHandler(db *database.Catalog) {
 			s.writeJSONResponse(w, r, map[string][]model.Ingredient{"ingredients": ingredients}, http.StatusOK)
 		})
 
-		r.Get("/api/doughs", func(w http.ResponseWriter, r *http.Request) {
-			s.log.DebugContext(r.Context(), "Doughs requested")
+		r.Get("/api/rices", func(w http.ResponseWriter, r *http.Request) {
+			s.log.DebugContext(r.Context(), "Rices requested")
 
-			doughs, err := db.GetDoughs(r.Context())
+			rices, err := db.GetRices(r.Context())
 			if err != nil {
-				s.log.ErrorContext(r.Context(), "Failed to get doughs from database", "err", err)
+				s.log.ErrorContext(r.Context(), "Failed to get rices from database", "err", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 
-			s.writeJSONResponse(w, r, map[string][]model.Dough{"doughs": doughs}, http.StatusOK)
+			s.writeJSONResponse(w, r, map[string][]model.Rice{"rices": rices}, http.StatusOK)
 		})
 
 		r.Get("/api/tools", func(w http.ResponseWriter, r *http.Request) {
@@ -1378,7 +1378,7 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 				restrictions.CustomName = restrictions.CustomName[:model.MaxFoodNameLength]
 			}
 
-			oils, err := catalogClient.Ingredients("olive_oil")
+			sauces, err := catalogClient.Ingredients("sauce")
 			if err != nil {
 				s.log.ErrorContext(r.Context(), "Requesting ingredients", "err", err)
 				w.WriteHeader(http.StatusInternalServerError)
@@ -1386,52 +1386,52 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 			}
 
 			// Retrieve list of ingredients from Catalog.
-			var validOliveOils []model.Ingredient
-			for _, oliveOil := range oils {
-				if !slices.Contains(restrictions.ExcludedIngredients, oliveOil.Name) && (!restrictions.MustBeVegetarian || oliveOil.Vegetarian) {
-					validOliveOils = append(validOliveOils, oliveOil)
+			var validSauces []model.Ingredient
+			for _, sauce := range sauces {
+				if !slices.Contains(restrictions.ExcludedIngredients, sauce.Name) && (!restrictions.MustBeVegetarian || sauce.Vegetarian) {
+					validSauces = append(validSauces, sauce)
 				}
 			}
 
-			tomatoes, err := catalogClient.Ingredients("tomato")
+			proteins, err := catalogClient.Ingredients("protein")
 			if err != nil {
 				s.log.ErrorContext(r.Context(), "Requesting ingredients", "err", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 
-			var validTomatoes []model.Ingredient
-			for _, tomato := range tomatoes {
-				if !slices.Contains(restrictions.ExcludedIngredients, tomato.Name) && (!restrictions.MustBeVegetarian || tomato.Vegetarian) {
-					validTomatoes = append(validTomatoes, tomato)
+			var validProteins []model.Ingredient
+			for _, protein := range proteins {
+				if !slices.Contains(restrictions.ExcludedIngredients, protein.Name) && (!restrictions.MustBeVegetarian || protein.Vegetarian) {
+					validProteins = append(validProteins, protein)
 				}
 			}
 
-			mozzarellas, err := catalogClient.Ingredients("mozzarella")
+			vegetables, err := catalogClient.Ingredients("vegetable")
 			if err != nil {
 				s.log.ErrorContext(r.Context(), "Requesting ingredients", "err", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 
-			var validMozzarellas []model.Ingredient
-			for _, mozzarella := range mozzarellas {
-				if !slices.Contains(restrictions.ExcludedIngredients, mozzarella.Name) && (!restrictions.MustBeVegetarian || mozzarella.Vegetarian) {
-					validMozzarellas = append(validMozzarellas, mozzarella)
+			var validVegetables []model.Ingredient
+			for _, vegetable := range vegetables {
+				if !slices.Contains(restrictions.ExcludedIngredients, vegetable.Name) && (!restrictions.MustBeVegetarian || vegetable.Vegetarian) {
+					validVegetables = append(validVegetables, vegetable)
 				}
 			}
 
-			toppings, err := catalogClient.Ingredients("topping")
+			sideDishes, err := catalogClient.Ingredients("side_dish")
 			if err != nil {
 				s.log.ErrorContext(r.Context(), "Requesting ingredients", "err", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 
-			var validToppings []model.Ingredient
-			for _, topping := range toppings {
-				if !slices.Contains(restrictions.ExcludedIngredients, topping.Name) && (!restrictions.MustBeVegetarian || topping.Vegetarian) {
-					validToppings = append(validToppings, topping)
+			var validSideDishes []model.Ingredient
+			for _, sideDish := range sideDishes {
+				if !slices.Contains(restrictions.ExcludedIngredients, sideDish.Name) && (!restrictions.MustBeVegetarian || sideDish.Vegetarian) {
+					validSideDishes = append(validSideDishes, sideDish)
 				}
 			}
 
@@ -1449,9 +1449,9 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 				}
 			}
 
-			doughs, err := catalogClient.Doughs()
+			rices, err := catalogClient.Rices()
 			if err != nil {
-				s.log.ErrorContext(r.Context(), "Requesting doughs", "err", err)
+				s.log.ErrorContext(r.Context(), "Requesting rices", "err", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
@@ -1502,19 +1502,19 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 
 				p = model.Food{
 					Name:        randomName,
-					Dough:       doughs[rand.Intn(len(doughs))],
-					Ingredients: []model.Ingredient{validOliveOils[rand.Intn(len(validOliveOils))], validTomatoes[rand.Intn(len(validTomatoes))], validMozzarellas[rand.Intn(len(validMozzarellas))]},
+					Rice:        rices[rand.Intn(len(rices))],
+					Ingredients: []model.Ingredient{validSauces[rand.Intn(len(validSauces))], validProteins[rand.Intn(len(validProteins))], validVegetables[rand.Intn(len(validVegetables))]},
 					Tool:        validTools[rand.Intn(len(validTools))],
 				}
 
-				// Compute how many extra toppings we are allowed to add. If any, randomize that number.
+				// Compute how many extra side dishes we are allowed to add. If any, randomize that number.
 				extraToppings := restrictions.MaxNumberOfToppings - restrictions.MinNumberOfToppings
 				if extraToppings > 0 {
 					extraToppings = rand.Intn(extraToppings + 1)
 				}
 
 				for range extraToppings + restrictions.MinNumberOfToppings {
-					p.Ingredients = append(p.Ingredients, validToppings[rand.Intn(len(validToppings))])
+					p.Ingredients = append(p.Ingredients, validSideDishes[rand.Intn(len(validSideDishes))])
 				}
 
 				uniqueIngredients := make(map[string]model.Ingredient)

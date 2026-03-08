@@ -33,7 +33,7 @@ func (s *serverImplementation) RateFood(_ context.Context, in *pb.FoodRatingRequ
 	if len(in.Ingredients) > 0 {
 		rating = rand.Int31n(6)
 	}
-	if in.Dough != "" && rating < 5 {
+	if in.Rice != "" && rating < 5 {
 		rating += rand.Int31n(2)
 	}
 	return &pb.FoodRatingResponse{

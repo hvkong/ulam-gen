@@ -36,7 +36,7 @@ export default function () {
 
   let token = res.json().token;
   let foodData = {
-    maxCaloriesPerSlice: 500,
+    maxCaloriesPerServing: 500,
     mustBeVegetarian: false,
     excludedIngredients: ["pepperoni"],
     excludedTools: ["knife"],

@@ -74,19 +74,19 @@ var (
 		NativeHistogramMinResetDuration: 1 * time.Hour,
 	})
 
-	foodCaloriesPerSlice = promauto.NewHistogram(prometheus.HistogramOpts{
+	foodCaloriesPerServing = promauto.NewHistogram(prometheus.HistogramOpts{
 		Namespace: "quickfood",
 		Subsystem: "server",
-		Name:      "food_calories_per_slice",
-		Help:      "The number of calories per slice of food",
+		Name:      "food_calories_per_serving",
+		Help:      "The number of calories per serving of food",
 		Buckets:   []float64{100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000},
 	})
 
-	foodCaloriesPerSliceNativeHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
+	foodCaloriesPerServingNativeHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
 		Namespace:                       "quickfood",
 		Subsystem:                       "server",
-		Name:                            "food_calories_per_slice_native",
-		Help:                            "The number of calories per slice of food (Native Histogram)",
+		Name:                            "food_calories_per_serving_native",
+		Help:                            "The number of calories per serving of food (Native Histogram)",
 		NativeHistogramBucketFactor:     1.1,
 		NativeHistogramMaxBucketNumber:  100,
 		NativeHistogramMinResetDuration: 1 * time.Hour,
@@ -168,18 +168,18 @@ type FoodRecommendation struct {
 
 // Restrictions are sent by the client to further specify how the target food should look like
 type Restrictions struct {
-	MaxCaloriesPerSlice int      `json:"maxCaloriesPerSlice"`
-	MustBeVegetarian    bool     `json:"mustBeVegetarian"`
-	ExcludedIngredients []string `json:"excludedIngredients"`
-	ExcludedTools       []string `json:"excludedTools"`
-	MaxNumberOfToppings int      `json:"maxNumberOfToppings"`
-	MinNumberOfToppings int      `json:"minNumberOfToppings"`
-	CustomName          string   `json:"customName"`
+	MaxCaloriesPerServing int      `json:"maxCaloriesPerServing"`
+	MustBeVegetarian      bool     `json:"mustBeVegetarian"`
+	ExcludedIngredients   []string `json:"excludedIngredients"`
+	ExcludedTools         []string `json:"excludedTools"`
+	MaxNumberOfToppings   int      `json:"maxNumberOfToppings"`
+	MinNumberOfToppings   int      `json:"minNumberOfToppings"`
+	CustomName            string   `json:"customName"`
 }
 
 func (r Restrictions) WithDefaults() Restrictions {
-	if r.MaxCaloriesPerSlice == 0 {
-		r.MaxCaloriesPerSlice = 1000
+	if r.MaxCaloriesPerServing == 0 {
+		r.MaxCaloriesPerServing = 1000
 	}
 	if r.MaxNumberOfToppings == 0 {
 		r.MaxNumberOfToppings = 5
@@ -1526,7 +1526,7 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 					p.Ingredients = append(p.Ingredients, ingredient)
 				}
 
-				if p.CalculateCalories() > restrictions.MaxCaloriesPerSlice {
+				if p.CalculateCalories() > restrictions.MaxCaloriesPerServing {
 					continue
 				}
 
@@ -1558,8 +1558,8 @@ func (s *Server) AddRecommendations(catalogClient CatalogClient, copyClient Copy
 
 		numberOfIngredientsPerFood.Observe(float64(len(p.Ingredients)))
 		numberOfIngredientsPerFoodNativeHistogram.Observe(float64(len(p.Ingredients)))
-		foodCaloriesPerSlice.Observe(float64(foodRecommendation.Calories))
-		foodCaloriesPerSliceNativeHistogram.Observe(float64(foodRecommendation.Calories))
+		foodCaloriesPerServing.Observe(float64(foodRecommendation.Calories))
+		foodCaloriesPerServingNativeHistogram.Observe(float64(foodRecommendation.Calories))
 
 		s.log.InfoContext(r.Context(), "New food recommendation", "food", foodRecommendation.Food.Name)
 			s.writeJSONResponse(w, r, foodRecommendation, http.StatusOK)

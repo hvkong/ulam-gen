@@ -9,7 +9,7 @@ export const options = {
 };
 
 interface Restrictions {
-  maxCaloriesPerSlice: number;
+  maxCaloriesPerServing: number;
   mustBeVegetarian: boolean;
   excludedIngredients: string[];
   excludedTools: string[];
@@ -19,7 +19,7 @@ interface Restrictions {
 
 export default function (): void {
   const restrictions: Restrictions = {
-    maxCaloriesPerSlice: 500,
+    maxCaloriesPerServing: 500,
     mustBeVegetarian: false,
     excludedIngredients: ["pepperoni"],
     excludedTools: ["knife"],

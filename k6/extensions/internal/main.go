@@ -19,12 +19,12 @@ type Internal struct {
 }
 
 type GojaRestrictions struct {
-	MaxCaloriesPerSlice int      `json:"maxCaloriesPerSlice"`
-	MustBeVegetarian    bool     `json:"mustBeVegetarian"`
-	ExcludedIngredients []string `json:"excludedIngredients"`
-	ExcludedTools       []string `json:"excludedTools"`
-	MinNumberOfToppings int      `json:"minNumberOfToppings"`
-	MaxNumberOfToppings int      `json:"maxNumberOfToppings"`
+	MaxCaloriesPerServing int      `json:"maxCaloriesPerServing"`
+	MustBeVegetarian      bool     `json:"mustBeVegetarian"`
+	ExcludedIngredients   []string `json:"excludedIngredients"`
+	ExcludedTools         []string `json:"excludedTools"`
+	MinNumberOfToppings   int      `json:"minNumberOfToppings"`
+	MaxNumberOfToppings   int      `json:"maxNumberOfToppings"`
 }
 
 // CheckRestrictions checks if the given pizza satisfies the given restrictions.
@@ -34,8 +34,8 @@ func (i *Internal) CheckRestrictions(pizza model.Pizza, restrictions GojaRestric
 		return false
 	}
 
-	if pizza.CalculateCalories() > restrictions.MaxCaloriesPerSlice {
-		i.CheckResult = "Pizza has too many calories: expected at most " + fmt.Sprint(restrictions.MaxCaloriesPerSlice) + " but got " + fmt.Sprint(pizza.CalculateCalories())
+	if pizza.CalculateCalories() > restrictions.MaxCaloriesPerServing {
+		i.CheckResult = "Pizza has too many calories: expected at most " + fmt.Sprint(restrictions.MaxCaloriesPerServing) + " but got " + fmt.Sprint(pizza.CalculateCalories())
 		return false
 	}
 

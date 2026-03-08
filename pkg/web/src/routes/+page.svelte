@@ -12,7 +12,7 @@ import { verifyUserLoggedIn } from '../lib/auth';
 import ToggleConfetti from '../lib/ToggleConfetti.svelte';
 
 const defaultRestrictions = {
-	maxCaloriesPerSlice: 1000,
+	maxCaloriesPerServing: 1000,
 	mustBeVegetarian: false,
 	excludedIngredients: [],
 	excludedTools: [],
@@ -199,13 +199,14 @@ async function getFood() {
 		);
 	}
 
-	// Check if rice is present - Asian food culture easter egg
-	const hasRice = food['food']['rice'];
+	// Check if rice name contains "rice" - Asian food culture easter egg
+	const riceName = food['food']['rice']?.name || '';
+	const hasRiceInName = riceName.toLowerCase().includes('rice');
 	
-	if (!hasRice) {
+	if (!hasRiceInName) {
 		window.faro?.api?.pushError(
 			new Error(
-				'Food Error: No Rice Detected! Asians can\'t eat a meal without rice!',
+				'Food Error: Invalid Rice Detected! "' + riceName + '" is not rice! Asians can\'t eat a meal without rice!',
 			),
 		);
 	}
@@ -286,7 +287,7 @@ async function getTools() {
 					<div class="flex flex-row">
 						<div class="relative">
 							<input
-								bind:value={restrictions.maxCaloriesPerSlice}
+								bind:value={restrictions.maxCaloriesPerServing}
 								type="number"
 								id="floating_filled"
 								class="block rounded-t-lg px-2.5 pb-2.5 pt-5 w-full text-sm text-gray-900 bg-gray-50 border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-red-600 peer"
@@ -295,7 +296,7 @@ async function getTools() {
 							<label
 								for="floating_filled"
 								class="absolute text-sm text-gray-900 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-red-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
-								>Max Calories per Slice</label
+								>Max Calories per Serving</label
 							>
 						</div>
 						<div class="relative ml-2">
@@ -309,7 +310,7 @@ async function getTools() {
 							<label
 								for="floating_filled"
 								class="absolute text-sm text-gray-900 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-red-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
-								>Min Number of Toppings</label
+								>Min Number of Side Dishes</label
 							>
 						</div>
 						<div class="relative ml-2">
@@ -323,7 +324,7 @@ async function getTools() {
 							<label
 								for="floating_filled"
 								class="absolute text-sm text-gray-900 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5 peer-focus:text-red-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
-								>Max Number of Toppings</label
+								>Max Number of Side Dishes</label
 							>
 						</div>
 					</div>
@@ -419,7 +420,7 @@ async function getTools() {
 										{/each}
 									</ul>
 									<p>Utensil: {food['food']['tool']}</p>
-									<p>Calories per slice: {food['calories']}</p>
+									<p>Calories per serving: {food['calories']}</p>
 								</div>
 							</div>
 						</div>

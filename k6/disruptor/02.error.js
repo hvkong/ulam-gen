@@ -38,7 +38,7 @@ export function disrupt(data) {
 
 export default function () {
     const restrictions = {
-        "maxCaloriesPerSlice": 500,
+        "maxCaloriesPerServing": 500,
         "mustBeVegetarian": false,
         "excludedIngredients": ["pepperoni"],
         "excludedTools": ["knife"],

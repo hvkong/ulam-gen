@@ -58,9 +58,9 @@ These are custom application metrics specific to the QuickFood application, impl
 
 - `quickfood_server_number_of_ingredients_per_food_native`: Distribution of ingredients per food (Native Histogram).
 
-- `quickfood_server_food_calories_per_slice`: Distribution of calories per food slice (Classic Histogram).
+- `quickfood_server_food_calories_per_serving`: Distribution of calories per food serving (Classic Histogram).
 
-- `quickfood_server_food_calories_per_slice_native`: Distribution of calories per food slice (Native Histogram).
+- `quickfood_server_food_calories_per_serving_native`: Distribution of calories per food serving (Native Histogram).
 
 - `quickfood_server_http_request_duration_seconds`: Duration of HTTP request processing (Classic Histogram).
 

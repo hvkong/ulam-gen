@@ -5,10 +5,10 @@ import (
 )
 
 type Ingredient struct {
-	bun.BaseModel    `bun:"table:ingredients,alias:i"`
-	ID               int64  `bun:",pk"`
-	Name             string `json:"name"`
-	CaloriesPerSlice int    `json:"caloriesPerSlice"`
-	Vegetarian       bool   `json:"vegetarian"`
-	Type             string `json:"-"`
+	bun.BaseModel      `bun:"table:ingredients,alias:i"`
+	ID                 int64  `bun:",pk"`
+	Name               string `json:"name"`
+	CaloriesPerServing int    `json:"caloriesPerServing"`
+	Vegetarian         bool   `json:"vegetarian"`
+	Type               string `json:"-"`
 }

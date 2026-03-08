@@ -2,19 +2,34 @@
   rows:
     - id: 1
       name: Jasmine Rice
-      calories_per_slice: 130
+      calories_per_serving: 130
     - id: 2
       name: Garlic Rice
-      calories_per_slice: 150
+      calories_per_serving: 150
     - id: 3
       name: Fried Rice
-      calories_per_slice: 180
+      calories_per_serving: 180
     - id: 4
       name: Basmati Rice
-      calories_per_slice: 130
+      calories_per_serving: 130
     - id: 5
       name: Brown Rice
-      calories_per_slice: 140
+      calories_per_serving: 140
+    - id: 6
+      name: Bagoong Rice
+      calories_per_serving: 160
+    - id: 7
+      name: Aligue Rice
+      calories_per_serving: 170
+    - id: 8
+      name: Kimchi Rice
+      calories_per_serving: 155
+    - id: 9
+      name: Yang Chow Rice
+      calories_per_serving: 190
+    - id: 10
+      name: Garlic Bread
+      calories_per_serving: 200
 - model: Tool
   rows:
     - name: Chopsticks
@@ -25,201 +40,201 @@
   rows:
     - id: 1
       name: "Soy Sauce"
-      calories_per_slice: 10
+      calories_per_serving: 10
       vegetarian: true
       type: "sauce"
     - id: 2
       name: "Oyster Sauce"
-      calories_per_slice: 15
+      calories_per_serving: 15
       vegetarian: false
       type: "sauce"
     - id: 3
       name: "Fish Sauce"
-      calories_per_slice: 10
+      calories_per_serving: 10
       vegetarian: false
       type: "sauce"
     - id: 4
       name: "Hoisin Sauce"
-      calories_per_slice: 20
+      calories_per_serving: 20
       vegetarian: true
       type: "sauce"
     - id: 5
       name: "Teriyaki Sauce"
-      calories_per_slice: 25
+      calories_per_serving: 25
       vegetarian: true
       type: "sauce"
     - id: 6
       name: "Chicken"
-      calories_per_slice: 120
+      calories_per_serving: 120
       vegetarian: false
       type: "protein"
     - id: 7
       name: "Pork"
-      calories_per_slice: 150
+      calories_per_serving: 150
       vegetarian: false
       type: "protein"
     - id: 8
       name: "Beef"
-      calories_per_slice: 140
+      calories_per_serving: 140
       vegetarian: false
       type: "protein"
     - id: 9
       name: "Tofu"
-      calories_per_slice: 80
+      calories_per_serving: 80
       vegetarian: true
       type: "protein"
     - id: 10
       name: "Shrimp"
-      calories_per_slice: 100
+      calories_per_serving: 100
       vegetarian: false
       type: "protein"
     - id: 11
       name: "Fish"
-      calories_per_slice: 110
+      calories_per_serving: 110
       vegetarian: false
       type: "protein"
     - id: 12
       name: "Bok Choy"
-      calories_per_slice: 15
+      calories_per_serving: 15
       vegetarian: true
       type: "vegetable"
     - id: 13
       name: "Chinese Cabbage"
-      calories_per_slice: 20
+      calories_per_serving: 20
       vegetarian: true
       type: "vegetable"
     - id: 14
       name: "Bean Sprouts"
-      calories_per_slice: 10
+      calories_per_serving: 10
       vegetarian: true
       type: "vegetable"
     - id: 15
       name: "Spinach"
-      calories_per_slice: 25
+      calories_per_serving: 25
       vegetarian: true
       type: "vegetable"
     - id: 16
       name: "Broccoli"
-      calories_per_slice: 30
+      calories_per_serving: 30
       vegetarian: true
       type: "vegetable"
     - id: 17
-      calories_per_slice: 80
+      calories_per_serving: 80
       name: Kimchi
       type: side_dish
       vegetarian: true
     - id: 18
-      calories_per_slice: 30
+      calories_per_serving: 30
       name: Pickled Radish
       type: side_dish
       vegetarian: true
     - id: 19
-      calories_per_slice: 120
+      calories_per_serving: 120
       name: Spring Rolls
       type: side_dish
       vegetarian: true
     - id: 20
-      calories_per_slice: 150
+      calories_per_serving: 150
       name: Dumplings
       type: side_dish
       vegetarian: false
     - id: 21
-      calories_per_slice: 60
+      calories_per_serving: 60
       name: Edamame
       type: side_dish
       vegetarian: true
     - id: 22
-      calories_per_slice: 100
+      calories_per_serving: 100
       name: Gyoza
       type: side_dish
       vegetarian: false
     - id: 23
-      calories_per_slice: 50
+      calories_per_serving: 50
       name: Seaweed Salad
       type: side_dish
       vegetarian: true
     - id: 24
-      calories_per_slice: 90
+      calories_per_serving: 90
       name: Miso Soup
       type: side_dish
       vegetarian: true
     - id: 25
-      calories_per_slice: 70
+      calories_per_serving: 70
       name: Cucumber Salad
       type: side_dish
       vegetarian: true
     - id: 26
-      calories_per_slice: 110
+      calories_per_serving: 110
       name: Egg Rolls
       type: side_dish
       vegetarian: false
     - id: 27
-      calories_per_slice: 85
+      calories_per_serving: 85
       name: Tempura Vegetables
       type: side_dish
       vegetarian: true
     - id: 28
-      calories_per_slice: 130
+      calories_per_serving: 130
       name: Pork Buns
       type: side_dish
       vegetarian: false
     - id: 29
-      calories_per_slice: 75
+      calories_per_serving: 75
       name: Steamed Buns
       type: side_dish
       vegetarian: true
     - id: 30
-      calories_per_slice: 95
+      calories_per_serving: 95
       name: Wontons
       type: side_dish
       vegetarian: false
     - id: 31
-      calories_per_slice: 40
+      calories_per_serving: 40
       name: Pickled Ginger
       type: side_dish
       vegetarian: true
     - id: 32
-      calories_per_slice: 55
+      calories_per_serving: 55
       name: Daikon Radish
       type: side_dish
       vegetarian: true
     - id: 33
-      calories_per_slice: 120
+      calories_per_serving: 120
       name: Chicken Satay
       type: side_dish
       vegetarian: false
     - id: 34
-      calories_per_slice: 100
+      calories_per_serving: 100
       name: Tofu Skin Rolls
       type: side_dish
       vegetarian: true
     - id: 35
-      calories_per_slice: 65
+      calories_per_serving: 65
       name: Bamboo Shoots
       type: side_dish
       vegetarian: true
     - id: 36
-      calories_per_slice: 80
+      calories_per_serving: 80
       name: Water Chestnuts
       type: side_dish
       vegetarian: true
     - id: 37
-      calories_per_slice: 90
+      calories_per_serving: 90
       name: Scallion Pancakes
       type: side_dish
       vegetarian: true
     - id: 38
-      calories_per_slice: 110
+      calories_per_serving: 110
       name: Char Siu
       type: side_dish
       vegetarian: false
     - id: 39
-      calories_per_slice: 45
+      calories_per_serving: 45
       name: Sesame Seeds
       type: side_dish
       vegetarian: true
     - id: 40
-      calories_per_slice: 35
+      calories_per_serving: 35
       name: Green Onions
       type: side_dish
       vegetarian: true

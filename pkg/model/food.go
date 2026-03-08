@@ -28,7 +28,7 @@ func (f Food) IsVegetarian() bool {
 func (f Food) CalculateCalories() int {
 	calories := 0
 	for _, ingredient := range f.Ingredients {
-		calories += ingredient.CaloriesPerSlice
+		calories += ingredient.CaloriesPerServing
 	}
 	return calories
 }

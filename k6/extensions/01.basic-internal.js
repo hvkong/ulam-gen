@@ -11,7 +11,7 @@ export const options = {
 
 export default function() {
   let restrictions = {
-    maxCaloriesPerSlice: 500,
+    maxCaloriesPerServing: 500,
     mustBeVegetarian: false,
     excludedIngredients: ["pepperoni"],
     excludedTools: ["knife"],

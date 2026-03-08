@@ -54,7 +54,7 @@ QUICKFOOD_IMAGE=quickfood-local:latest docker compose -f compose.grafana-cloud.m
 curl -X POST http://localhost:3333/api/food \
   -H "Authorization: Token abcdef0123456789" \
   -H "Content-Type: application/json" \
-  -d '{"maxCaloriesPerSlice": 1000, "mustBeVegetarian": false}'
+  -d '{"maxCaloriesPerServing": 1000, "mustBeVegetarian": false}'
 ```
 
 

@@ -18,10 +18,10 @@ COPY . ./
 COPY --from=fe-builder /app/pkg/web/build /app/pkg/web/build
 # Disable CGO in order to build a completely static binary, allowing us to use the binary in a container
 # with uses a different distribution of libc.
-RUN CGO_ENABLED=0 go build -o /bin/quickpizza ./cmd
+RUN CGO_ENABLED=0 go build -o /bin/quickfood ./cmd
 
 FROM gcr.io/distroless/static-debian11@sha256:1dbe426d60caed5d19597532a2d74c8056cd7b1674042b88f7328690b5ead8ed
 
-COPY --from=builder /bin/quickpizza /bin
+COPY --from=builder /bin/quickfood /bin
 EXPOSE 3333 3334 3335
-ENTRYPOINT [ "/bin/quickpizza" ]
+ENTRYPOINT [ "/bin/quickfood" ]

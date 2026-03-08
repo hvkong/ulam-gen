@@ -16,7 +16,7 @@ build-go: # Build Go binary (doesn't rebuild frontend)
 	mkdir -p $(FRONTEND_BUILD_DIR)
 	test -e $(FRONTEND_BUILD_DIR)/index.html || \
 		cp pkg/web/dev.html $(FRONTEND_BUILD_DIR)/index.html
-	go build -o bin/quickpizza ./cmd
+	go build -o bin/quickfood ./cmd
 
 .PHONY: install-web
 install-web: # Install frontend dependencies
@@ -52,7 +52,7 @@ format-check: # Check Go code formatting
 
 .PHONY: docker-build
 docker-build: # Build Docker image
-	docker build . -t grafana/quickpizza-local:latest
+	docker build . -t grafana/quickfood-local:latest
 
 .PHONY: docker-run
 docker-run: # Run Docker container

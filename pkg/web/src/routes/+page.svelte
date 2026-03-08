@@ -381,7 +381,7 @@ async function getTools() {
 					x={[-0.5, 0.5]}
 					size="30"
 					amount="10"
-					colorArray={['url(/images/pizza.png)']}
+					colorArray={['url(/images/food.png)']}
 				/>
 			</ToggleConfetti>
 			<p />

@@ -238,8 +238,8 @@ async function getTools() {
 </script>
 
 <svelte:head>
-	<title>QuickFood</title>
-	<meta name="description" content="QuickFood" />
+	<title>Ulam Generator 🍲</title>
+	<meta name="description" content="Generate delicious ulam combinations" />
 </svelte:head>
 
 <style>
@@ -248,15 +248,15 @@ async function getTools() {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		margin: 2rem auto;
+		margin: 0rem auto;
 		max-width: 800px;
 	}
 
 	.ulam-text {
 		position: absolute;
 		font-size: clamp(4rem, 15vw, 12rem);
-		font-weight: bold;
-		color: #ba660b;
+		font-weight: 900;
+		color: #e99842ff;
 		z-index: 0;
 		user-select: none;
 		pointer-events: none;
@@ -311,7 +311,7 @@ async function getTools() {
 		/>
 	</section>
 
-	<section class="mt-8 flex flex-row justify-center items-center">
+	<section class="mt-0 flex flex-row justify-center items-center">
 		{#if quote}
 			<br />
 			<div class="bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg p-2 text-sm text-white">

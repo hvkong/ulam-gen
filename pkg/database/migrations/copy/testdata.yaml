@@ -1,93 +1,72 @@
 - model: Quote
   rows:
     - name: |-
-        "Pizza makes anything possible..." - Ernest Hemingway
+        "Monitoring tells you when something is wrong. Observability lets you understand why." - Charity Majors
     - name: |-
-        "Anyone who says that money cannot buy happiness has clearly never spent their money on pizza." - Oscar Wilde
+        "Modern systems don't fail because engineers lack skills; they fail because teams can't see why systems are failing at all or can't see why they're failing fast enough." - Splunk Blog
     - name: |-
-        "Pizza is the most perfect food that exists." - John Green
+        "Everything fails all the time, so plan for failure and nothing fails." - Werner Vogels
     - name: |-
-        "My unbiased opinion is that pizza is a great food." - Mario Pizzetti
+        "Hope is not a strategy." - Traditional System Reliability Engineering (SRE) saying
     - name: |-
-        "How did my name end up in a pizza website? No, seriously." - John Hamm
+        "May the queries flow, and the pager stay silent." - Traditional SRE Blessing
     - name: |-
-        "I used Grafana's k6 to test this website, and it was great. Like pizza." - Mary D. Eveloper
+        "Any fool can write code that a computer can understand. Good programmers write code that humans can understand." - Martin Fowler
 - model: ClassicalName
   rows:
-    - name: Americana
-    - name: Bolognese
-    - name: Calzone
-    - name: Capricciosa
-    - name: Carbonara
-    - name: Frutti di Mare
-    - name: Funghi
-    - name: Fungi e Olive
-    - name: Hawaii
-    - name: Margherita
-    - name: Marinara
-    - name: Napoletana
-    - name: Prosciutto
-    - name: Pugliese
-    - name: Quattro Formaggi
-    - name: Quattro Stagioni
-    - name: Romana
-    - name: Siciliana
+    - name: Feast
+    - name: Meal
+    - name: Combo
+    - name: Platter
+    - name: Merienda
+    - name: Snack
+    - name: Course
+    - name: Diet
+    - name: Breakfast
+    - name: Brunch
+    - name: Lunch
+    - name: Dinner
+    - name: Supper
+    - name: Fiesta
+    - name: Banquet
+    - name: Party
+    - name: Group
+    - name: for Sharing
 - model: Adjective
   rows:
-    - name: Able
-    - name: Bad
-    - name: Big
-    - name: Black
-    - name: Blue
-    - name: Bold
-    - name: Brave
-    - name: Bright
-    - name: Busy
-    - name: Calm
-    - name: Clever
+    - name: Bite-sized
+    - name: Bitter
+    - name: Bottomless
+    - name: Cheap
+    - name: Chewy
+    - name: Chilled
+    - name: Chunky
     - name: Cold
-    - name: Cool
-    - name: Crazy
-    - name: Cute
-    - name: Dark
-    - name: Dead
-    - name: Deep
-    - name: Dirty
-    - name: Dry
-    - name: Early
-    - name: Easy
-    - name: Empty
-    - name: Fast
-    - name: Fat
-    - name: Fierce
-    - name: Fine
-    - name: Flat
-    - name: Fluffy
-    - name: Free
-    - name: Fresh
-    - name: Full
-    - name: Funny
-    - name: Gentle
+    - name: Comforting
+    - name: Deep-fried
+    - name: Deluxe
+    - name: Exotic
+    - name: Famous
+    - name: Fancy
+    - name: Fusion
+    - name: Generous
     - name: Giant
-    - name: Gigantic
-    - name: Good
-    - name: Green
-    - name: Grey
+    - name: Gourmet
+    - name: Guilt-free
     - name: Happy
     - name: Hard
+    - name: Heavenly
     - name: Heavy
-    - name: High
-    - name: Hollow
+    - name: Home-Cooked
     - name: Hot
     - name: Huge
     - name: Hungry
-    - name: Hurt
-    - name: Ill
     - name: Important
-    - name: Kind
-    - name: Large
-    - name: Late
-    - name: Lazy
+    - name: Infinite
+    - name: Instant
+    - name: Irresistable
+    - name: Juicy
+    - name: Legendary
     - name: Light
     - name: Little
     - name: Long
@@ -96,6 +75,7 @@
     - name: Lucky
     - name: Mad
     - name: Mammoth
+    - name: Marinated
     - name: Massive
     - name: Mean
     - name: Mighty
@@ -103,6 +83,7 @@
     - name: Misty
     - name: Modern
     - name: Mushy
+    - name: Mysterious
     - name: Narrow
     - name: Nasty
     - name: New
@@ -116,26 +97,41 @@
     - name: Purple
     - name: Quick
     - name: Quiet
+    - name: Radiant
+    - name: Raw
     - name: Red
-    - name: Round
+    - name: Roasted
     - name: Rough
+    - name: Round
     - name: Sad
+    - name: Salty
+    - name: Savory
     - name: Scary
+    - name: Secret
     - name: Shallow
     - name: Short
     - name: Shy
     - name: Silent
+    - name: Sinful
+    - name: Sizzling
+    - name: Slow-cooked
     - name: Small
     - name: Soft
     - name: Solid
     - name: Sour
+    - name: Spicy
     - name: Square
+    - name: Steamed
     - name: Strange
     - name: Strong
     - name: Stupid
+    - name: Succulent
+    - name: Sumptuous
+    - name: Surprising
     - name: Sweet
     - name: Tall
     - name: Tame
+    - name: Tangy
     - name: Tasty
     - name: Tender
     - name: Tight
@@ -143,8 +139,10 @@
     - name: Tough
     - name: "True"
     - name: Ugly
+    - name: Ultimate
     - name: Unhappy
     - name: Unusual
+    - name: Vintage
     - name: Warm
     - name: Weak
     - name: White
@@ -153,3 +151,5 @@
     - name: Wise
     - name: Yellow
     - name: Young
+    - name: Yummy
+    - name: Zesty

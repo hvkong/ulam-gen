@@ -209,7 +209,7 @@ async function handleLogout() {
 					</form>
 					<p class="text-sm">
 						<b>Tip:</b> You can create a new user via the
-						<code>POST http://quickfood.grafana.com/api/users</code>
+						<code>POST /api/users</code>
 						endpoint. Attach a JSON payload with <code>username</code> and <code>password</code> keys.
 					</p>
 					{#if loginError}

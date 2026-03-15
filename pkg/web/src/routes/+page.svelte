@@ -254,7 +254,8 @@ async function getTools() {
 
 	.ulam-text {
 		position: absolute;
-		font-size: clamp(4rem, 15vw, 12rem);
+		width: max-content;
+		font-size: clamp(15vw, 20vw, 20vw);
 		font-weight: 900;
 		color: #e99842ff;
 		z-index: 0;
@@ -271,15 +272,21 @@ async function getTools() {
 		max-height: 500px;
 		object-fit: contain;
 	}
+
+	@media (max-width: 768px) {
+		.ulam-text {
+			font-size: clamp(20vw, 30vw, 50vw);
+		}
+	}	
 </style>
 
 {#if render}
 	<section class="mt-4 flow-root">
 		<div class="flex float-left">
-			<a href="https://quickfood.grafana.com"
+			<a href="#"
 				><img class="w-7 h-7 mr-2" src="/images/food.png" alt="logo" /></a
 			>
-			<p class="text-xl font-bold text-white">QuickFood</p>
+			<p class="text-xl font-bold text-white">Ulam Generator</p>
 		</div>
 		<div class="flex float-right">
 			<span class="relative inline-flex items-center mb-5 mt-1 mr-6">
@@ -301,9 +308,9 @@ async function getTools() {
 		</div>
 	</section>
 
-	<!-- Hero Section with ULAM text -->
+	<!-- Hero Section text -->
 	<section class="hero-container">
-		<div class="ulam-text">ULAM</div>
+		<div class="ulam-text">FOOD!</div>
 		<img 
 			src="/images/hero{heroImageNumber}.png" 
 			alt="QuickFood Hero" 
@@ -326,7 +333,7 @@ async function getTools() {
 				Looking to break out of your food routine?
 			</h1>
 			<h2 class="text-xl md:text-2xl mt-2 font-semibold text-white">
-				<span class="text-orange-400">QuickFood</span> has your back!
+				<span class="text-orange-400">Ulam Generator</span> has your back!
 			</h2>
 			<p class="m-2 text-white">
 			With just one click, you'll discover new and exciting food combinations that you never knew
@@ -463,7 +470,7 @@ async function getTools() {
 								<div class="ml-2">
 									<p>Name: {food['food']['name']}</p>
 									<p>Rice: {food['food']['rice']['name']}</p>
-									<p>Ingredients:</p>
+									<p>Dishes:</p>
 									<ul class="list-disc list-inside">
 										{#each food['food']['ingredients'] as ingredient}
 											<li class="pl-5 list-inside">{ingredient['name']}</li>
@@ -500,7 +507,7 @@ async function getTools() {
 	</section>
 	<footer>
 		<div class="flex justify-center mt-8 m-1">
-			<p class="text-sm text-white">Made with ❤️ by QuickFood Labs.</p>
+			<p class="text-sm text-white">Inspired by Grafana Labs demo app ❤️.</p>
 		</div>
 		<div class="flex justify-center">
 			<p class="text-xs text-white text-opacity-70">WebSocket visitor ID: {wsVisitorID}</p>
@@ -514,9 +521,9 @@ async function getTools() {
 		</div>
 		<div class="flex justify-center">
 			<p class="text-xs text-white text-opacity-70">
-				Contribute to QuickFood on <a
+				Customization details can be found on: <a
 					class="text-orange-400 hover:text-orange-300"
-					href="https://github.com/grafana/quickpizza">GitHub</a
+					href="https://github.com/hvkong/ulam-gen">GitHub</a
 				>
 			</p>
 		</div>

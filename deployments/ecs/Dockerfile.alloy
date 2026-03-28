@@ -1,0 +1,5 @@
+FROM grafana/alloy:v1.12.2
+COPY config.alloy /config.alloy
+EXPOSE 12345 4317 4318
+ENTRYPOINT ["/bin/alloy"]
+CMD ["run", "/config.alloy", "--server.http.listen-addr=0.0.0.0:12345", "--stability.level=public-preview"]

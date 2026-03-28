@@ -1,0 +1,75 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+  # Scrape Prometheus metrics from the app container (localhost in Fargate)
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: quickfood
+          scrape_interval: 10s
+          static_configs:
+            - targets: ["localhost:3333"]
+
+processors:
+  batch:
+    timeout: 5s
+    send_batch_size: 1024
+
+  resource:
+    attributes:
+      - key: deployment.environment
+        value: ${DEPLOYMENT_ENVIRONMENT}
+        action: upsert
+      - key: service.namespace
+        value: ${SERVICE_NAMESPACE}
+        action: upsert
+
+  resourcedetection:
+    detectors: [env, ecs]
+    timeout: 5s
+
+exporters:
+  # AWS X-Ray for traces
+  awsxray:
+    region: ${AWS_REGION}
+
+  # CloudWatch for metrics
+  awsemf:
+    region: ${AWS_REGION}
+    namespace: QuickFood
+    log_group_name: /ecs/quickfood/metrics
+    dimension_rollup_option: NoDimensionRollup
+
+  # Grafana Cloud via OTLP HTTP
+  otlphttp/grafana:
+    endpoint: ${GRAFANA_OTLP_ENDPOINT}
+    headers:
+      Authorization: "Basic ${GRAFANA_OTLP_AUTH}"
+
+  # CloudWatch Logs
+  awscloudwatchlogs:
+    region: ${AWS_REGION}
+    log_group_name: /ecs/quickfood/otel-logs
+    log_stream_name: ${OTEL_SERVICE_NAME}
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [resource, resourcedetection, batch]
+      exporters: [awsxray, otlphttp/grafana]
+
+    metrics:
+      receivers: [otlp, prometheus]
+      processors: [resource, resourcedetection, batch]
+      exporters: [awsemf, otlphttp/grafana]
+
+    logs:
+      receivers: [otlp]
+      processors: [resource, resourcedetection, batch]
+      exporters: [awscloudwatchlogs, otlphttp/grafana]

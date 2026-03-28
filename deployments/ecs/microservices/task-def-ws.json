@@ -1,0 +1,60 @@
+{
+  "family": "quickfood-ws",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "<EXECUTION_ROLE_ARN>",
+  "taskRoleArn": "<TASK_ROLE_ARN>",
+  "containerDefinitions": [
+    {
+      "name": "ws",
+      "image": "<ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/hkdemo/ulam-gen:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "name": "ws",
+          "containerPort": 3333,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "environment": [
+        { "name": "QUICKFOOD_ENABLE_ALL_SERVICES", "value": "0" },
+        { "name": "QUICKFOOD_ENABLE_WS_SERVICE", "value": "1" },
+        { "name": "QUICKFOOD_OTLP_ENDPOINT", "value": "http://localhost:4318" },
+        { "name": "QUICKFOOD_TRUST_CLIENT_TRACEID", "value": "1" },
+        { "name": "QUICKFOOD_OTEL_SERVICE_NAME", "value": "ws" },
+        { "name": "QUICKFOOD_OTEL_SERVICE_INSTANCE_ID", "value": "ws" },
+        { "name": "OTEL_RESOURCE_ATTRIBUTES", "value": "deployment.environment=production,service.version=hkdemo-quickfood-ecs" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "hkdemo/ecs/quickfood/ws",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "app"
+        }
+      }
+    },
+    {
+      "name": "adot-collector",
+      "image": "public.ecr.aws/aws-observability/aws-otel-collector:latest",
+      "essential": false,
+      "environment": [
+        { "name": "AOT_CONFIG_CONTENT", "value": "receivers:\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\n  prometheus:\n    config:\n      scrape_configs:\n        - job_name: quickfood-ws\n          scrape_interval: 10s\n          static_configs:\n            - targets: [\"localhost:3333\"]\nprocessors:\n  batch:\n    timeout: 5s\n    send_batch_size: 1024\n  resourcedetection:\n    detectors: [env, ecs]\n    timeout: 5s\nexporters:\n  awsxray:\n    region: us-east-1\n  awsemf:\n    region: us-east-1\n    namespace: QuickFood\n    log_group_name: /ecs/quickfood/metrics\n    dimension_rollup_option: NoDimensionRollup\n  otlphttp/grafana:\n    endpoint: ${GRAFANA_OTLP_ENDPOINT}\n    headers:\n      Authorization: Basic ${GRAFANA_OTLP_AUTH}\nservice:\n  pipelines:\n    traces:\n      receivers: [otlp]\n      processors: [resourcedetection, batch]\n      exporters: [awsxray, otlphttp/grafana]\n    metrics:\n      receivers: [otlp, prometheus]\n      processors: [resourcedetection, batch]\n      exporters: [awsemf, otlphttp/grafana]\n    logs:\n      receivers: [otlp]\n      processors: [resourcedetection, batch]\n      exporters: [otlphttp/grafana]\n" },
+        { "name": "AWS_REGION", "value": "us-east-1" },
+        { "name": "GRAFANA_OTLP_ENDPOINT", "value": "<GRAFANA_OTLP_ENDPOINT>" },
+        { "name": "GRAFANA_OTLP_AUTH", "value": "<GRAFANA_OTLP_AUTH_BASE64>" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "hkdemo/ecs/quickfood/ws",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "adot"
+        }
+      }
+    }
+  ]
+}

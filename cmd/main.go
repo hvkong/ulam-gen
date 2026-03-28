@@ -158,7 +158,11 @@ func main() {
 		}()
 	}
 
-	listen := ":3333"
+	listenPort := os.Getenv("QUICKFOOD_LISTEN_PORT")
+	if listenPort == "" {
+		listenPort = "3333"
+	}
+	listen := ":" + listenPort
 	slog.Info("Starting QuickFood", "listenAddress", listen)
 	err := http.ListenAndServe(listen, server)
 	if err != nil {

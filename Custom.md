@@ -1,4 +1,4 @@
-# Customizations
+# Local Customizations
 
 Customize the look and feel of the frontend via the below locations.
 
@@ -18,19 +18,26 @@ Once you’ve edited any of the Svelte/HTML files, rebuild the frontend and then
 
 # Shortcuts
 
-## Build
-To build, create, start the resources in docker compose file.
+## Build from scratch
+Build the image with latest changes 
+```
+docker buildx build -t quickfood-local:latest --load .
+```
+
+# Create, start the resources in docker compose file.
+Deploy the services and containers
 ```
 QUICKFOOD_IMAGE=quickfood-local:latest docker compose -f compose.grafana-cloud.microservices.yaml up -d
 ```
 
-## Stop and Remove
+# Stop and Remove
 To stop and remove containers, networks and other resources.
 ```
 docker compose -f compose.grafana-cloud.microservices.yaml down
 ```
 
-# 1. PURGE everything
+# Cleanup
+Cleanup everything
 ```
 docker compose down -v
 docker rmi quickfood-local:latest
@@ -38,18 +45,9 @@ docker system prune --all --volumes
 ```
 To clear the build history `docker buildx history rm --all`
 
-# 2. REBUILD from scratch
-```
-docker buildx build -t quickfood-local:latest --load .
-```
 
-# 3. START fresh  
-```
-QUICKFOOD_IMAGE=quickfood-local:latest docker compose -f compose.grafana-cloud.microservices.yaml up -d
-```
-
-
-# 4. TEST the API
+# Testing the API
+Call the local API
 ```
 curl -X POST http://localhost:3333/api/food \
   -H "Authorization: Token abcdef0123456789" \
@@ -58,7 +56,8 @@ curl -X POST http://localhost:3333/api/food \
 ```
 
 
-# 5. RUN a k6 test if you want to verify load tests work
+# Run a k6 test if you want to verify load tests work
+Untested with latest changes but try it out
 ```
 k6 run k6/foundations/14.basic.tracing.js -u http://localhost:3333
 ```

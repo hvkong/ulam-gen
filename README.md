@@ -89,3 +89,6 @@ and Grafana Cloud. Without it, use VPC endpoints (PrivateLink) or a NAT Gateway.
 Ensure all services use "Client and server" mode in Service Connect configuration.
 The discovery name and DNS name must match what other services use in their endpoint
 env vars (e.g. `QUICKFOOD_CATALOG_ENDPOINT=http://catalog:3333` requires DNS name `catalog`).
+
+#### Websocket service appears in Grafana Service Map but not in AWS X-Ray Trace Map
+X-Ray's service map is built exclusively from traces — it only shows services that have trace segments (spans) flowing through them. It doesn't consume Prometheus metrics. Grafana's service map uses both traces and metrics. The Prometheus scrape registers ws as a known service, so Grafana shows it even without traces.

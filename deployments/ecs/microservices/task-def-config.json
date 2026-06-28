@@ -9,7 +9,7 @@
   "containerDefinitions": [
     {
       "name": "config",
-      "image": "<ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/hkdemo/ulam-gen:latest",
+      "image": "<ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/hkdemo/quickfood:latest",
       "essential": true,
       "portMappings": [
         {

@@ -1,5 +1,9 @@
 # ECS Fargate Microservices Deployment
 
+> **Automated Deployment Available:** Use the CloudFormation template at
+> `deployments/cloudformation/quickfood-ecs-fargate.yaml` for one-click deployment.
+> The manual steps below are preserved for reference or if you prefer CLI control.
+
 Deploys QuickFood as separate ECS services with ADOT collector sidecars,
 sending telemetry to both AWS (X-Ray, CloudWatch, Application Signals)
 and Grafana Cloud.
@@ -20,7 +24,7 @@ Each service has an ADOT sidecar for telemetry collection.
 
 ## Prerequisites
 
-1. ECR image pushed: `<account-id>.dkr.ecr.<region>.amazonaws.com/hkdemo/ulam-gen:latest`
+1. ECR image pushed: `<account-id>.dkr.ecr.<region>.amazonaws.com/hkdemo/quickfood:latest`
 2. ECS cluster with Service Connect enabled (namespace: `quickfood`)
 3. IAM task execution role with:
    - `AmazonECSTaskExecutionRolePolicy`
@@ -59,14 +63,23 @@ aws ecs create-cluster \
 
 ### 3. Register Task Definitions
 
-See task definition JSON files in this directory.
+See task definition JSON files in the `Task Definitions/` directory at the project root.
+Replace placeholder values before registering:
+- `<ACCOUNT_ID>` — your AWS account ID
+- `<REGION>` — target AWS region (e.g. `ap-northeast-1`)
+- `<EXECUTION_ROLE_ARN>` — ARN of your ECS task execution role
+- `<TASK_ROLE_ARN>` — ARN of your ECS task role
+- `<GRAFANA_OTLP_ENDPOINT>` — Grafana Cloud OTLP gateway URL
+- `<GRAFANA_OTLP_AUTH_BASE64>` — Base64-encoded `<instance-id>:<token>`
+- `<FARO_COLLECTOR_URL>` — Grafana Faro collector URL (public-api and config only)
+
 Register each one:
 
 ```bash
 for svc in public-api catalog copy recommendations ws config grpc; do
   aws ecs register-task-definition \
-    --cli-input-json file://task-def-${svc}.json \
-    --region us-east-1
+    --cli-input-json "file://Task Definitions/quickfood-${svc}.json" \
+    --region <REGION>
 done
 ```
 

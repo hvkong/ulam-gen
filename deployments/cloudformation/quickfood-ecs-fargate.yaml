@@ -1,0 +1,1434 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  QuickFood ECS Fargate Microservices Stack.
+  Deploys 7 microservices (public-api, catalog, copy, recommendations, ws, config, grpc)
+  with ADOT sidecars sending telemetry to both AWS native services and Grafana Cloud.
+  Services start with DesiredCount 0 — scale up manually when ready.
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Naming"
+        Parameters:
+          - ClusterName
+          - TaskFamilyPrefix
+          - LogGroupPrefix
+      - Label:
+          default: "Network — Select your existing VPC and subnets"
+        Parameters:
+          - VpcId
+          - SubnetIds
+          - ALBAllowedCIDR
+      - Label:
+          default: "HTTPS / TLS"
+        Parameters:
+          - ACMCertificateArn
+      - Label:
+          default: "Container Image"
+        Parameters:
+          - ECRImageUri
+      - Label:
+          default: "Grafana Cloud — Obtain these from your Grafana Cloud portal"
+        Parameters:
+          - GrafanaOtlpEndpoint
+          - GrafanaOtlpAuth
+          - FaroCollectorUrl
+          - FaroAppName
+      - Label:
+          default: "Telemetry Tags"
+        Parameters:
+          - DeploymentEnvironment
+          - ServiceVersion
+    ParameterLabels:
+      ClusterName:
+        default: "ECS Cluster Name"
+      TaskFamilyPrefix:
+        default: "Task Definition Family Prefix"
+      LogGroupPrefix:
+        default: "CloudWatch Log Group Prefix"
+      VpcId:
+        default: "VPC"
+      SubnetIds:
+        default: "Subnets (select at least 2)"
+      ALBAllowedCIDR:
+        default: "ALB Allowed Inbound CIDR"
+      ACMCertificateArn:
+        default: "ACM Certificate ARN (for HTTPS)"
+      ECRImageUri:
+        default: "ECR Image URI"
+      GrafanaOtlpEndpoint:
+        default: "Grafana OTLP Gateway Endpoint"
+      GrafanaOtlpAuth:
+        default: "Grafana OTLP Auth (Base64)"
+      FaroCollectorUrl:
+        default: "Faro Collector URL (optional)"
+      FaroAppName:
+        default: "Faro Application Name"
+      DeploymentEnvironment:
+        default: "Deployment Environment Tag"
+      ServiceVersion:
+        default: "Service Version Tag"
+
+Parameters:
+  ClusterName:
+    Type: String
+    Default: quickfood
+    Description: >
+      Name for the ECS cluster. This also becomes the Service Connect namespace.
+      Example: quickfood, myteam-quickfood
+
+  TaskFamilyPrefix:
+    Type: String
+    Default: quickfood
+    Description: >
+      Prefix for all task definition family names. Each service appends its name.
+      Example: With prefix "quickfood", task families become quickfood-public-api,
+      quickfood-catalog, etc.
+
+  LogGroupPrefix:
+    Type: String
+    Default: "/ecs/quickfood"
+    Description: >
+      Prefix for CloudWatch Log Group names. Each service gets its own log group.
+      Example: With prefix "/ecs/quickfood", log groups become
+      /ecs/quickfood/public-api, /ecs/quickfood/catalog, etc.
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: >
+      Select the VPC where the ECS services and ALB will be deployed.
+      Must have internet access (public subnets with IGW or NAT Gateway).
+
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: >
+      Select at least 2 subnets in different AZs. These must be public subnets
+      (with route to Internet Gateway) since Fargate tasks need internet access
+      to pull images from ECR and send telemetry to Grafana Cloud.
+
+  ALBAllowedCIDR:
+    Type: String
+    Default: "0.0.0.0/0"
+    Description: >
+      CIDR range allowed to access the ALB (HTTP/HTTPS).
+      Use 0.0.0.0/0 for public access or restrict to your IP/office range.
+      Example: 203.0.113.0/24 for a specific network, or 1.2.3.4/32 for a single IP.
+    AllowedPattern: "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}/\\d{1,2}$"
+    ConstraintDescription: "Must be a valid CIDR block (e.g. 0.0.0.0/0 or 10.0.0.0/8)."
+
+  ACMCertificateArn:
+    Type: String
+    Description: >
+      ARN of an ACM certificate for HTTPS on the ALB. The certificate must be
+      in the same region as this stack and must be validated (status: Issued).
+      Find this in AWS Console > Certificate Manager > your certificate > ARN.
+      Example: arn:aws:acm:ap-northeast-1:123456789012:certificate/abc-123-def
+    AllowedPattern: "arn:aws:acm:.*"
+    ConstraintDescription: "Must be a valid ACM certificate ARN."
+
+  ECRImageUri:
+    Type: String
+    Description: >
+      Full ECR image URI for the QuickFood application.
+      Example: 123456789012.dkr.ecr.us-east-1.amazonaws.com/hkdemo/ulam-gen:latest
+    AllowedPattern: ".+"
+    ConstraintDescription: "ECR image URI is required."
+
+  GrafanaOtlpEndpoint:
+    Type: String
+    Default: "https://otlp-gateway-prod-ap-southeast-1.grafana.net/otlp"
+    Description: >
+      Grafana Cloud OTLP gateway endpoint. Find this in Grafana Cloud portal under
+      Connections > OpenTelemetry (OTLP). Format:
+      https://otlp-gateway-prod-<region>.grafana.net/otlp
+
+  GrafanaOtlpAuth:
+    Type: String
+    NoEcho: true
+    Description: >
+      Base64-encoded Grafana Cloud OTLP auth string in the format
+      <instance-id>:<access-policy-token>. Find the pre-encoded value in
+      Grafana Cloud > Connections > OpenTelemetry (OTLP) under the
+      OTEL_EXPORTER_OTLP_HEADERS example. Required scopes: metrics:write,
+      logs:write, traces:write, profiles:write.
+    AllowedPattern: ".+"
+    ConstraintDescription: "Grafana OTLP auth is required."
+
+  FaroCollectorUrl:
+    Type: String
+    Default: ""
+    Description: >
+      Grafana Faro collector URL for frontend observability (optional).
+      Find this in Grafana Cloud > Frontend Observability > your app > Settings.
+      Example: https://faro-collector-prod-ap-southeast-1.grafana.net/collect/<app-key>
+      Leave empty to disable frontend observability.
+
+  FaroAppName:
+    Type: String
+    Default: "QuickFood App ECS Demo"
+    Description: >
+      Application name shown in Grafana Cloud Frontend Observability.
+      This identifies your app in the Faro dashboard.
+
+  DeploymentEnvironment:
+    Type: String
+    Default: production
+    Description: >
+      Environment tag embedded in all telemetry (traces, metrics, logs).
+      Used for filtering in Grafana dashboards. Examples: production, staging, demo.
+    AllowedValues:
+      - production
+      - staging
+      - development
+      - demo
+
+  ServiceVersion:
+    Type: String
+    Default: "quickfood-ecs"
+    Description: >
+      Service version tag embedded in OTEL_RESOURCE_ATTRIBUTES.
+      Useful for distinguishing deployments in Grafana service maps.
+
+Resources:
+  # ============================================================
+  # SECURITY GROUPS
+  # ============================================================
+  ALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Sub "${ClusterName} ALB - allows inbound HTTP/HTTPS from specified CIDR"
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: !Ref ALBAllowedCIDR
+          Description: "HTTP (redirects to HTTPS)"
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: !Ref ALBAllowedCIDR
+          Description: "HTTPS from allowed CIDR"
+      Tags:
+        - Key: Name
+          Value: !Sub "${ClusterName}-alb-sg"
+
+  ECSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Sub "${ClusterName} ECS tasks - allows traffic from ALB and between services"
+      VpcId: !Ref VpcId
+      Tags:
+        - Key: Name
+          Value: !Sub "${ClusterName}-ecs-sg"
+
+  ECSIngressFromALB:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref ECSSecurityGroup
+      IpProtocol: tcp
+      FromPort: 3333
+      ToPort: 3335
+      SourceSecurityGroupId: !Ref ALBSecurityGroup
+      Description: "App ports from ALB"
+
+  ECSIngressFromSelf:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref ECSSecurityGroup
+      IpProtocol: tcp
+      FromPort: 3333
+      ToPort: 3335
+      SourceSecurityGroupId: !Ref ECSSecurityGroup
+      Description: "Inter-service communication via Service Connect"
+
+  # ============================================================
+  # APPLICATION LOAD BALANCER
+  # ============================================================
+  ALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub "${ClusterName}-alb"
+      Scheme: internet-facing
+      Type: application
+      Subnets: !Ref SubnetIds
+      SecurityGroups:
+        - !Ref ALBSecurityGroup
+      Tags:
+        - Key: Name
+          Value: !Sub "${ClusterName}-alb"
+
+  ALBTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub "${ClusterName}-public-api"
+      VpcId: !Ref VpcId
+      Protocol: HTTP
+      Port: 3333
+      TargetType: ip
+      HealthCheckPath: /healthz
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 3
+      Tags:
+        - Key: Name
+          Value: !Sub "${ClusterName}-public-api-tg"
+
+  ALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref ALB
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: redirect
+          RedirectConfig:
+            Protocol: HTTPS
+            Port: "443"
+            StatusCode: HTTP_301
+
+  ALBListenerHTTPS:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref ALB
+      Port: 443
+      Protocol: HTTPS
+      Certificates:
+        - CertificateArn: !Ref ACMCertificateArn
+      SslPolicy: ELBSecurityPolicy-TLS13-1-2-2021-06
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ALBTargetGroup
+
+  # ============================================================
+  # CLOUDWATCH LOG GROUPS
+  # ============================================================
+  LogGroupPublicApi:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "${LogGroupPrefix}/public-api"
+      RetentionInDays: 1
+
+  LogGroupCatalog:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "${LogGroupPrefix}/catalog"
+      RetentionInDays: 1
+
+  LogGroupCopy:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "${LogGroupPrefix}/copy"
+      RetentionInDays: 1
+
+  LogGroupRecommendations:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "${LogGroupPrefix}/recommendations"
+      RetentionInDays: 1
+
+  LogGroupWs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "${LogGroupPrefix}/ws"
+      RetentionInDays: 1
+
+  LogGroupConfig:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "${LogGroupPrefix}/config"
+      RetentionInDays: 1
+
+  LogGroupGrpc:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "${LogGroupPrefix}/grpc"
+      RetentionInDays: 1
+
+  LogGroupMetrics:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "${LogGroupPrefix}/metrics"
+      RetentionInDays: 1
+
+  # ============================================================
+  # IAM ROLES
+  # ============================================================
+  ECSTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ClusterName}-ecsTaskExecutionRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      Tags:
+        - Key: Name
+          Value: !Sub "${ClusterName}-ecsTaskExecutionRole"
+
+  ECSTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ClusterName}-ecsTaskRole"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess
+        - arn:aws:iam::aws:policy/CloudWatchFullAccessV2
+      Tags:
+        - Key: Name
+          Value: !Sub "${ClusterName}-ecsTaskRole"
+
+  # ============================================================
+  # ECS CLUSTER
+  # ============================================================
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ClusterName
+      ServiceConnectDefaults:
+        Namespace: !Ref ClusterName
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
+      Tags:
+        - Key: Name
+          Value: !Ref ClusterName
+
+  # ============================================================
+  # TASK DEFINITIONS
+  # ============================================================
+
+  # --- PUBLIC-API (512 CPU, 1024 Memory) ---
+  TaskDefPublicApi:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub "${TaskFamilyPrefix}-public-api"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "512"
+      Memory: "1024"
+      ExecutionRoleArn: !GetAtt ECSTaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt ECSTaskRole.Arn
+      ContainerDefinitions:
+        - Name: public-api
+          Image: !Ref ECRImageUri
+          Essential: true
+          PortMappings:
+            - ContainerPort: 3333
+              HostPort: 3333
+              Protocol: tcp
+              Name: public-api
+              AppProtocol: http
+          Environment:
+            - Name: QUICKFOOD_ENABLE_ALL_SERVICES
+              Value: "0"
+            - Name: QUICKFOOD_ENABLE_PUBLIC_API_SERVICE
+              Value: "1"
+            - Name: QUICKFOOD_ENABLE_CONFIG_SERVICE
+              Value: "1"
+            - Name: QUICKFOOD_OTLP_ENDPOINT
+              Value: "http://localhost:4318"
+            - Name: QUICKFOOD_TRUST_CLIENT_TRACEID
+              Value: "1"
+            - Name: QUICKFOOD_OTEL_SERVICE_NAME
+              Value: public-api
+            - Name: QUICKFOOD_OTEL_SERVICE_INSTANCE_ID
+              Value: public-api
+            - Name: QUICKFOOD_CATALOG_ENDPOINT
+              Value: "http://catalog:3333"
+            - Name: QUICKFOOD_COPY_ENDPOINT
+              Value: "http://copy:3333"
+            - Name: QUICKFOOD_WS_ENDPOINT
+              Value: "http://ws:3333"
+            - Name: QUICKFOOD_RECOMMENDATIONS_ENDPOINT
+              Value: "http://recommendations:3333"
+            - Name: QUICKFOOD_CONFIG_ENDPOINT
+              Value: "http://config:3333"
+            - Name: QUICKFOOD_CONF_FARO_URL
+              Value: !Ref FaroCollectorUrl
+            - Name: QUICKFOOD_CONF_FARO_APP_NAME
+              Value: !Ref FaroAppName
+            - Name: QUICKFOOD_CONF_FARO_INSTRUMENTATION_ENABLE_REPLAY
+              Value: "true"
+            - Name: OTEL_RESOURCE_ATTRIBUTES
+              Value: !Sub "deployment.environment=${DeploymentEnvironment},service.version=${ServiceVersion}"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Sub "${LogGroupPrefix}/public-api"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: app
+        - Name: adot-collector
+          Image: public.ecr.aws/aws-observability/aws-otel-collector:latest
+          Essential: true
+          Environment:
+            - Name: AWS_REGION
+              Value: !Ref AWS::Region
+            - Name: GRAFANA_OTLP_ENDPOINT
+              Value: !Ref GrafanaOtlpEndpoint
+            - Name: GRAFANA_OTLP_AUTH
+              Value: !Ref GrafanaOtlpAuth
+            - Name: AOT_CONFIG_CONTENT
+              Value: !Sub |
+                receivers:
+                  otlp:
+                    protocols:
+                      grpc:
+                        endpoint: 0.0.0.0:4317
+                      http:
+                        endpoint: 0.0.0.0:4318
+                  prometheus:
+                    config:
+                      scrape_configs:
+                        - job_name: quickfood-public-api
+                          scrape_interval: 10s
+                          static_configs:
+                            - targets: ["localhost:3333"]
+                processors:
+                  batch:
+                    timeout: 5s
+                    send_batch_size: 1024
+                  resourcedetection:
+                    detectors: [env, ecs]
+                    timeout: 5s
+                exporters:
+                  awsxray:
+                    region: ${AWS::Region}
+                  awsemf:
+                    region: ${AWS::Region}
+                    namespace: QuickFood
+                    log_group_name: ${LogGroupPrefix}/metrics
+                    dimension_rollup_option: NoDimensionRollup
+                  otlphttp/grafana:
+                    endpoint: ${GrafanaOtlpEndpoint}
+                    headers:
+                      Authorization: Basic ${GrafanaOtlpAuth}
+                service:
+                  pipelines:
+                    traces:
+                      receivers: [otlp]
+                      processors: [resourcedetection, batch]
+                      exporters: [awsxray, otlphttp/grafana]
+                    metrics:
+                      receivers: [otlp, prometheus]
+                      processors: [resourcedetection, batch]
+                      exporters: [awsemf, otlphttp/grafana]
+                    logs:
+                      receivers: [otlp]
+                      processors: [resourcedetection, batch]
+                      exporters: [otlphttp/grafana]
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Sub "${LogGroupPrefix}/public-api"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: adot
+
+  # --- CATALOG (256 CPU, 512 Memory) ---
+  TaskDefCatalog:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub "${TaskFamilyPrefix}-catalog"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ExecutionRoleArn: !GetAtt ECSTaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt ECSTaskRole.Arn
+      ContainerDefinitions:
+        - Name: catalog
+          Image: !Ref ECRImageUri
+          Essential: true
+          PortMappings:
+            - ContainerPort: 3333
+              HostPort: 3333
+              Protocol: tcp
+              Name: catalog
+              AppProtocol: http
+          Environment:
+            - Name: QUICKFOOD_ENABLE_ALL_SERVICES
+              Value: "0"
+            - Name: QUICKFOOD_ENABLE_CATALOG_SERVICE
+              Value: "1"
+            - Name: QUICKFOOD_OTLP_ENDPOINT
+              Value: "http://localhost:4318"
+            - Name: QUICKFOOD_TRUST_CLIENT_TRACEID
+              Value: "1"
+            - Name: QUICKFOOD_OTEL_SERVICE_NAME
+              Value: catalog
+            - Name: QUICKFOOD_OTEL_SERVICE_INSTANCE_ID
+              Value: catalog
+            - Name: QUICKFOOD_DB
+              Value: ""
+            - Name: QUICKFOOD_OTEL_DB_NAME
+              Value: quickfood-db
+            - Name: OTEL_RESOURCE_ATTRIBUTES
+              Value: !Sub "deployment.environment=${DeploymentEnvironment},service.version=${ServiceVersion}"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Sub "${LogGroupPrefix}/catalog"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: app
+        - Name: adot-collector
+          Image: public.ecr.aws/aws-observability/aws-otel-collector:latest
+          Essential: true
+          Environment:
+            - Name: AWS_REGION
+              Value: !Ref AWS::Region
+            - Name: GRAFANA_OTLP_ENDPOINT
+              Value: !Ref GrafanaOtlpEndpoint
+            - Name: GRAFANA_OTLP_AUTH
+              Value: !Ref GrafanaOtlpAuth
+            - Name: AOT_CONFIG_CONTENT
+              Value: !Sub |
+                receivers:
+                  otlp:
+                    protocols:
+                      grpc:
+                        endpoint: 0.0.0.0:4317
+                      http:
+                        endpoint: 0.0.0.0:4318
+                  prometheus:
+                    config:
+                      scrape_configs:
+                        - job_name: quickfood-catalog
+                          scrape_interval: 10s
+                          static_configs:
+                            - targets: ["localhost:3333"]
+                processors:
+                  batch:
+                    timeout: 5s
+                    send_batch_size: 1024
+                  resourcedetection:
+                    detectors: [env, ecs]
+                    timeout: 5s
+                exporters:
+                  awsxray:
+                    region: ${AWS::Region}
+                  awsemf:
+                    region: ${AWS::Region}
+                    namespace: QuickFood
+                    log_group_name: ${LogGroupPrefix}/metrics
+                    dimension_rollup_option: NoDimensionRollup
+                  otlphttp/grafana:
+                    endpoint: ${GrafanaOtlpEndpoint}
+                    headers:
+                      Authorization: Basic ${GrafanaOtlpAuth}
+                service:
+                  pipelines:
+                    traces:
+                      receivers: [otlp]
+                      processors: [resourcedetection, batch]
+                      exporters: [awsxray, otlphttp/grafana]
+                    metrics:
+                      receivers: [otlp, prometheus]
+                      processors: [resourcedetection, batch]
+                      exporters: [awsemf, otlphttp/grafana]
+                    logs:
+                      receivers: [otlp]
+                      processors: [resourcedetection, batch]
+                      exporters: [otlphttp/grafana]
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Sub "${LogGroupPrefix}/catalog"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: adot
+
+  # --- COPY (256 CPU, 512 Memory) ---
+  TaskDefCopy:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub "${TaskFamilyPrefix}-copy"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ExecutionRoleArn: !GetAtt ECSTaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt ECSTaskRole.Arn
+      ContainerDefinitions:
+        - Name: copy
+          Image: !Ref ECRImageUri
+          Essential: true
+          PortMappings:
+            - ContainerPort: 3333
+              HostPort: 3333
+              Protocol: tcp
+              Name: copy
+              AppProtocol: http
+          Environment:
+            - Name: QUICKFOOD_ENABLE_ALL_SERVICES
+              Value: "0"
+            - Name: QUICKFOOD_ENABLE_COPY_SERVICE
+              Value: "1"
+            - Name: QUICKFOOD_OTLP_ENDPOINT
+              Value: "http://localhost:4318"
+            - Name: QUICKFOOD_TRUST_CLIENT_TRACEID
+              Value: "1"
+            - Name: QUICKFOOD_OTEL_SERVICE_NAME
+              Value: copy
+            - Name: QUICKFOOD_OTEL_SERVICE_INSTANCE_ID
+              Value: copy
+            - Name: QUICKFOOD_DB
+              Value: ""
+            - Name: QUICKFOOD_OTEL_DB_NAME
+              Value: quickfood-db
+            - Name: OTEL_RESOURCE_ATTRIBUTES
+              Value: !Sub "deployment.environment=${DeploymentEnvironment},service.version=${ServiceVersion}"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Sub "${LogGroupPrefix}/copy"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: app
+        - Name: adot-collector
+          Image: public.ecr.aws/aws-observability/aws-otel-collector:latest
+          Essential: true
+          Environment:
+            - Name: AWS_REGION
+              Value: !Ref AWS::Region
+            - Name: GRAFANA_OTLP_ENDPOINT
+              Value: !Ref GrafanaOtlpEndpoint
+            - Name: GRAFANA_OTLP_AUTH
+              Value: !Ref GrafanaOtlpAuth
+            - Name: AOT_CONFIG_CONTENT
+              Value: !Sub |
+                receivers:
+                  otlp:
+                    protocols:
+                      grpc:
+                        endpoint: 0.0.0.0:4317
+                      http:
+                        endpoint: 0.0.0.0:4318
+                  prometheus:
+                    config:
+                      scrape_configs:
+                        - job_name: quickfood-copy
+                          scrape_interval: 10s
+                          static_configs:
+                            - targets: ["localhost:3333"]
+                processors:
+                  batch:
+                    timeout: 5s
+                    send_batch_size: 1024
+                  resourcedetection:
+                    detectors: [env, ecs]
+                    timeout: 5s
+                exporters:
+                  awsxray:
+                    region: ${AWS::Region}
+                  awsemf:
+                    region: ${AWS::Region}
+                    namespace: QuickFood
+                    log_group_name: ${LogGroupPrefix}/metrics
+                    dimension_rollup_option: NoDimensionRollup
+                  otlphttp/grafana:
+                    endpoint: ${GrafanaOtlpEndpoint}
+                    headers:
+                      Authorization: Basic ${GrafanaOtlpAuth}
+                service:
+                  pipelines:
+                    traces:
+                      receivers: [otlp]
+                      processors: [resourcedetection, batch]
+                      exporters: [awsxray, otlphttp/grafana]
+                    metrics:
+                      receivers: [otlp, prometheus]
+                      processors: [resourcedetection, batch]
+                      exporters: [awsemf, otlphttp/grafana]
+                    logs:
+                      receivers: [otlp]
+                      processors: [resourcedetection, batch]
+                      exporters: [otlphttp/grafana]
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Sub "${LogGroupPrefix}/copy"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: adot
+
+  # --- RECOMMENDATIONS (256 CPU, 512 Memory) ---
+  TaskDefRecommendations:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub "${TaskFamilyPrefix}-recommendations"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ExecutionRoleArn: !GetAtt ECSTaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt ECSTaskRole.Arn
+      ContainerDefinitions:
+        - Name: recommendations
+          Image: !Ref ECRImageUri
+          Essential: true
+          PortMappings:
+            - ContainerPort: 3333
+              HostPort: 3333
+              Protocol: tcp
+              Name: recommendations
+              AppProtocol: http
+          Environment:
+            - Name: QUICKFOOD_ENABLE_ALL_SERVICES
+              Value: "0"
+            - Name: QUICKFOOD_ENABLE_RECOMMENDATIONS_SERVICE
+              Value: "1"
+            - Name: QUICKFOOD_OTLP_ENDPOINT
+              Value: "http://localhost:4318"
+            - Name: QUICKFOOD_TRUST_CLIENT_TRACEID
+              Value: "1"
+            - Name: QUICKFOOD_OTEL_SERVICE_NAME
+              Value: recommendations
+            - Name: QUICKFOOD_OTEL_SERVICE_INSTANCE_ID
+              Value: recommendations
+            - Name: QUICKFOOD_CATALOG_ENDPOINT
+              Value: "http://catalog:3333"
+            - Name: QUICKFOOD_COPY_ENDPOINT
+              Value: "http://copy:3333"
+            - Name: OTEL_RESOURCE_ATTRIBUTES
+              Value: !Sub "deployment.environment=${DeploymentEnvironment},service.version=${ServiceVersion}"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Sub "${LogGroupPrefix}/recommendations"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: app
+        - Name: adot-collector
+          Image: public.ecr.aws/aws-observability/aws-otel-collector:latest
+          Essential: true
+          Environment:
+            - Name: AWS_REGION
+              Value: !Ref AWS::Region
+            - Name: GRAFANA_OTLP_ENDPOINT
+              Value: !Ref GrafanaOtlpEndpoint
+            - Name: GRAFANA_OTLP_AUTH
+              Value: !Ref GrafanaOtlpAuth
+            - Name: AOT_CONFIG_CONTENT
+              Value: !Sub |
+                receivers:
+                  otlp:
+                    protocols:
+                      grpc:
+                        endpoint: 0.0.0.0:4317
+                      http:
+                        endpoint: 0.0.0.0:4318
+                  prometheus:
+                    config:
+                      scrape_configs:
+                        - job_name: quickfood-recommendations
+                          scrape_interval: 10s
+                          static_configs:
+                            - targets: ["localhost:3333"]
+                processors:
+                  batch:
+                    timeout: 5s
+                    send_batch_size: 1024
+                  resourcedetection:
+                    detectors: [env, ecs]
+                    timeout: 5s
+                exporters:
+                  awsxray:
+                    region: ${AWS::Region}
+                  awsemf:
+                    region: ${AWS::Region}
+                    namespace: QuickFood
+                    log_group_name: ${LogGroupPrefix}/metrics
+                    dimension_rollup_option: NoDimensionRollup
+                  otlphttp/grafana:
+                    endpoint: ${GrafanaOtlpEndpoint}
+                    headers:
+                      Authorization: Basic ${GrafanaOtlpAuth}
+                service:
+                  pipelines:
+                    traces:
+                      receivers: [otlp]
+                      processors: [resourcedetection, batch]
+                      exporters: [awsxray, otlphttp/grafana]
+                    metrics:
+                      receivers: [otlp, prometheus]
+                      processors: [resourcedetection, batch]
+                      exporters: [awsemf, otlphttp/grafana]
+                    logs:
+                      receivers: [otlp]
+                      processors: [resourcedetection, batch]
+                      exporters: [otlphttp/grafana]
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Sub "${LogGroupPrefix}/recommendations"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: adot
+
+  # --- WS (256 CPU, 512 Memory) ---
+  TaskDefWs:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub "${TaskFamilyPrefix}-ws"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ExecutionRoleArn: !GetAtt ECSTaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt ECSTaskRole.Arn
+      ContainerDefinitions:
+        - Name: ws
+          Image: !Ref ECRImageUri
+          Essential: true
+          PortMappings:
+            - ContainerPort: 3333
+              HostPort: 3333
+              Protocol: tcp
+              Name: ws
+              AppProtocol: http
+          Environment:
+            - Name: QUICKFOOD_ENABLE_ALL_SERVICES
+              Value: "0"
+            - Name: QUICKFOOD_ENABLE_WS_SERVICE
+              Value: "1"
+            - Name: QUICKFOOD_OTLP_ENDPOINT
+              Value: "http://localhost:4318"
+            - Name: QUICKFOOD_TRUST_CLIENT_TRACEID
+              Value: "1"
+            - Name: QUICKFOOD_OTEL_SERVICE_NAME
+              Value: ws
+            - Name: QUICKFOOD_OTEL_SERVICE_INSTANCE_ID
+              Value: ws
+            - Name: OTEL_RESOURCE_ATTRIBUTES
+              Value: !Sub "deployment.environment=${DeploymentEnvironment},service.version=${ServiceVersion}"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Sub "${LogGroupPrefix}/ws"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: app
+        - Name: adot-collector
+          Image: public.ecr.aws/aws-observability/aws-otel-collector:latest
+          Essential: true
+          Environment:
+            - Name: AWS_REGION
+              Value: !Ref AWS::Region
+            - Name: GRAFANA_OTLP_ENDPOINT
+              Value: !Ref GrafanaOtlpEndpoint
+            - Name: GRAFANA_OTLP_AUTH
+              Value: !Ref GrafanaOtlpAuth
+            - Name: AOT_CONFIG_CONTENT
+              Value: !Sub |
+                receivers:
+                  otlp:
+                    protocols:
+                      grpc:
+                        endpoint: 0.0.0.0:4317
+                      http:
+                        endpoint: 0.0.0.0:4318
+                  prometheus:
+                    config:
+                      scrape_configs:
+                        - job_name: quickfood-ws
+                          scrape_interval: 10s
+                          static_configs:
+                            - targets: ["localhost:3333"]
+                processors:
+                  batch:
+                    timeout: 5s
+                    send_batch_size: 1024
+                  resourcedetection:
+                    detectors: [env, ecs]
+                    timeout: 5s
+                exporters:
+                  awsxray:
+                    region: ${AWS::Region}
+                  awsemf:
+                    region: ${AWS::Region}
+                    namespace: QuickFood
+                    log_group_name: ${LogGroupPrefix}/metrics
+                    dimension_rollup_option: NoDimensionRollup
+                  otlphttp/grafana:
+                    endpoint: ${GrafanaOtlpEndpoint}
+                    headers:
+                      Authorization: Basic ${GrafanaOtlpAuth}
+                service:
+                  pipelines:
+                    traces:
+                      receivers: [otlp]
+                      processors: [resourcedetection, batch]
+                      exporters: [awsxray, otlphttp/grafana]
+                    metrics:
+                      receivers: [otlp, prometheus]
+                      processors: [resourcedetection, batch]
+                      exporters: [awsemf, otlphttp/grafana]
+                    logs:
+                      receivers: [otlp]
+                      processors: [resourcedetection, batch]
+                      exporters: [otlphttp/grafana]
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Sub "${LogGroupPrefix}/ws"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: adot
+
+  # --- CONFIG (256 CPU, 512 Memory) ---
+  TaskDefConfig:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub "${TaskFamilyPrefix}-config"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ExecutionRoleArn: !GetAtt ECSTaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt ECSTaskRole.Arn
+      ContainerDefinitions:
+        - Name: config
+          Image: !Ref ECRImageUri
+          Essential: true
+          PortMappings:
+            - ContainerPort: 3333
+              HostPort: 3333
+              Protocol: tcp
+              Name: config
+              AppProtocol: http
+          Environment:
+            - Name: QUICKFOOD_ENABLE_ALL_SERVICES
+              Value: "0"
+            - Name: QUICKFOOD_ENABLE_CONFIG_SERVICE
+              Value: "1"
+            - Name: QUICKFOOD_OTLP_ENDPOINT
+              Value: "http://localhost:4318"
+            - Name: QUICKFOOD_TRUST_CLIENT_TRACEID
+              Value: "1"
+            - Name: QUICKFOOD_OTEL_SERVICE_NAME
+              Value: config
+            - Name: QUICKFOOD_OTEL_SERVICE_INSTANCE_ID
+              Value: config
+            - Name: QUICKFOOD_CONF_FARO_URL
+              Value: !Ref FaroCollectorUrl
+            - Name: QUICKFOOD_CONF_FARO_APP_NAME
+              Value: !Ref FaroAppName
+            - Name: QUICKFOOD_CONF_FARO_INSTRUMENTATION_ENABLE_REPLAY
+              Value: "true"
+            - Name: OTEL_RESOURCE_ATTRIBUTES
+              Value: !Sub "deployment.environment=${DeploymentEnvironment},service.version=${ServiceVersion}"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Sub "${LogGroupPrefix}/config"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: app
+        - Name: adot-collector
+          Image: public.ecr.aws/aws-observability/aws-otel-collector:latest
+          Essential: true
+          Environment:
+            - Name: AWS_REGION
+              Value: !Ref AWS::Region
+            - Name: GRAFANA_OTLP_ENDPOINT
+              Value: !Ref GrafanaOtlpEndpoint
+            - Name: GRAFANA_OTLP_AUTH
+              Value: !Ref GrafanaOtlpAuth
+            - Name: AOT_CONFIG_CONTENT
+              Value: !Sub |
+                receivers:
+                  otlp:
+                    protocols:
+                      grpc:
+                        endpoint: 0.0.0.0:4317
+                      http:
+                        endpoint: 0.0.0.0:4318
+                  prometheus:
+                    config:
+                      scrape_configs:
+                        - job_name: quickfood-config
+                          scrape_interval: 10s
+                          static_configs:
+                            - targets: ["localhost:3333"]
+                processors:
+                  batch:
+                    timeout: 5s
+                    send_batch_size: 1024
+                  resourcedetection:
+                    detectors: [env, ecs]
+                    timeout: 5s
+                exporters:
+                  awsxray:
+                    region: ${AWS::Region}
+                  awsemf:
+                    region: ${AWS::Region}
+                    namespace: QuickFood
+                    log_group_name: ${LogGroupPrefix}/metrics
+                    dimension_rollup_option: NoDimensionRollup
+                  otlphttp/grafana:
+                    endpoint: ${GrafanaOtlpEndpoint}
+                    headers:
+                      Authorization: Basic ${GrafanaOtlpAuth}
+                service:
+                  pipelines:
+                    traces:
+                      receivers: [otlp]
+                      processors: [resourcedetection, batch]
+                      exporters: [awsxray, otlphttp/grafana]
+                    metrics:
+                      receivers: [otlp, prometheus]
+                      processors: [resourcedetection, batch]
+                      exporters: [awsemf, otlphttp/grafana]
+                    logs:
+                      receivers: [otlp]
+                      processors: [resourcedetection, batch]
+                      exporters: [otlphttp/grafana]
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Sub "${LogGroupPrefix}/config"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: adot
+
+  # --- GRPC (256 CPU, 512 Memory) — No Prometheus scrape, port 3334, appProtocol grpc ---
+  TaskDefGrpc:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub "${TaskFamilyPrefix}-grpc"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ExecutionRoleArn: !GetAtt ECSTaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt ECSTaskRole.Arn
+      ContainerDefinitions:
+        - Name: grpc
+          Image: !Ref ECRImageUri
+          Essential: true
+          PortMappings:
+            - ContainerPort: 3334
+              HostPort: 3334
+              Protocol: tcp
+              Name: grpc
+              AppProtocol: grpc
+          Environment:
+            - Name: QUICKFOOD_ENABLE_ALL_SERVICES
+              Value: "0"
+            - Name: QUICKFOOD_ENABLE_GRPC_SERVICE
+              Value: "1"
+            - Name: QUICKFOOD_OTLP_ENDPOINT
+              Value: "http://localhost:4318"
+            - Name: QUICKFOOD_TRUST_CLIENT_TRACEID
+              Value: "1"
+            - Name: QUICKFOOD_OTEL_SERVICE_NAME
+              Value: grpc
+            - Name: QUICKFOOD_OTEL_SERVICE_INSTANCE_ID
+              Value: grpc
+            - Name: OTEL_RESOURCE_ATTRIBUTES
+              Value: !Sub "deployment.environment=${DeploymentEnvironment},service.version=${ServiceVersion}"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Sub "${LogGroupPrefix}/grpc"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: app
+        - Name: adot-collector
+          Image: public.ecr.aws/aws-observability/aws-otel-collector:latest
+          Essential: true
+          Environment:
+            - Name: AWS_REGION
+              Value: !Ref AWS::Region
+            - Name: GRAFANA_OTLP_ENDPOINT
+              Value: !Ref GrafanaOtlpEndpoint
+            - Name: GRAFANA_OTLP_AUTH
+              Value: !Ref GrafanaOtlpAuth
+            - Name: AOT_CONFIG_CONTENT
+              Value: !Sub |
+                receivers:
+                  otlp:
+                    protocols:
+                      grpc:
+                        endpoint: 0.0.0.0:4317
+                      http:
+                        endpoint: 0.0.0.0:4318
+                processors:
+                  batch:
+                    timeout: 5s
+                    send_batch_size: 1024
+                  resourcedetection:
+                    detectors: [env, ecs]
+                    timeout: 5s
+                exporters:
+                  awsxray:
+                    region: ${AWS::Region}
+                  awsemf:
+                    region: ${AWS::Region}
+                    namespace: QuickFood
+                    log_group_name: ${LogGroupPrefix}/metrics
+                    dimension_rollup_option: NoDimensionRollup
+                  otlphttp/grafana:
+                    endpoint: ${GrafanaOtlpEndpoint}
+                    headers:
+                      Authorization: Basic ${GrafanaOtlpAuth}
+                service:
+                  pipelines:
+                    traces:
+                      receivers: [otlp]
+                      processors: [resourcedetection, batch]
+                      exporters: [awsxray, otlphttp/grafana]
+                    metrics:
+                      receivers: [otlp]
+                      processors: [resourcedetection, batch]
+                      exporters: [awsemf, otlphttp/grafana]
+                    logs:
+                      receivers: [otlp]
+                      processors: [resourcedetection, batch]
+                      exporters: [otlphttp/grafana]
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Sub "${LogGroupPrefix}/grpc"
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: adot
+
+  # ============================================================
+  # ECS SERVICES (all start with DesiredCount: 0)
+  # ============================================================
+
+  # --- CATALOG SERVICE ---
+  ServiceCatalog:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: catalog
+      Cluster: !Ref ECSCluster
+      TaskDefinition: !Ref TaskDefCatalog
+      DesiredCount: 0
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets: !Ref SubnetIds
+          SecurityGroups:
+            - !Ref ECSSecurityGroup
+          AssignPublicIp: ENABLED
+      ServiceConnectConfiguration:
+        Enabled: true
+        Namespace: !Ref ClusterName
+        Services:
+          - PortName: catalog
+            DiscoveryName: catalog
+            ClientAliases:
+              - Port: 3333
+                DnsName: catalog
+
+  # --- COPY SERVICE ---
+  ServiceCopy:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: copy
+      Cluster: !Ref ECSCluster
+      TaskDefinition: !Ref TaskDefCopy
+      DesiredCount: 0
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets: !Ref SubnetIds
+          SecurityGroups:
+            - !Ref ECSSecurityGroup
+          AssignPublicIp: ENABLED
+      ServiceConnectConfiguration:
+        Enabled: true
+        Namespace: !Ref ClusterName
+        Services:
+          - PortName: copy
+            DiscoveryName: copy
+            ClientAliases:
+              - Port: 3333
+                DnsName: copy
+
+  # --- RECOMMENDATIONS SERVICE ---
+  ServiceRecommendations:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: recommendations
+      Cluster: !Ref ECSCluster
+      TaskDefinition: !Ref TaskDefRecommendations
+      DesiredCount: 0
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets: !Ref SubnetIds
+          SecurityGroups:
+            - !Ref ECSSecurityGroup
+          AssignPublicIp: ENABLED
+      ServiceConnectConfiguration:
+        Enabled: true
+        Namespace: !Ref ClusterName
+        Services:
+          - PortName: recommendations
+            DiscoveryName: recommendations
+            ClientAliases:
+              - Port: 3333
+                DnsName: recommendations
+
+  # --- WS SERVICE ---
+  ServiceWs:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: ws
+      Cluster: !Ref ECSCluster
+      TaskDefinition: !Ref TaskDefWs
+      DesiredCount: 0
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets: !Ref SubnetIds
+          SecurityGroups:
+            - !Ref ECSSecurityGroup
+          AssignPublicIp: ENABLED
+      ServiceConnectConfiguration:
+        Enabled: true
+        Namespace: !Ref ClusterName
+        Services:
+          - PortName: ws
+            DiscoveryName: ws
+            ClientAliases:
+              - Port: 3333
+                DnsName: ws
+
+  # --- CONFIG SERVICE ---
+  ServiceConfig:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: config
+      Cluster: !Ref ECSCluster
+      TaskDefinition: !Ref TaskDefConfig
+      DesiredCount: 0
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets: !Ref SubnetIds
+          SecurityGroups:
+            - !Ref ECSSecurityGroup
+          AssignPublicIp: ENABLED
+      ServiceConnectConfiguration:
+        Enabled: true
+        Namespace: !Ref ClusterName
+        Services:
+          - PortName: config
+            DiscoveryName: config
+            ClientAliases:
+              - Port: 3333
+                DnsName: config
+
+  # --- GRPC SERVICE ---
+  ServiceGrpc:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: grpc
+      Cluster: !Ref ECSCluster
+      TaskDefinition: !Ref TaskDefGrpc
+      DesiredCount: 0
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets: !Ref SubnetIds
+          SecurityGroups:
+            - !Ref ECSSecurityGroup
+          AssignPublicIp: ENABLED
+      ServiceConnectConfiguration:
+        Enabled: true
+        Namespace: !Ref ClusterName
+        Services:
+          - PortName: grpc
+            DiscoveryName: grpc
+            ClientAliases:
+              - Port: 3334
+                DnsName: grpc
+
+  # --- PUBLIC-API SERVICE (attached to ALB) ---
+  ServicePublicApi:
+    Type: AWS::ECS::Service
+    DependsOn: ALBListener
+    Properties:
+      ServiceName: public-api
+      Cluster: !Ref ECSCluster
+      TaskDefinition: !Ref TaskDefPublicApi
+      DesiredCount: 0
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets: !Ref SubnetIds
+          SecurityGroups:
+            - !Ref ECSSecurityGroup
+          AssignPublicIp: ENABLED
+      LoadBalancers:
+        - ContainerName: public-api
+          ContainerPort: 3333
+          TargetGroupArn: !Ref ALBTargetGroup
+      ServiceConnectConfiguration:
+        Enabled: true
+        Namespace: !Ref ClusterName
+        Services:
+          - PortName: public-api
+            DiscoveryName: public-api
+            ClientAliases:
+              - Port: 3333
+                DnsName: public-api
+
+# ============================================================
+# OUTPUTS
+# ============================================================
+Outputs:
+  ALBDnsName:
+    Description: >
+      Application Load Balancer DNS name. Use this URL to access the QuickFood app.
+      Add this to Grafana Cloud Faro Allowed Origins for frontend observability.
+    Value: !GetAtt ALB.DNSName
+
+  ALBUrl:
+    Description: "Full URL to access QuickFood (HTTPS)"
+    Value: !Sub "https://${ALB.DNSName}"
+
+  ECSClusterName:
+    Description: "ECS Cluster name — use with aws ecs update-service to scale up"
+    Value: !Ref ECSCluster
+
+  ECSClusterArn:
+    Description: "ECS Cluster ARN"
+    Value: !GetAtt ECSCluster.Arn
+
+  ScaleUpCommand:
+    Description: >
+      Run this command to scale all services to 1 task each.
+      Replace the region if needed.
+    Value: !Sub >
+      for svc in public-api catalog copy recommendations ws config grpc; do
+        aws ecs update-service --cluster ${ClusterName} --service $svc --desired-count 1 --region ${AWS::Region};
+      done
+
+  ScaleDownCommand:
+    Description: "Run this command to scale all services back to 0."
+    Value: !Sub >
+      for svc in public-api catalog copy recommendations ws config grpc; do
+        aws ecs update-service --cluster ${ClusterName} --service $svc --desired-count 0 --region ${AWS::Region};
+      done
+
+  TaskExecutionRoleArn:
+    Description: "Task Execution Role ARN (for reference)"
+    Value: !GetAtt ECSTaskExecutionRole.Arn
+
+  TaskRoleArn:
+    Description: "Task Role ARN (for reference)"
+    Value: !GetAtt ECSTaskRole.Arn
